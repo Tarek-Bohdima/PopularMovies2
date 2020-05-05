@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Popular Movies</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="description_movie_poster">a movie poster</string>
+    <string name="connection_error_placeholder">Connection Error PlaceHolder</string>
+    <string name="backdrop">Backdrop</string>
+    <string name="overview">Overview</string>
 </resources>

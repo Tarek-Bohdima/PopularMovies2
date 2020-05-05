@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020. This project was submitted by Tarek Bohdima as part of the Android Developer Nanodegree At Udacity.
+  ~ As part of Udacity Honor code, your submissions must be your own work, hence submitting this project as yours will cause you to break the Udacity Honor Code and the suspension of your account.
+  ~ Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.android.popularmovies">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!--
+    Allows Glide to monitor connectivity status and restart failed requests if users go from a
+    a disconnected to a connected network state.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,6 +29,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".DetailActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

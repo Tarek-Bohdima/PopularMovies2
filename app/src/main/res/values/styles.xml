@@ -8,4 +8,23 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="detail_text_medium">
+        <item name="android:fontFamily">@font/amaranth</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textColor">@color/text_color</item>
+    </style>
+
+    <style name="detail_text_small">
+        <item name="android:fontFamily">@font/amaranth</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textColor">@color/text_color</item>
+    </style>
+
+    <style name="detail_text_large">
+        <item name="android:fontFamily">@font/amaranth</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Large</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
