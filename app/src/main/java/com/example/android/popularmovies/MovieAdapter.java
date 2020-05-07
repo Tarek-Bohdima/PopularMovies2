@@ -62,11 +62,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public int getItemCount() {
-        if (moviesArrayList == null) {
+       /* if (moviesArrayList == null) {
             return 0;
         }else {
             return moviesArrayList.size();
-        }
+        }*/
+        // OR better ternary operator https://www.tutorialspoint.com/Java-Ternary-Operator-Examples
+        // https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op2.html
+        return moviesArrayList == null ? 0 : moviesArrayList.size();
     }
 
     void setMovieData(ArrayList<Movie> movieData) {
