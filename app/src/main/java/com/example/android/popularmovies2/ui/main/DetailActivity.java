@@ -4,7 +4,7 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies;
+package com.example.android.popularmovies2.ui.main;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,10 +16,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.android.popularmovies2.R;
+import com.example.android.popularmovies2.adapter.MovieAdapter;
+import com.example.android.popularmovies2.model.Movie;
 
-import static com.example.android.popularmovies.MainActivity.MOVIE_OBJECT;
-import static com.example.android.popularmovies.MovieAdapter.buildBackdropImageUrl;
-import static com.example.android.popularmovies.MovieAdapter.buildPosterImageUrl;
+
+import static com.example.android.popularmovies2.adapter.MovieAdapter.buildBackdropImageUrl;
+import static com.example.android.popularmovies2.ui.main.MainActivity.MOVIE_OBJECT;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -47,7 +50,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         Glide.with(context)
-                .load(buildPosterImageUrl(detailMovie.getPosterPath()))
+                .load(MovieAdapter.buildPosterImageUrl(detailMovie.getPosterPath()))
                 .into(poster);
 
         Glide.with(context)

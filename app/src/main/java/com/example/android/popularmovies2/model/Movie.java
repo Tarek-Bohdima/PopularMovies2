@@ -4,19 +4,28 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies;
+package com.example.android.popularmovies2.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 // implementation of Parcelable credits go to : https://stackoverflow.com/a/23647471/8899344
 public class Movie implements Parcelable {
+    @SerializedName("id")
     private int movieId;
+    @SerializedName("original_title")
     private String originalTitle;
+    @SerializedName("poster_path")
     private String posterPath;
+    @SerializedName("backdrop_path")
     private String backdropPath;
+
     private String overview;
+    @SerializedName("vote_average")
     private double voteAverage;
+    @SerializedName("release_date")
     private String releaseDate;
 
     public Movie(int movieId, String originalTitle, String posterPath, String backdropPath, String overview, double voteAverage, String releaseDate) {

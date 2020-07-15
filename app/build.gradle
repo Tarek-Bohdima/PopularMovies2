@@ -11,7 +11,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "com.example.android.popularmovies"
+        applicationId "com.example.android.popularmovies2"
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
@@ -32,6 +32,11 @@ android {
         it.buildConfigField 'String', 'TMDB_API_KEY', myTMDBApiKey
     }
 
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
 }
 
 dependencies {
@@ -47,4 +52,8 @@ dependencies {
     // RecyclerView
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
+    //Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
 }

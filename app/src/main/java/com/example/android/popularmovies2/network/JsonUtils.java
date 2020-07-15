@@ -4,18 +4,14 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies.network;
+package com.example.android.popularmovies2.network;
 
-import android.util.Log;
 
-import com.example.android.popularmovies.Movie;
+/* Class not needed anymore , kept for future reference*/
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.android.popularmovies2.model.Movie;
 
-import java.util.ArrayList;
-
+/*
 public class JsonUtils {
     private static final String TAG = JsonUtils.class.getSimpleName();
     private static final String ID = "id";
@@ -30,10 +26,12 @@ public class JsonUtils {
     private JsonUtils() {
     }
 
-    /**
+    */
+/**
      * Return a list of {@link Movie} objects that has been built up from
      * parsing the given JSON response.
-     */
+     *//*
+
     public static ArrayList<Movie> parseJson(String movieJson) {
 
         // Create an empty ArrayList that we can start adding movies to.
@@ -73,3 +71,4 @@ public class JsonUtils {
     }
 
 }
+*/

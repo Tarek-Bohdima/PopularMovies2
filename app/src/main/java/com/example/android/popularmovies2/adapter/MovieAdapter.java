@@ -4,7 +4,7 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies;
+package com.example.android.popularmovies2.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.android.popularmovies2.R;
+import com.example.android.popularmovies2.model.Movie;
 
 import java.util.ArrayList;
 
@@ -30,7 +32,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         void onListItemClick(Movie currentMovie);
     }
 
-    MovieAdapter(Context context, ArrayList<Movie> moviesArrayList, MovieAdapterClickListener onClickListener) {
+    public MovieAdapter(Context context, ArrayList<Movie> moviesArrayList, MovieAdapterClickListener onClickListener) {
         this.context = context;
         this.moviesArrayList = moviesArrayList;
         this.onClickListener = onClickListener;
@@ -72,7 +74,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return moviesArrayList == null ? 0 : moviesArrayList.size();
     }
 
-    void setMovieData(ArrayList<Movie> movieData) {
+    public void setMovieData(ArrayList<Movie> movieData) {
         moviesArrayList = movieData;
         notifyDataSetChanged();
     }
@@ -96,11 +98,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         }
     }
 
-    static String buildPosterImageUrl(String filepath) {
+    public static String buildPosterImageUrl(String filepath) {
         return BASE_IMAGE_URL + "w185/" + filepath;
     }
 
-    static String buildBackdropImageUrl(String filepath) {
+    public static String buildBackdropImageUrl(String filepath) {
         return BASE_IMAGE_URL + "w500" + filepath;
     }
 }

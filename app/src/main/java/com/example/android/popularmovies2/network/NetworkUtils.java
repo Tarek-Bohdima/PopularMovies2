@@ -4,23 +4,12 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies.network;
+package com.example.android.popularmovies2.network;
 
-import android.net.Uri;
-import android.util.Log;
-
-import com.example.android.popularmovies.BuildConfig;
-
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
-public class NetworkUtils {
+/* Class not needed anymore , kept for future reference*/
+/*public class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
     // please acquire your API KEY from https://www.themoviedb.org/ then:
@@ -29,9 +18,9 @@ public class NetworkUtils {
     private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
     private static final String API_PARAMETER = "api_key";
 
-    /**
+    *//**
      * Returns new URL object by building URI by provided parameter and converting it to URL
-     */
+     *//*
     public static URL buildUrl(String sortByParameter) {
         Uri builtUri = Uri.parse(BASE_URL).buildUpon()
                 .appendPath(sortByParameter)
@@ -76,10 +65,10 @@ public class NetworkUtils {
         return jsonResponse;
     }
 
-    /**
+    *//**
      * Convert the {@link InputStream} into a String which contains the
      * whole JSON response from the server.
-     */
+     *//*
     private static String readFromStream(InputStream inputStream) throws IOException {
         StringBuilder output = new StringBuilder();
         if (inputStream != null) {
@@ -94,4 +83,4 @@ public class NetworkUtils {
         return output.toString();
     }
 
-}
+}*/
