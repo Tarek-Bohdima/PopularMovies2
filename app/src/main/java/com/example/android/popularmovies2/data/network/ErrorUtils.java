@@ -4,9 +4,7 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.network;
-
-import com.example.android.popularmovies2.model.APIError;
+package com.example.android.popularmovies2.data.network;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;

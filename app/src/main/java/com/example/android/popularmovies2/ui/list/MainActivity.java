@@ -4,7 +4,7 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.ui.main;
+package com.example.android.popularmovies2.ui.list;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,13 +28,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.popularmovies2.BuildConfig;
 import com.example.android.popularmovies2.R;
-import com.example.android.popularmovies2.adapter.MovieAdapter;
-import com.example.android.popularmovies2.model.APIError;
-import com.example.android.popularmovies2.model.Movie;
-import com.example.android.popularmovies2.model.MoviesList;
-import com.example.android.popularmovies2.network.ErrorUtils;
-import com.example.android.popularmovies2.network.MovieApi;
-import com.example.android.popularmovies2.network.RetrofitClientInstance;
+import com.example.android.popularmovies2.data.network.APIError;
+import com.example.android.popularmovies2.data.model.Movie;
+import com.example.android.popularmovies2.data.model.MoviesList;
+import com.example.android.popularmovies2.data.network.ErrorUtils;
+import com.example.android.popularmovies2.data.network.MovieApi;
+import com.example.android.popularmovies2.data.network.RetrofitClientInstance;
+import com.example.android.popularmovies2.ui.detail.DetailActivity;
 
 import java.util.ArrayList;
 
@@ -51,21 +51,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
-    public ArrayList<Movie> moviesArrayList = new ArrayList<Movie>();
+    public ArrayList<Movie> moviesArrayList = new ArrayList<>();
     private ImageView errorImageView;
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
-    private MovieApi movieApi;
+    public  MovieApi movieApi;
 
     // Credits to https://stackoverflow.com/a/61566780/8899344
     private static boolean isNetworkConnected(Context context) {
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if (connectivityManager != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-                return capabilities != null && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+                NetworkCapabilities capabilities = connectivityManager.
+                        getNetworkCapabilities(connectivityManager.getActiveNetwork());
+                return capabilities != null &&
+                        (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
             } else {
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 return activeNetwork != null && activeNetwork.isConnected();
@@ -101,12 +105,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
 
         checkAndCall(context, POPULAR);
+
+
     }
 
-    private void getMovies(String path) {
-        Call<MoviesList> callMoviesbyPath = movieApi.getPopularMovies(path,MY_TMDB_API_KEY);
 
-        callMoviesbyPath.enqueue(new Callback<MoviesList>() {
+
+    private void getMovies(String path) {
+        Call<MoviesList> callMoviesByPath = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY);
+
+        callMoviesByPath.enqueue(new Callback<MoviesList>() {
             @Override
             public void onResponse(Call<MoviesList> call, Response<MoviesList> response) {
                 if (!response.isSuccessful()){

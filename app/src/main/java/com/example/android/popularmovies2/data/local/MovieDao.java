@@ -4,21 +4,25 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.model;
+package com.example.android.popularmovies2.data.local;
 
-public class APIError {
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.Query;
 
-    private int statusCode;
-    private String message;
+import com.example.android.popularmovies2.data.model.Movie;
 
-    public APIError() {
-    }
+import java.util.List;
 
-    public int status() {
-        return statusCode;
-    }
+@Dao
+public interface MovieDao {
 
-    public String message() {
-        return message;
-    }
+    @Query("SELECT * FROM movies")
+    LiveData<List<Movie>> loadAllMovies();
+
+    @Insert
+    void insertMovie(Movie movie);
+
+
 }

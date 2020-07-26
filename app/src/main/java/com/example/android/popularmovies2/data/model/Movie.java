@@ -4,15 +4,21 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.model;
+package com.example.android.popularmovies2.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
 // implementation of Parcelable credits go to : https://stackoverflow.com/a/23647471/8899344
+@Entity(tableName = "movies")
 public class Movie implements Parcelable {
+    @PrimaryKey(autoGenerate = true)
     @SerializedName("id")
     private int movieId;
     @SerializedName("original_title")
@@ -38,6 +44,7 @@ public class Movie implements Parcelable {
         this.releaseDate = releaseDate;
     }
 
+    @Ignore
     private Movie(Parcel in) {
         movieId = in.readInt();
         originalTitle = in.readString();

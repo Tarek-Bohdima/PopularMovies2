@@ -4,7 +4,7 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.adapter;
+package com.example.android.popularmovies2.ui.list;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies2.R;
-import com.example.android.popularmovies2.model.Movie;
+import com.example.android.popularmovies2.data.model.Movie;
 
 import java.util.ArrayList;
 

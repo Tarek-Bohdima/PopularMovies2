@@ -4,15 +4,21 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.model;
+package com.example.android.popularmovies2.data.network;
 
-import java.util.ArrayList;
+public class APIError {
 
-public class MoviesList{
-    ArrayList<Movie> results;
+    private int statusCode;
+    private String message;
 
-    public ArrayList<Movie> getMovies() {
-        return results;
+    public APIError() {
     }
 
+    public int status() {
+        return statusCode;
+    }
+
+    public String message() {
+        return message;
+    }
 }

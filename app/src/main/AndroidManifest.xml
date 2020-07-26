@@ -22,18 +22,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:fullBackupContent="@xml/backup_descriptor">
-        <activity android:name="com.example.android.popularmovies2.ui.main.MainActivity">
+        <activity android:name="com.example.android.popularmovies2.ui.list.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.android.popularmovies2.ui.main.DetailActivity"
-            android:parentActivityName="com.example.android.popularmovies2.ui.main.MainActivity">
+        <activity android:name="com.example.android.popularmovies2.ui.detail.DetailActivity"
+            android:parentActivityName="com.example.android.popularmovies2.ui.list.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.android.popularmovies2.ui.main.MainActivity"/>
+                android:value="com.example.android.popularmovies2.ui.list.MainActivity"/>
         </activity>
 
         <meta-data
