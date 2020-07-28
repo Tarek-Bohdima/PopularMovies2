@@ -9,8 +9,8 @@ package com.example.android.popularmovies2.data.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
@@ -18,23 +18,40 @@ import com.google.gson.annotations.SerializedName;
 // implementation of Parcelable credits go to : https://stackoverflow.com/a/23647471/8899344
 @Entity(tableName = "movies")
 public class Movie implements Parcelable {
+
     @PrimaryKey(autoGenerate = true)
     @SerializedName("id")
     private int movieId;
+
     @SerializedName("original_title")
     private String originalTitle;
+
     @SerializedName("poster_path")
     private String posterPath;
+
     @SerializedName("backdrop_path")
     private String backdropPath;
 
     private String overview;
+
     @SerializedName("vote_average")
     private double voteAverage;
+
     @SerializedName("release_date")
     private String releaseDate;
 
-    public Movie(int movieId, String originalTitle, String posterPath, String backdropPath, String overview, double voteAverage, String releaseDate) {
+    @ColumnInfo(name = "is_top_rated")
+    private boolean isTopRated;
+
+    @ColumnInfo(name = "is_popular")
+    private boolean isPopular;
+
+    @ColumnInfo(name = "is_favorite")
+    private boolean isFavorite;
+
+
+    public Movie(int movieId, String originalTitle, String posterPath, String backdropPath,
+                 String overview, double voteAverage, String releaseDate) {
         this.movieId = movieId;
         this.originalTitle = originalTitle;
         this.posterPath = posterPath;
@@ -44,7 +61,6 @@ public class Movie implements Parcelable {
         this.releaseDate = releaseDate;
     }
 
-    @Ignore
     private Movie(Parcel in) {
         movieId = in.readInt();
         originalTitle = in.readString();
@@ -53,6 +69,9 @@ public class Movie implements Parcelable {
         overview = in.readString();
         voteAverage = in.readDouble();
         releaseDate = in.readString();
+        isTopRated = in.readByte() != 0;  //myBoolean == true if byte != 0 credit https://stackoverflow.com/a/7089687/8899344
+        isPopular = in.readByte() != 0;
+        isFavorite = in.readByte() != 0;
     }
 
     @Override
@@ -64,6 +83,9 @@ public class Movie implements Parcelable {
         dest.writeString(overview);
         dest.writeDouble(voteAverage);
         dest.writeString(releaseDate);
+        dest.writeByte((byte) (isTopRated ? 1 : 0));  //if myBoolean == true, byte == 1
+        dest.writeByte((byte) (isPopular ? 1 : 0));
+        dest.writeByte((byte) (isFavorite ? 1 : 0));
     }
 
     @Override
@@ -127,7 +149,32 @@ public class Movie implements Parcelable {
         return voteAverage;
     }
 
+    public boolean isTopRated() {
+        return isTopRated;
+    }
+
+    public void setTopRated(boolean topRated) {
+        isTopRated = topRated;
+    }
+
+    public boolean isPopular() {
+        return isPopular;
+    }
+
+    public void setPopular(boolean popular) {
+        isPopular = popular;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
     public void setVoteAverage(double voteAverage) {
+
         this.voteAverage = voteAverage;
     }
 
@@ -137,5 +184,16 @@ public class Movie implements Parcelable {
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "movieId=" + movieId +
+                ", originalTitle='" + originalTitle + '\'' +
+                ", isTopRated=" + isTopRated +
+                ", isPopular=" + isPopular +
+                ", isFavorite=" + isFavorite +
+                '}';
     }
 }

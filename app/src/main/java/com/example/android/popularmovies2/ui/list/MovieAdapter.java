@@ -19,12 +19,12 @@ import com.bumptech.glide.Glide;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     private Context context;
-    private ArrayList<Movie> moviesArrayList;
+    private List<Movie> moviesArrayList;
     private static final String BASE_IMAGE_URL = "https://image.tmdb.org/t/p/";
     final private MovieAdapterClickListener onClickListener;
 
@@ -32,7 +32,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         void onListItemClick(Movie currentMovie);
     }
 
-    public MovieAdapter(Context context, ArrayList<Movie> moviesArrayList, MovieAdapterClickListener onClickListener) {
+    public MovieAdapter(Context context, List<Movie> moviesArrayList, MovieAdapterClickListener onClickListener) {
         this.context = context;
         this.moviesArrayList = moviesArrayList;
         this.onClickListener = onClickListener;
@@ -74,7 +74,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return moviesArrayList == null ? 0 : moviesArrayList.size();
     }
 
-    public void setMovieData(ArrayList<Movie> movieData) {
+    public void setMovieData(List<Movie> movieData) {
         moviesArrayList = movieData;
         notifyDataSetChanged();
     }

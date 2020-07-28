@@ -4,15 +4,15 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.data.model;
+package com.example.android.popularmovies2.ui.detail;
 
-import java.util.List;
+import android.app.Application;
 
-public class MoviesList{
-    List<Movie> results;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 
-    public List<Movie> getMovies() {
-        return results;
+public class DetailActivityViewModel extends AndroidViewModel {
+    public DetailActivityViewModel(@NonNull Application application) {
+        super(application);
     }
-
 }

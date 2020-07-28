@@ -10,14 +10,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class Review {
 
-    private int movieId;
-
     @SerializedName("author")
     private String author;
+
     @SerializedName("content")
     private String content;
+
     @SerializedName("id")
     private String  commentId;
+
     @SerializedName("url")
     private String reviewUrl;
 

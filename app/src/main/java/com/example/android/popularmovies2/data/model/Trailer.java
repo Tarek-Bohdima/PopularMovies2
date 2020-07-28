@@ -8,9 +8,9 @@ package com.example.android.popularmovies2.data.model;
 
 import com.google.gson.annotations.SerializedName;
 
+
 public class Trailer {
 
-    private int movieId;
 
     @SerializedName("id")
     private String TrailerId;
@@ -23,14 +23,6 @@ public class Trailer {
 
     @SerializedName("type")
     private String type;
-
-    public int getMovieId() {
-        return movieId;
-    }
-
-    public void setMovieId(int movieId) {
-        this.movieId = movieId;
-    }
 
     public String getTrailerId() {
         return TrailerId;

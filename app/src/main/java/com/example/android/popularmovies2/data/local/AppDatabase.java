@@ -15,7 +15,7 @@ import androidx.room.RoomDatabase;
 
 import com.example.android.popularmovies2.data.model.Movie;
 
-@Database(entities = {Movie.class}, version = 1, exportSchema = false)
+@Database(entities = {Movie.class},version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String TAG = AppDatabase.class.getSimpleName();
     public static final Object LOCK = new Object();

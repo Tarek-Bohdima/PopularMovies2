@@ -8,7 +8,9 @@ package com.example.android.popularmovies2.data.local;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.example.android.popularmovies2.data.model.Movie;
@@ -19,10 +21,27 @@ import java.util.List;
 public interface MovieDao {
 
     @Query("SELECT * FROM movies")
-    LiveData<List<Movie>> loadAllMovies();
+    LiveData<List<Movie>> getAllMovies();
 
-    @Insert
+    @Query("SELECT * FROM movies where movieId = :id")
+    LiveData<Movie> getMoviebyId(int id);
+
+    @Query("SELECT * From movies where is_favorite")
+    LiveData<List<Movie>> getFavoriteMovies();
+
+    @Query("SELECT * FROM movies where is_popular")
+    LiveData<List<Movie>> getPopularMovies();
+
+    @Query("SELECT * FROM movies where is_top_rated")
+    LiveData<List<Movie>> getTopRatedMovies();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMovie(Movie movie);
 
+    @Delete
+    void delete(Movie movie);
+
+    @Query("DELETE FROM movies")
+    void deleteAllMovies();
 
 }

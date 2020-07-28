@@ -22,16 +22,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies2.BuildConfig;
 import com.example.android.popularmovies2.R;
-import com.example.android.popularmovies2.ui.list.MovieAdapter;
-import com.example.android.popularmovies2.data.network.APIError;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.Review;
 import com.example.android.popularmovies2.data.model.ReviewsList;
 import com.example.android.popularmovies2.data.model.Trailer;
 import com.example.android.popularmovies2.data.model.TrailerList;
+import com.example.android.popularmovies2.data.network.APIError;
 import com.example.android.popularmovies2.data.network.ErrorUtils;
 import com.example.android.popularmovies2.data.network.MovieApi;
 import com.example.android.popularmovies2.data.network.RetrofitClientInstance;
+import com.example.android.popularmovies2.ui.list.MovieAdapter;
 
 import java.util.List;
 
@@ -39,18 +39,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildBackdropImageUrl;
 import static com.example.android.popularmovies2.ui.list.MainActivity.MOVIE_OBJECT;
+import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildBackdropImageUrl;
 
 public class DetailActivity extends AppCompatActivity {
 
-    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     private static final String TAG = DetailActivity.class.getSimpleName();
     private final Context context = DetailActivity.this;
-    private Movie detailMovie;
+    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     TextView reviewsTV;
     String movieId;
     MovieApi movieApi;
+    private Movie detailMovie;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,11 +66,7 @@ public class DetailActivity extends AppCompatActivity {
 
         reviewsTV = findViewById(R.id.review);
 
-
-
-
         movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
-
 
         Intent extraIntent = getIntent();
         if (extraIntent != null) {
@@ -106,7 +102,7 @@ public class DetailActivity extends AppCompatActivity {
         callTrailersByMovieId.enqueue(new Callback<TrailerList>() {
             @Override
             public void onResponse(Call<TrailerList> call, Response<TrailerList> response) {
-                if (!response.isSuccessful()){
+                if (!response.isSuccessful()) {
                     /* TODO notify user about response error in UI */
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
@@ -115,9 +111,16 @@ public class DetailActivity extends AppCompatActivity {
                 }
 
                 TrailerList trailerList = response.body();
-                List<Trailer> trailers = trailerList.getTrailers();
+                List<Trailer> trailers = null;
+                if (trailerList != null) {
+                    trailers = trailerList.getTrailers();
+                }
 
-                String key = trailers.get(1).getKey();
+                String key = "dr2dnVLJmyY";
+                if (trailers != null && !trailers.isEmpty()) {
+                    key = trailers.get(0).getKey();
+                }
+
                 //credits to: https://stackoverflow.com/a/12439378/8899344
                 watchYoutubeVideo(context, key);
 
@@ -149,7 +152,7 @@ public class DetailActivity extends AppCompatActivity {
         callReviewsByMovieId.enqueue(new Callback<ReviewsList>() {
             @Override
             public void onResponse(Call<ReviewsList> call, Response<ReviewsList> response) {
-                if (!response.isSuccessful()){
+                if (!response.isSuccessful()) {
                     /* TODO notify user about response error in UI */
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);

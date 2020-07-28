@@ -7,6 +7,7 @@
 package com.example.android.popularmovies2.data;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -19,37 +20,59 @@ import java.util.List;
 
 public class AppRepository {
     private static final String TAG = AppRepository.class.getSimpleName();
-    private static final Object LOCK = new Object();
-    private static AppRepository sInstance;
     private final MovieDao movieDao;
-    private AppExecutors executors;
-    private boolean isInitialized = false;
     private LiveData<List<Movie>> movieList;
+    private LiveData<List<Movie>> topRatedMovies;
+    private LiveData<List<Movie>> popularMovies;
+    private LiveData<List<Movie>> favoriteMovies;
 
-    private AppRepository(Application application) {
+
+    public AppRepository(Application application) {
         AppDatabase database = AppDatabase.getInstance(application);
         movieDao = database.movieDao();
-        movieList = movieDao.loadAllMovies();
+        movieList = movieDao.getAllMovies();
+        topRatedMovies = movieDao.getTopRatedMovies();
+        popularMovies = movieDao.getPopularMovies();
+        favoriteMovies = movieDao.getFavoriteMovies();
     }
+
 
     public  LiveData<List<Movie>> getMovieList(){
         return movieList;
     }
 
-    public void insert(Movie movie) {
-
+    public LiveData<List<Movie>> getTopRatedMovies() {
+        return topRatedMovies;
     }
 
-    public void update(Movie movie) {
+    public LiveData<List<Movie>> getPopularMovies() {
+        return popularMovies;
+    }
 
+    public LiveData<List<Movie>> getFavoriteMovies() {
+        return favoriteMovies;
+    }
+
+
+    public void insert(Movie movie) {
+        Log.d(TAG, "insert: movie inserted " + movie.toString() );
+        AppExecutors.getInstance().diskIO().execute(() -> movieDao.insertMovie(movie));
     }
 
     public void delete(Movie movie) {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
+        Log.d(TAG, "delete: movie deleted " + movie.toString());
+        AppExecutors.getInstance().diskIO().execute(() -> movieDao.delete(movie));
+    }
 
-            }
+    public void deleteAllMovies(){
+        Log.d(TAG, "deleteAllMovies: done!");
+        AppExecutors.getInstance().diskIO().execute(() -> {
+            movieDao.deleteAllMovies();
         });
+    }
+
+    public LiveData<Movie> getMovieById(int id) {
+        Log.d(TAG, "getMovieById: " + id);
+        return movieDao.getMoviebyId(id);
     }
 }
