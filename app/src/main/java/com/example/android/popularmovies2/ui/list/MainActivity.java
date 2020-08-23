@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         errorImageView = findViewById(R.id.connection_error_imageview);
         Context context = this;
 
-        repository = new AppRepository(getApplication());
+        repository = AppRepository.getInstance();
 
         // Credits to https://stackoverflow.com/a/44187816/8899344
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -127,7 +127,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                             error.message(), Toast.LENGTH_LONG).show();
                 }
                 MoviesList moviesLists = response.body();
-                List<Movie> movies = moviesLists.getMovies();
+                List<Movie> movies = null;
+                if (moviesLists != null) {
+                    movies = moviesLists.getMovies();
+                }
                 for (Movie movie : movies) {
                     switch (path) {
                         case POPULAR:
@@ -139,7 +142,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                         default:
                             throw new IllegalStateException("Unexpected value: " + path);
                     }
-                    repository.insert(movie);
+                    if (movie != null) {
+
+                        repository.insert(movie);
+                    }
+                    else{
+                        Log.d(TAG, "onResponse: Error inserting movie");
+                    }
                 }
                 LiveData<List<Movie>> moviesList = new MutableLiveData<>();
                 moviesList.removeObservers(MainActivity.this);
@@ -154,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     default:
                         throw new IllegalStateException("Unexpected value: " + path);
                 }
-                adapter.setMovieData(movies);
+                adapter.setMovieData(movieList);
                 // TODO Observer mess with order of both top rated and popular lists
 //                moviesList.observe(MainActivity.this, new Observer<List<Movie>>() {
 //                    @Override
@@ -189,7 +198,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void makeMoviesQuery(String path) {
         showRecyclerView();
         getMovies(path);
-//        new MoviesAsyncTasks().execute(sortByParameter);
     }
 
     private void showRecyclerView() {
@@ -231,49 +239,4 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         MainToDetailIntent.putExtra(MOVIE_OBJECT, currentMovie);
         startActivity(MainToDetailIntent);
     }
-
-    /* Class not needed anymore , kept for future reference*/
-    /*private static class MoviesAsyncTasks extends AsyncTask<String, Void, ArrayList<Movie>> {
-        @Override
-        protected ArrayList<Movie> doInBackground(String... strings) {
-            if (strings.length == 0) {
-                return null;
-            }
-            String sortByParameter = strings[0];
-            URL moviesQueryUrl = NetworkUtils.buildUrl(sortByParameter);
-
-            String JsonResponse;
-            try {
-                switch (sortByParameter) {
-                    case (POPULAR):
-                        moviesQueryUrl = NetworkUtils.buildUrl(POPULAR);
-                        break;
-                    case (TOP_RATED):
-                        moviesQueryUrl = NetworkUtils.buildUrl(TOP_RATED);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Unknown URL " + moviesQueryUrl);
-                }
-
-                JsonResponse = NetworkUtils.makeHttpRequest(moviesQueryUrl);
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e(TAG, "IOException in doInBackground: ", e);
-                return null;
-            }
-            return JsonUtils.parseJson(JsonResponse);
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
-            super.onPostExecute(movies);
-            if (movies != null) {
-               adapter.setMovieData(movies);
-            } else {
-                Log.d(TAG, "onPostExecute() called with: movies = [" + movies + "]");
-            }
-        }
-    }*/
 }
