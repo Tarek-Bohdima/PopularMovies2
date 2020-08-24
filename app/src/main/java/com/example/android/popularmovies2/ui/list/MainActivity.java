@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -62,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
     private AppRepository repository;
+    LiveData<List<Movie>> topMoviesLiveData;
+    LiveData<List<Movie>> popularMoviesLiveData;
 
     // Credits to https://stackoverflow.com/a/61566780/8899344
     private static boolean isNetworkConnected(Context context) {
@@ -93,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         errorImageView = findViewById(R.id.connection_error_imageview);
         Context context = this;
 
-        repository = ((MoviesApp)getApplication()).getAppRepository();
+        repository = ((MoviesApp) getApplication()).getAppRepository();
 
         // Credits to https://stackoverflow.com/a/44187816/8899344
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -131,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 List<Movie> movies = null;
                 if (moviesLists != null) {
                     movies = moviesLists.getMovies();
+                } else {
+                    Log.d(TAG, "onResponse: Error getting movies");
                 }
                 for (Movie movie : movies) {
                     switch (path) {
@@ -146,32 +151,38 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     if (movie != null) {
 
                         repository.insert(movie);
-                    }
-                    else{
+                    } else {
                         Log.d(TAG, "onResponse: Error inserting movie");
                     }
                 }
-                LiveData<List<Movie>> moviesList = new MutableLiveData<>();
-                moviesList.removeObservers(MainActivity.this);
+
+                topMoviesLiveData = new MutableLiveData<>();
+                popularMoviesLiveData = new MutableLiveData<>();
+
                 switch (path) {
                     case POPULAR:
-
-                        moviesList = repository.getPopularMovies();
+                        popularMoviesLiveData = repository.getPopularMovies();
                         break;
                     case TOP_RATED:
-                        moviesList = repository.getTopRatedMovies();
+                        topMoviesLiveData = repository.getTopRatedMovies();
                         break;
                     default:
                         throw new IllegalStateException("Unexpected value: " + path);
                 }
-                adapter.setMovieData(movieList);
-                // TODO Observer mess with order of both top rated and popular lists
-//                moviesList.observe(MainActivity.this, new Observer<List<Movie>>() {
-//                    @Override
-//                    public void onChanged(List<Movie> movies) {
-//                        adapter.setMovieData(movies);
-//                    }
-//                });
+
+                topMoviesLiveData.observe(MainActivity.this, new Observer<List<Movie>>() {
+                    @Override
+                    public void onChanged(List<Movie> movies) {
+                        adapter.setMovieData(movies);
+                    }
+                });
+
+                popularMoviesLiveData.observe(MainActivity.this, new Observer<List<Movie>>() {
+                    @Override
+                    public void onChanged(List<Movie> movies) {
+                        adapter.setMovieData(movies);
+                    }
+                });
             }
 
             @Override
@@ -182,6 +193,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             }
         });
     }
+
 
     private void setGridLayoutManager(Context context, int spanCount) {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, spanCount);
