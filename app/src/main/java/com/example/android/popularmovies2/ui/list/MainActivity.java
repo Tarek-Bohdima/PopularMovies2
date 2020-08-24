@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.popularmovies2.BuildConfig;
+import com.example.android.popularmovies2.MoviesApp;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.AppRepository;
 import com.example.android.popularmovies2.data.model.Movie;
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         errorImageView = findViewById(R.id.connection_error_imageview);
         Context context = this;
 
-        repository = AppRepository.getInstance();
+        repository = ((MoviesApp)getApplication()).getAppRepository();
 
         // Credits to https://stackoverflow.com/a/44187816/8899344
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
