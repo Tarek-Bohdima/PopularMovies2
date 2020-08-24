@@ -22,8 +22,8 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,7 +42,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
     public List<Movie> movieList = new ArrayList<>();
-//    public MovieApi movieApi;
+    LiveData<List<Movie>> topMoviesLiveData;
+    LiveData<List<Movie>> popularMoviesLiveData;
+    //    public MovieApi movieApi;
 //    // please acquire your API KEY from https://www.themoviedb.org/ then:
 //    // user your API key in the project's gradle.properties file: MY_TMDB_API_KEY="<your API KEY>"
 //    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
@@ -51,8 +53,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
     private AppRepository repository;
-    LiveData<List<Movie>> topMoviesLiveData;
-    LiveData<List<Movie>> popularMoviesLiveData;
+    MainActivityViewModel mainActivityViewModel;
 
     // Credits to https://stackoverflow.com/a/61566780/8899344
     private static boolean isNetworkConnected(Context context) {
@@ -98,105 +99,33 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         adapter = new MovieAdapter(context, movieList, (MovieAdapter.MovieAdapterClickListener) context);
         recyclerView.setAdapter(adapter);
 
-//        /*Create handle for the RetrofitInstance interface*/
-//        movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
+        mainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
         checkAndCall(context, POPULAR);
+
     }
 
     private void getMovies(String path) {
-
-        MutableLiveData<List<Movie>> movies = new MutableLiveData<>();
-
         switch (path) {
             case POPULAR:
-                movies.setValue(repository.getPopularMovies());
+                mainActivityViewModel.getPopularMovies().observe(this, new Observer<List<Movie>>() {
+                    @Override
+                    public void onChanged(List<Movie> movies) {
+                        adapter.setMovieData(movies);
+                    }
+                });
                 break;
             case TOP_RATED:
-                movies.setValue(repository.getTopRatedMovies());
-        }
-        movies.observe(this, new Observer<List<Movie>>() {
-            @Override
-            public void onChanged(List<Movie> movies) {
-                adapter.setMovieData(movies);
-            }
-        });
+                mainActivityViewModel.getTopRatedMovies().observe(this, new Observer<List<Movie>>() {
+                    @Override
+                    public void onChanged(List<Movie> movies) {
+                        adapter.setMovieData(movies);
+                    }
+                });
+                break;
 
-//        Call<MoviesList> callMoviesByPath = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY);
-//
-//        callMoviesByPath.enqueue(new Callback<MoviesList>() {
-//            @Override
-//            public void onResponse(Call<MoviesList> call, Response<MoviesList> response) {
-//                if (!response.isSuccessful()) {
-//                    /* TODO notify user about response error in UI */
-//                    // parse the response body …
-//                    APIError error = ErrorUtils.parseError(response);
-//                    Log.d(TAG, "onResponse: " + response.code());
-//                    Toast.makeText(MainActivity.this, "OnResponse " +
-//                            error.message(), Toast.LENGTH_LONG).show();
-//                }
-//                MoviesList moviesLists = response.body();
-//                List<Movie> movies = null;
-//                if (moviesLists != null) {
-//                    movies = moviesLists.getMovies();
-//                } else {
-//                    Log.d(TAG, "onResponse: Error getting movies");
-//                }
-//                for (Movie movie : movies) {
-//                    switch (path) {
-//                        case POPULAR:
-//                            movie.setPopular(true);
-//                            break;
-//                        case TOP_RATED:
-//                            movie.setTopRated(true);
-//                            break;
-//                        default:
-//                            throw new IllegalStateException("Unexpected value: " + path);
-//                    }
-//                    if (movie != null) {
-//
-//                        repository.insert(movie);
-//                    } else {
-//                        Log.d(TAG, "onResponse: Error inserting movie");
-//                    }
-//                }
-//
-//                topMoviesLiveData = new MutableLiveData<>();
-//                popularMoviesLiveData = new MutableLiveData<>();
-//
-//                switch (path) {
-//                    case POPULAR:
-//                        popularMoviesLiveData = repository.getPopularMovies();
-//                        break;
-//                    case TOP_RATED:
-//                        topMoviesLiveData = repository.getTopRatedMovies();
-//                        break;
-//                    default:
-//                        throw new IllegalStateException("Unexpected value: " + path);
-//                }
-//
-//                topMoviesLiveData.observe(MainActivity.this, new Observer<List<Movie>>() {
-//                    @Override
-//                    public void onChanged(List<Movie> movies) {
-//                        adapter.setMovieData(movies);
-//                    }
-//                });
-//
-//                popularMoviesLiveData.observe(MainActivity.this, new Observer<List<Movie>>() {
-//                    @Override
-//                    public void onChanged(List<Movie> movies) {
-//                        adapter.setMovieData(movies);
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onFailure(Call<MoviesList> call, Throwable t) {
-//                Log.d(TAG, "onFailure: " + t.getMessage());
-//                Toast.makeText(MainActivity.this, "onFailure: " +
-//                        t.getMessage(), Toast.LENGTH_LONG).show();
-//            }
-//        });
+        }
+
     }
 
 

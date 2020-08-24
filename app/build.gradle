@@ -45,6 +45,7 @@ android {
 
 dependencies {
     implementation 'org.jetbrains:annotations:15.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     def recyclerview = "1.1.0"
     def Glide = "4.11.0"
     def retrofit = "2.9.0"

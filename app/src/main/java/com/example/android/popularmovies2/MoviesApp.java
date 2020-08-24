@@ -7,11 +7,12 @@
 package com.example.android.popularmovies2;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.example.android.popularmovies2.data.AppRepository;
 
 public class MoviesApp extends Application {
-
+    private static final String TAG = MoviesApp.class.getSimpleName();
 
 
     @Override
@@ -22,6 +23,7 @@ public class MoviesApp extends Application {
 
 
     public AppRepository getAppRepository() {
+        Log.d(TAG, "getAppRepository: from MoviesApp");
         return AppRepository.getInstance(this);
     }
 
