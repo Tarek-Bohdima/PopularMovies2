@@ -14,12 +14,10 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,24 +27,14 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.android.popularmovies2.BuildConfig;
 import com.example.android.popularmovies2.MoviesApp;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.AppRepository;
 import com.example.android.popularmovies2.data.model.Movie;
-import com.example.android.popularmovies2.data.model.MoviesList;
-import com.example.android.popularmovies2.data.network.APIError;
-import com.example.android.popularmovies2.data.network.ErrorUtils;
-import com.example.android.popularmovies2.data.network.MovieApi;
-import com.example.android.popularmovies2.data.network.RetrofitClientInstance;
 import com.example.android.popularmovies2.ui.detail.DetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterClickListener {
     public static final String MOVIE_OBJECT = "movie_object";
@@ -54,11 +42,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
     public List<Movie> movieList = new ArrayList<>();
-    public MovieApi movieApi;
-    // please acquire your API KEY from https://www.themoviedb.org/ then:
-    // user your API key in the project's gradle.properties file: MY_TMDB_API_KEY="<your API KEY>"
-    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
-    String BASE_URL = "http://api.themoviedb.org/3/movie/";
+//    public MovieApi movieApi;
+//    // please acquire your API KEY from https://www.themoviedb.org/ then:
+//    // user your API key in the project's gradle.properties file: MY_TMDB_API_KEY="<your API KEY>"
+//    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
+//    String BASE_URL = "http://api.themoviedb.org/3/movie/";
     private ImageView errorImageView;
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
@@ -110,88 +98,105 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         adapter = new MovieAdapter(context, movieList, (MovieAdapter.MovieAdapterClickListener) context);
         recyclerView.setAdapter(adapter);
 
-        /*Create handle for the RetrofitInstance interface*/
-        movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
+//        /*Create handle for the RetrofitInstance interface*/
+//        movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
 
         checkAndCall(context, POPULAR);
     }
 
     private void getMovies(String path) {
-        Call<MoviesList> callMoviesByPath = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY);
 
-        callMoviesByPath.enqueue(new Callback<MoviesList>() {
+        MutableLiveData<List<Movie>> movies = new MutableLiveData<>();
+
+        switch (path) {
+            case POPULAR:
+                movies.setValue(repository.getPopularMovies());
+                break;
+            case TOP_RATED:
+                movies.setValue(repository.getTopRatedMovies());
+        }
+        movies.observe(this, new Observer<List<Movie>>() {
             @Override
-            public void onResponse(Call<MoviesList> call, Response<MoviesList> response) {
-                if (!response.isSuccessful()) {
-                    /* TODO notify user about response error in UI */
-                    // parse the response body …
-                    APIError error = ErrorUtils.parseError(response);
-                    Log.d(TAG, "onResponse: " + response.code());
-                    Toast.makeText(MainActivity.this, "OnResponse " +
-                            error.message(), Toast.LENGTH_LONG).show();
-                }
-                MoviesList moviesLists = response.body();
-                List<Movie> movies = null;
-                if (moviesLists != null) {
-                    movies = moviesLists.getMovies();
-                } else {
-                    Log.d(TAG, "onResponse: Error getting movies");
-                }
-                for (Movie movie : movies) {
-                    switch (path) {
-                        case POPULAR:
-                            movie.setPopular(true);
-                            break;
-                        case TOP_RATED:
-                            movie.setTopRated(true);
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + path);
-                    }
-                    if (movie != null) {
-
-                        repository.insert(movie);
-                    } else {
-                        Log.d(TAG, "onResponse: Error inserting movie");
-                    }
-                }
-
-                topMoviesLiveData = new MutableLiveData<>();
-                popularMoviesLiveData = new MutableLiveData<>();
-
-                switch (path) {
-                    case POPULAR:
-                        popularMoviesLiveData = repository.getPopularMovies();
-                        break;
-                    case TOP_RATED:
-                        topMoviesLiveData = repository.getTopRatedMovies();
-                        break;
-                    default:
-                        throw new IllegalStateException("Unexpected value: " + path);
-                }
-
-                topMoviesLiveData.observe(MainActivity.this, new Observer<List<Movie>>() {
-                    @Override
-                    public void onChanged(List<Movie> movies) {
-                        adapter.setMovieData(movies);
-                    }
-                });
-
-                popularMoviesLiveData.observe(MainActivity.this, new Observer<List<Movie>>() {
-                    @Override
-                    public void onChanged(List<Movie> movies) {
-                        adapter.setMovieData(movies);
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Call<MoviesList> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.getMessage());
-                Toast.makeText(MainActivity.this, "onFailure: " +
-                        t.getMessage(), Toast.LENGTH_LONG).show();
+            public void onChanged(List<Movie> movies) {
+                adapter.setMovieData(movies);
             }
         });
+
+//        Call<MoviesList> callMoviesByPath = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY);
+//
+//        callMoviesByPath.enqueue(new Callback<MoviesList>() {
+//            @Override
+//            public void onResponse(Call<MoviesList> call, Response<MoviesList> response) {
+//                if (!response.isSuccessful()) {
+//                    /* TODO notify user about response error in UI */
+//                    // parse the response body …
+//                    APIError error = ErrorUtils.parseError(response);
+//                    Log.d(TAG, "onResponse: " + response.code());
+//                    Toast.makeText(MainActivity.this, "OnResponse " +
+//                            error.message(), Toast.LENGTH_LONG).show();
+//                }
+//                MoviesList moviesLists = response.body();
+//                List<Movie> movies = null;
+//                if (moviesLists != null) {
+//                    movies = moviesLists.getMovies();
+//                } else {
+//                    Log.d(TAG, "onResponse: Error getting movies");
+//                }
+//                for (Movie movie : movies) {
+//                    switch (path) {
+//                        case POPULAR:
+//                            movie.setPopular(true);
+//                            break;
+//                        case TOP_RATED:
+//                            movie.setTopRated(true);
+//                            break;
+//                        default:
+//                            throw new IllegalStateException("Unexpected value: " + path);
+//                    }
+//                    if (movie != null) {
+//
+//                        repository.insert(movie);
+//                    } else {
+//                        Log.d(TAG, "onResponse: Error inserting movie");
+//                    }
+//                }
+//
+//                topMoviesLiveData = new MutableLiveData<>();
+//                popularMoviesLiveData = new MutableLiveData<>();
+//
+//                switch (path) {
+//                    case POPULAR:
+//                        popularMoviesLiveData = repository.getPopularMovies();
+//                        break;
+//                    case TOP_RATED:
+//                        topMoviesLiveData = repository.getTopRatedMovies();
+//                        break;
+//                    default:
+//                        throw new IllegalStateException("Unexpected value: " + path);
+//                }
+//
+//                topMoviesLiveData.observe(MainActivity.this, new Observer<List<Movie>>() {
+//                    @Override
+//                    public void onChanged(List<Movie> movies) {
+//                        adapter.setMovieData(movies);
+//                    }
+//                });
+//
+//                popularMoviesLiveData.observe(MainActivity.this, new Observer<List<Movie>>() {
+//                    @Override
+//                    public void onChanged(List<Movie> movies) {
+//                        adapter.setMovieData(movies);
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onFailure(Call<MoviesList> call, Throwable t) {
+//                Log.d(TAG, "onFailure: " + t.getMessage());
+//                Toast.makeText(MainActivity.this, "onFailure: " +
+//                        t.getMessage(), Toast.LENGTH_LONG).show();
+//            }
+//        });
     }
 
 

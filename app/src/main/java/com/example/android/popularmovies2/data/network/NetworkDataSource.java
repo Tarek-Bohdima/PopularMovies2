@@ -6,16 +6,20 @@
 
 package com.example.android.popularmovies2.data.network;
 
-import android.content.Context;
+import android.app.Application;
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import com.example.android.popularmovies2.AppExecutors;
+import com.example.android.popularmovies2.BuildConfig;
 import com.example.android.popularmovies2.data.model.Movie;
+import com.example.android.popularmovies2.data.model.MoviesList;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class NetworkDataSource {
     private static final String TAG = NetworkDataSource.class.getSimpleName();
@@ -23,34 +27,68 @@ public class NetworkDataSource {
     // For Singleton instantiation
     private static final Object LOCK = new Object();
     private static NetworkDataSource sInstance;
-    private final Context mContext;
+    public MovieApi movieApi;
+    // please acquire your API KEY from https://www.themoviedb.org/ then:
+    // user your API key in the project's gradle.properties file: MY_TMDB_API_KEY="<your API KEY>"
+    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
+    String BASE_URL = "http://api.themoviedb.org/3/movie/";
+    private static final String POPULAR = "popular";
+    private static final String TOP_RATED = "top_rated";
 
-    // LiveData storing the latest downloaded movies
-    private MutableLiveData<List<Movie>> donwloadedMovies;
+    private List<Movie> downloadedMovies = new ArrayList<>();
     private AppExecutors executors;
 
-    private NetworkDataSource(Context mContext, AppExecutors executors) {
-        this.mContext = mContext;
-        this.executors = executors;
-        donwloadedMovies = new MutableLiveData<>();
+    private NetworkDataSource(Application application) {
+
+                /*Create handle for the RetrofitInstance interface*/
+        movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
     }
+
 
     /**
      * Get the singleton for this class
      */
-    public static NetworkDataSource getInstance(Context context, AppExecutors executors) {
+    public static NetworkDataSource getInstance(Application application) {
         Log.d(TAG, "getting the network data source");
         if (sInstance == null) {
             synchronized (LOCK) {
-                sInstance = new NetworkDataSource(context.getApplicationContext(), executors);
+                sInstance = new NetworkDataSource(application);
                 Log.d(TAG, "Made new Network Data source");
             }
         }
         return sInstance;
     }
 
-    public LiveData<List<Movie>> getCurrentMovies() {
-        return donwloadedMovies;
+    private List<Movie> getMoviesByPath(String path) {
+        downloadedMovies = new ArrayList<>();
+        Call<MoviesList> callMoviesByPath = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY);
+        callMoviesByPath.enqueue(new Callback<MoviesList>() {
+            @Override
+            public void onResponse(Call<MoviesList> call, Response<MoviesList> response) {
+                if (!response.isSuccessful()) {
+                    /* TODO notify user about response error in UI */
+                    // parse the response body …
+                    APIError error = ErrorUtils.parseError(response);
+                    Log.d(TAG, "onResponse: " + response.code());
+                }
+                MoviesList moviesLists = response.body();
+                downloadedMovies = moviesLists.getMovies();
+            }
+
+            @Override
+            public void onFailure(Call<MoviesList> call, Throwable t) {
+                Log.d(TAG, "onFailure: " + t.getMessage());
+            }
+        });
+
+        return downloadedMovies;
     }
 
+    public List<Movie> getPopularMoviesLiveData() {
+        return getMoviesByPath(POPULAR);
+    }
+
+    public List<Movie> getTopRatedMoviesLiveData() {
+        return getMoviesByPath(TOP_RATED);
+    }
 }

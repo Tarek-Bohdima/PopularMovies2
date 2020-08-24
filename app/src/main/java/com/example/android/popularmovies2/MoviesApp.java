@@ -9,32 +9,20 @@ package com.example.android.popularmovies2;
 import android.app.Application;
 
 import com.example.android.popularmovies2.data.AppRepository;
-import com.example.android.popularmovies2.data.local.AppDatabase;
-import com.example.android.popularmovies2.data.local.MovieDao;
-import com.example.android.popularmovies2.data.network.MovieApi;
 
 public class MoviesApp extends Application {
 
-    private AppDatabase appDatabase;
-    private AppExecutors appExecutors;
-    private MovieDao movieDao;
-    private MovieApi movieApi;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        appDatabase = AppDatabase.getInstance(this);
-        appExecutors = AppExecutors.getInstance();
-        movieDao = appDatabase.movieDao();
     }
 
-    public AppDatabase getAppDatabase() {
-        return AppDatabase.getInstance(this);
-    }
 
     public AppRepository getAppRepository() {
-        return AppRepository.getInstance(movieDao, appExecutors, movieApi);
+        return AppRepository.getInstance(this);
     }
+
 }
