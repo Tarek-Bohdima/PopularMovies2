@@ -99,13 +99,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         adapter = new MovieAdapter(context, movieList, (MovieAdapter.MovieAdapterClickListener) context);
         recyclerView.setAdapter(adapter);
 
-        mainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
         checkAndCall(context, POPULAR);
 
     }
 
-    private void getMovies(String path) {
+    private void setupViewModel(String path) {
+        mainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
         switch (path) {
             case POPULAR:
                 mainActivityViewModel.getPopularMovies().observe(this, new Observer<List<Movie>>() {
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private void makeMoviesQuery(String path) {
         showRecyclerView();
-        getMovies(path);
+        setupViewModel(path);
     }
 
     private void showRecyclerView() {

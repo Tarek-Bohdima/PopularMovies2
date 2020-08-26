@@ -80,11 +80,12 @@ public class AppRepository {
         return movieDao.getMoviebyId(id);
     }
 
-    public List<Movie> getPopularMovies() {
+    public LiveData<List<Movie>> getPopularMovies() {
         return networkDataSource.getPopularMoviesLiveData();
     }
 
-    public List<Movie> getTopRatedMovies() {
+    public LiveData<List<Movie>> getTopRatedMovies() {
+//        return networkDataSource.getTopRatedMoviesLiveData();
         return networkDataSource.getTopRatedMoviesLiveData();
     }
 }

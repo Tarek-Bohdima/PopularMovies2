@@ -6,19 +6,26 @@
 
 package com.example.android.popularmovies2.data.network;
 
+import android.util.Log;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClientInstance {
+    private static final String TAG = RetrofitClientInstance.class.getSimpleName();
     private static Retrofit retrofit;
+    private static final Object LOCK = new Object();
     private static String BASE_URL = "http://api.themoviedb.org/3/movie/";
 
     public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+            synchronized (LOCK) {
+                retrofit = new Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                Log.d(TAG, "Created Retrofit instance.");
+            }
         }
         return retrofit;
     }

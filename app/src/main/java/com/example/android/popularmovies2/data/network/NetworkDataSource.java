@@ -9,12 +9,14 @@ package com.example.android.popularmovies2.data.network;
 import android.app.Application;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.example.android.popularmovies2.AppExecutors;
 import com.example.android.popularmovies2.BuildConfig;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.MoviesList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -34,13 +36,15 @@ public class NetworkDataSource {
     String BASE_URL = "http://api.themoviedb.org/3/movie/";
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
+    private MutableLiveData<List<Movie>> popularMovies = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> topRatedMovies = new MutableLiveData<>();
 
-    private List<Movie> downloadedMovies = new ArrayList<>();
+
     private AppExecutors executors;
 
     private NetworkDataSource(Application application) {
 
-                /*Create handle for the RetrofitInstance interface*/
+        /*Create handle for the RetrofitInstance interface*/
         movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
     }
 
@@ -59,8 +63,8 @@ public class NetworkDataSource {
         return sInstance;
     }
 
-    private List<Movie> getMoviesByPath(String path) {
-        downloadedMovies = new ArrayList<>();
+    private void getMoviesByPath(String path) {
+
         Call<MoviesList> callMoviesByPath = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY);
         callMoviesByPath.enqueue(new Callback<MoviesList>() {
             @Override
@@ -72,7 +76,8 @@ public class NetworkDataSource {
                     Log.d(TAG, "onResponse: " + response.code());
                 }
                 MoviesList moviesLists = response.body();
-                downloadedMovies = moviesLists.getMovies();
+                popularMovies.setValue(moviesLists.getMovies());
+                topRatedMovies.setValue(moviesLists.getMovies());
             }
 
             @Override
@@ -81,14 +86,15 @@ public class NetworkDataSource {
             }
         });
 
-        return downloadedMovies;
     }
 
-    public List<Movie> getPopularMoviesLiveData() {
-        return getMoviesByPath(POPULAR);
+    public LiveData<List<Movie>> getPopularMoviesLiveData() {
+        getMoviesByPath(POPULAR);
+        return popularMovies;
     }
 
-    public List<Movie> getTopRatedMoviesLiveData() {
-        return getMoviesByPath(TOP_RATED);
+    public LiveData<List<Movie>> getTopRatedMoviesLiveData() {
+        getMoviesByPath(TOP_RATED);
+        return topRatedMovies;
     }
 }
