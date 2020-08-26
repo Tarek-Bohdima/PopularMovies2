@@ -40,11 +40,11 @@ public class Movie implements Parcelable {
     @SerializedName("release_date")
     private String releaseDate;
 
-    @ColumnInfo(name = "is_top_rated")
-    private boolean isTopRated;
-
-    @ColumnInfo(name = "is_popular")
-    private boolean isPopular;
+//    @ColumnInfo(name = "is_top_rated")
+//    private boolean isTopRated;
+//
+//    @ColumnInfo(name = "is_popular")
+//    private boolean isPopular;
 
     @ColumnInfo(name = "is_favorite")
     private boolean isFavorite;
@@ -69,8 +69,8 @@ public class Movie implements Parcelable {
         overview = in.readString();
         voteAverage = in.readDouble();
         releaseDate = in.readString();
-        isTopRated = in.readByte() != 0;  //myBoolean == true if byte != 0 credit https://stackoverflow.com/a/7089687/8899344
-        isPopular = in.readByte() != 0;
+//        isTopRated = in.readByte() != 0;  //myBoolean == true if byte != 0 credit https://stackoverflow.com/a/7089687/8899344
+//        isPopular = in.readByte() != 0;
         isFavorite = in.readByte() != 0;
     }
 
@@ -83,8 +83,8 @@ public class Movie implements Parcelable {
         dest.writeString(overview);
         dest.writeDouble(voteAverage);
         dest.writeString(releaseDate);
-        dest.writeByte((byte) (isTopRated ? 1 : 0));  //if myBoolean == true, byte == 1
-        dest.writeByte((byte) (isPopular ? 1 : 0));
+//        dest.writeByte((byte) (isTopRated ? 1 : 0));  //if myBoolean == true, byte == 1
+//        dest.writeByte((byte) (isPopular ? 1 : 0));
         dest.writeByte((byte) (isFavorite ? 1 : 0));
     }
 
@@ -149,21 +149,21 @@ public class Movie implements Parcelable {
         return voteAverage;
     }
 
-    public boolean isTopRated() {
-        return isTopRated;
-    }
-
-    public void setTopRated(boolean topRated) {
-        isTopRated = topRated;
-    }
-
-    public boolean isPopular() {
-        return isPopular;
-    }
-
-    public void setPopular(boolean popular) {
-        isPopular = popular;
-    }
+//    public boolean isTopRated() {
+//        return isTopRated;
+//    }
+//
+//    public void setTopRated(boolean topRated) {
+//        isTopRated = topRated;
+//    }
+//
+//    public boolean isPopular() {
+//        return isPopular;
+//    }
+//
+//    public void setPopular(boolean popular) {
+//        isPopular = popular;
+//    }
 
     public boolean isFavorite() {
         return isFavorite;
@@ -191,8 +191,8 @@ public class Movie implements Parcelable {
         return "Movie{" +
                 "movieId=" + movieId +
                 ", originalTitle='" + originalTitle + '\'' +
-                ", isTopRated=" + isTopRated +
-                ", isPopular=" + isPopular +
+//                ", isTopRated=" + isTopRated +
+//                ", isPopular=" + isPopular +
                 ", isFavorite=" + isFavorite +
                 '}';
     }

@@ -33,7 +33,6 @@ public class NetworkDataSource {
     // please acquire your API KEY from https://www.themoviedb.org/ then:
     // user your API key in the project's gradle.properties file: MY_TMDB_API_KEY="<your API KEY>"
     String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
-    String BASE_URL = "http://api.themoviedb.org/3/movie/";
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
     private MutableLiveData<List<Movie>> popularMovies = new MutableLiveData<>();

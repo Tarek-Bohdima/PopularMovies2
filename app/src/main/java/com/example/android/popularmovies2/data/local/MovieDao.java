@@ -29,12 +29,6 @@ public interface MovieDao {
     @Query("SELECT * From movies where is_favorite")
     LiveData<List<Movie>> getFavoriteMovies();
 
-    @Query("SELECT * FROM movies where is_popular")
-    LiveData<List<Movie>> getPopularMovies();
-
-    @Query("SELECT * FROM movies where is_top_rated")
-    LiveData<List<Movie>> getTopRatedMovies();
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMovie(Movie movie);
 

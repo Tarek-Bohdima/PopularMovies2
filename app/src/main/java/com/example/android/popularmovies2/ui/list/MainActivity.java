@@ -21,15 +21,12 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.android.popularmovies2.MoviesApp;
 import com.example.android.popularmovies2.R;
-import com.example.android.popularmovies2.data.AppRepository;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.ui.detail.DetailActivity;
 
@@ -42,17 +39,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
     public List<Movie> movieList = new ArrayList<>();
-    LiveData<List<Movie>> topMoviesLiveData;
-    LiveData<List<Movie>> popularMoviesLiveData;
-    //    public MovieApi movieApi;
-//    // please acquire your API KEY from https://www.themoviedb.org/ then:
-//    // user your API key in the project's gradle.properties file: MY_TMDB_API_KEY="<your API KEY>"
-//    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
-//    String BASE_URL = "http://api.themoviedb.org/3/movie/";
     private ImageView errorImageView;
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
-    private AppRepository repository;
     MainActivityViewModel mainActivityViewModel;
 
     // Credits to https://stackoverflow.com/a/61566780/8899344
@@ -85,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         errorImageView = findViewById(R.id.connection_error_imageview);
         Context context = this;
 
-        repository = ((MoviesApp) getApplication()).getAppRepository();
 
         // Credits to https://stackoverflow.com/a/44187816/8899344
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
