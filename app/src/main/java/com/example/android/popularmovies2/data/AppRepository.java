@@ -7,7 +7,6 @@
 package com.example.android.popularmovies2.data;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -19,15 +18,16 @@ import com.example.android.popularmovies2.data.network.NetworkDataSource;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class AppRepository {
-    private static final String TAG = AppRepository.class.getSimpleName();
     // For Singleton instantiation
     private static final Object LOCK = new Object();
     private static AppRepository sInstance;
 
-    private  MovieDao movieDao;
+    private MovieDao movieDao;
 
-    private  AppExecutors executors;
+    private AppExecutors executors;
 
     private  MovieApi movieApi;
 
@@ -42,7 +42,7 @@ public class AppRepository {
     public synchronized static AppRepository getInstance(Application application) {
         if (sInstance == null) {
             synchronized (LOCK) {
-                Log.d(TAG, "getInstance: Creating new repository instance");
+                Timber.tag("MyApp").d("getInstance: Creating new repository instance");
                 sInstance = new AppRepository(application);
             }
         }
@@ -61,22 +61,22 @@ public class AppRepository {
 //    }
 
     public void insert(Movie movie) {
-        Log.d(TAG, "insert: movie inserted " + movie.toString() );
+        Timber.tag("MyApp").d("insert: movie inserted %s", movie.toString());
         AppExecutors.getInstance().diskIO().execute(() -> movieDao.insertMovie(movie));
     }
 
     public void delete(Movie movie) {
-        Log.d(TAG, "delete: movie deleted " + movie.toString());
+        Timber.tag("MyApp").d("delete: movie deleted %s", movie.toString());
         AppExecutors.getInstance().diskIO().execute(() -> movieDao.delete(movie));
     }
 
     public void deleteAllMovies(){
-        Log.d(TAG, "deleteAllMovies: done!");
+        Timber.tag("MyApp").d("deleteAllMovies: done!");
         AppExecutors.getInstance().diskIO().execute(movieDao::deleteAllMovies);
     }
 
     public LiveData<Movie> getMovieById(int id) {
-        Log.d(TAG, "getMovieById: " + id);
+        Timber.tag("MyApp").d("getMovieById: %s", id);
         return movieDao.getMoviebyId(id);
     }
 
@@ -85,7 +85,6 @@ public class AppRepository {
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
-//        return networkDataSource.getTopRatedMoviesLiveData();
         return networkDataSource.getTopRatedMoviesLiveData();
     }
 }

@@ -7,23 +7,26 @@
 package com.example.android.popularmovies2;
 
 import android.app.Application;
-import android.util.Log;
 
 import com.example.android.popularmovies2.data.AppRepository;
 
+import timber.log.Timber;
+
 public class MoviesApp extends Application {
-    private static final String TAG = MoviesApp.class.getSimpleName();
 
 
     @Override
     public void onCreate() {
         super.onCreate();
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
 
     }
 
 
     public AppRepository getAppRepository() {
-        Log.d(TAG, "getAppRepository: from MoviesApp");
+        Timber.tag("MyApp").d("getAppRepository: from MoviesApp");
         return AppRepository.getInstance(this);
     }
 

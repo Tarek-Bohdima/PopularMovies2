@@ -7,7 +7,6 @@
 package com.example.android.popularmovies2.data.network;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -22,9 +21,10 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class NetworkDataSource {
-    private static final String TAG = NetworkDataSource.class.getSimpleName();
+
 
     // For Singleton instantiation
     private static final Object LOCK = new Object();
@@ -52,11 +52,11 @@ public class NetworkDataSource {
      * Get the singleton for this class
      */
     public static NetworkDataSource getInstance(Application application) {
-        Log.d(TAG, "getting the network data source");
+        Timber.tag("MyApp").d("getting the network data source");
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new NetworkDataSource(application);
-                Log.d(TAG, "Made new Network Data source");
+                Timber.tag("MyApp").d("Made new Network Data source");
             }
         }
         return sInstance;
@@ -72,16 +72,21 @@ public class NetworkDataSource {
                     /* TODO notify user about response error in UI */
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
-                    Log.d(TAG, "onResponse: " + response.code());
+                    Timber.tag("MyApp").d("onResponse: %s", response.code());
                 }
                 MoviesList moviesLists = response.body();
-                popularMovies.setValue(moviesLists.getMovies());
-                topRatedMovies.setValue(moviesLists.getMovies());
+                switch (path) {
+                    case POPULAR:
+                        popularMovies.setValue(moviesLists.getMovies());
+                        break;
+                    case TOP_RATED:
+                        topRatedMovies.setValue(moviesLists.getMovies());
+                }
             }
 
             @Override
             public void onFailure(Call<MoviesList> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.getMessage());
+                Timber.tag("MyApp").d("onFailure: %s", t.getMessage());
             }
         });
 

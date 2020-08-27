@@ -7,7 +7,6 @@
 package com.example.android.popularmovies2.ui.list;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -19,9 +18,10 @@ import com.example.android.popularmovies2.data.model.Movie;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class MainActivityViewModel extends AndroidViewModel {
 
-    private static final String TAG = MainActivityViewModel.class.getSimpleName();
 
     AppRepository appRepository;
 
@@ -29,7 +29,7 @@ public class MainActivityViewModel extends AndroidViewModel {
         super(application);
 
         appRepository = ((MoviesApp) getApplication()).getAppRepository();
-        Log.d(TAG, "MainActivityViewModel: get AppRepository instance");
+        Timber.tag("MyApp").d("MainActivityViewModel: get AppRepository instance");
     }
 
     public LiveData<List<Movie>> getPopularMovies() {

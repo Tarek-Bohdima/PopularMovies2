@@ -35,7 +35,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterClickListener {
     public static final String MOVIE_OBJECT = "movie_object";
-    private static final String TAG = MainActivity.class.getSimpleName();
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
     public List<Movie> movieList = new ArrayList<>();
