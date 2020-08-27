@@ -81,10 +81,12 @@ public class AppRepository {
     }
 
     public LiveData<List<Movie>> getPopularMovies() {
+        Timber.tag("MyApp").d("Call getPopularMovies from AppRepository made");
         return networkDataSource.getPopularMoviesLiveData();
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
+        Timber.tag("MyApp").d("Call getTopRatedMovies from AppRepository made");
         return networkDataSource.getTopRatedMoviesLiveData();
     }
 }

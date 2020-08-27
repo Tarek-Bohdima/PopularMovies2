@@ -33,6 +33,8 @@ import com.example.android.popularmovies2.ui.detail.DetailActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterClickListener {
     public static final String MOVIE_OBJECT = "movie_object";
     private static final String POPULAR = "popular";
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 mainActivityViewModel.getPopularMovies().observe(this, new Observer<List<Movie>>() {
                     @Override
                     public void onChanged(List<Movie> movies) {
+                        Timber.tag("MyApp").d("getPopularMovies Observed in MainActivity");
                         adapter.setMovieData(movies);
                     }
                 });
@@ -106,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 mainActivityViewModel.getTopRatedMovies().observe(this, new Observer<List<Movie>>() {
                     @Override
                     public void onChanged(List<Movie> movies) {
+                        Timber.tag("MyApp").d("getTopRatedMovies Observed in MainActivity");
                         adapter.setMovieData(movies);
                     }
                 });

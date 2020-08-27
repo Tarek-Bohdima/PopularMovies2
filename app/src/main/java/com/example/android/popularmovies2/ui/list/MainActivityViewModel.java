@@ -33,10 +33,12 @@ public class MainActivityViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Movie>> getPopularMovies() {
+        Timber.tag("MyApp").d("Call getPopularMovies from MainActivityViewModel made");
         return appRepository.getPopularMovies();
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
+        Timber.tag("MyApp").d("Call getTopRatedMovies from MainActivityViewModel made");
         return appRepository.getTopRatedMovies();
     }
 }
