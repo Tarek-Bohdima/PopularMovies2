@@ -74,15 +74,18 @@ public class NetworkDataSource {
                     APIError error = ErrorUtils.parseError(response);
                     Timber.tag("MyApp").d("NetworkDataSource: onResponse: %s", response.code());
                 }
+                Timber.tag("MyApp").d("onResponse() called with: call = [" + call + "], response = [" + response + "]");
                 MoviesList moviesLists = response.body();
                 switch (path) {
                     case POPULAR:
+                        List<Movie> popularMoviesList = moviesLists.getMovies();
                         Timber.tag("MyApp").d("NetworkDataSource: getPopularMovies from Retrofit");
-                        popularMovies.setValue(moviesLists.getMovies());
+                        popularMovies.setValue(popularMoviesList);
                         break;
                     case TOP_RATED:
+                        List<Movie> topRatedMoviesList = moviesLists.getMovies();
                         Timber.tag("MyApp").d("NetworkDataSource: getTopRatedMovies from Retrofit");
-                        topRatedMovies.setValue(moviesLists.getMovies());
+                        topRatedMovies.setValue(topRatedMoviesList);
                 }
             }
 
