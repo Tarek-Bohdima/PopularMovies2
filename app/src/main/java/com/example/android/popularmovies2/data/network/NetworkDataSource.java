@@ -16,11 +16,13 @@ import com.example.android.popularmovies2.BuildConfig;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.MoviesList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 import timber.log.Timber;
 
 public class NetworkDataSource {
@@ -29,14 +31,15 @@ public class NetworkDataSource {
     // For Singleton instantiation
     private static final Object LOCK = new Object();
     private static NetworkDataSource sInstance;
-    public MovieApi movieApi;
     // please acquire your API KEY from https://www.themoviedb.org/ then:
     // user your API key in the project's gradle.properties file: MY_TMDB_API_KEY="<your API KEY>"
+    private static Retrofit retrofit;
     String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
-    private MutableLiveData<List<Movie>> popularMovies = new MutableLiveData<>();
-    private MutableLiveData<List<Movie>> topRatedMovies = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> popularMovies;
+    private MutableLiveData<List<Movie>> topRatedMovies;
+    private List<Movie> dowonloadedMovies;
 
 
     private AppExecutors executors;
@@ -44,7 +47,11 @@ public class NetworkDataSource {
     private NetworkDataSource(Application application) {
 
         /*Create handle for the RetrofitInstance interface*/
-        movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
+        retrofit = RetrofitClientInstance.getRetrofitInstance();
+        popularMovies = new MutableLiveData<>();
+        topRatedMovies = new MutableLiveData<>();
+        dowonloadedMovies = new ArrayList<>();
+
     }
 
 
@@ -64,6 +71,7 @@ public class NetworkDataSource {
 
     private void getMoviesByPath(String path) {
 
+        MovieApi movieApi = retrofit.create(MovieApi.class);
         Call<MoviesList> callMoviesByPath = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY);
         callMoviesByPath.enqueue(new Callback<MoviesList>() {
             @Override
@@ -78,14 +86,14 @@ public class NetworkDataSource {
                 MoviesList moviesLists = response.body();
                 switch (path) {
                     case POPULAR:
-                        List<Movie> popularMoviesList = moviesLists.getMovies();
+                        dowonloadedMovies = moviesLists.getMovies();
                         Timber.tag("MyApp").d("NetworkDataSource: getPopularMovies from Retrofit");
-                        popularMovies.setValue(popularMoviesList);
+                        popularMovies.postValue(dowonloadedMovies);
                         break;
                     case TOP_RATED:
-                        List<Movie> topRatedMoviesList = moviesLists.getMovies();
+                        dowonloadedMovies = moviesLists.getMovies();
                         Timber.tag("MyApp").d("NetworkDataSource: getTopRatedMovies from Retrofit");
-                        topRatedMovies.setValue(topRatedMoviesList);
+                        topRatedMovies.postValue(dowonloadedMovies);
                 }
             }
 
@@ -94,7 +102,6 @@ public class NetworkDataSource {
                 Timber.tag("MyApp").d("onFailure: %s", t.getMessage());
             }
         });
-
     }
 
     public LiveData<List<Movie>> getPopularMoviesLiveData() {

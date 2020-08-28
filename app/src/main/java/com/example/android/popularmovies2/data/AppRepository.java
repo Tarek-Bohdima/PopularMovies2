@@ -21,8 +21,8 @@ public class AppRepository {
     // For Singleton instantiation
     private static final Object LOCK = new Object();
     private static AppRepository sInstance;
-
     private NetworkDataSource networkDataSource;
+
 
     private AppRepository(Application application) {
         networkDataSource = NetworkDataSource.getInstance(application);
@@ -37,6 +37,14 @@ public class AppRepository {
         }
         return sInstance;
     }
+
+  /*  public List<Movie> getPopularMovies() {
+        return popularMovies;
+    }
+
+    public List<Movie> getTopRatedMovies() {
+        return topRatedMovies;
+    }*/
 
 
     public LiveData<List<Movie>> getPopularMovies() {

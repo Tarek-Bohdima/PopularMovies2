@@ -23,22 +23,29 @@ import timber.log.Timber;
 public class MainViewModel extends AndroidViewModel {
 
 
-    AppRepository appRepository;
+    private LiveData<List<Movie>> popularMoviesLiveData;
+    private LiveData<List<Movie>> topRatedMoviesLiveData;
+
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-
-        appRepository = ((MoviesApp) getApplication()).getAppRepository();
+        AppRepository appRepository = ((MoviesApp) getApplication()).getAppRepository();
         Timber.tag("MyApp").d("MainViewModel: get AppRepository instance");
+
+        popularMoviesLiveData = appRepository.getPopularMovies();
+        topRatedMoviesLiveData = appRepository.getTopRatedMovies();
+
     }
+
 
     public LiveData<List<Movie>> getPopularMovies() {
         Timber.tag("MyApp").d("MainViewModel: getPopularMovies");
-        return appRepository.getPopularMovies();
+        return popularMoviesLiveData;
+
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
         Timber.tag("MyApp").d("MainViewModel: getTopRatedMovies");
-        return appRepository.getTopRatedMovies();
+        return topRatedMoviesLiveData;
     }
 }
