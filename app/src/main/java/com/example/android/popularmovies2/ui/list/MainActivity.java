@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private ImageView errorImageView;
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
-    MainActivityViewModel mainActivityViewModel;
+    MainViewModel mainActivityViewModel;
 
     // Credits to https://stackoverflow.com/a/61566780/8899344
     private static boolean isNetworkConnected(Context context) {
@@ -94,13 +94,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private void setupViewModel(String path) {
-        mainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
+        mainActivityViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         switch (path) {
             case POPULAR:
                 mainActivityViewModel.getPopularMovies().observe(this, new Observer<List<Movie>>() {
                     @Override
                     public void onChanged(List<Movie> movies) {
-                        Timber.tag("MyApp").d("getPopularMovies Observed in MainActivity");
+                        Timber.tag("MyApp").d("MainActivity: getPopularMovies Observed");
                         adapter.setMovieData(movies);
                     }
                 });
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 mainActivityViewModel.getTopRatedMovies().observe(this, new Observer<List<Movie>>() {
                     @Override
                     public void onChanged(List<Movie> movies) {
-                        Timber.tag("MyApp").d("getTopRatedMovies Observed in MainActivity");
+                        Timber.tag("MyApp").d("MainActivity: getTopRatedMovies Observed");
                         adapter.setMovieData(movies);
                     }
                 });

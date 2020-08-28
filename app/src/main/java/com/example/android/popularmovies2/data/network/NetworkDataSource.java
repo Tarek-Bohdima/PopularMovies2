@@ -52,11 +52,11 @@ public class NetworkDataSource {
      * Get the singleton for this class
      */
     public static NetworkDataSource getInstance(Application application) {
-        Timber.tag("MyApp").d("getting the network data source");
+        Timber.tag("MyApp").d("NetworkDataSource: getting the network data source");
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new NetworkDataSource(application);
-                Timber.tag("MyApp").d("Made new Network Data source");
+                Timber.tag("MyApp").d("NetworkDataSource: Made new Network Data source");
             }
         }
         return sInstance;
@@ -72,14 +72,16 @@ public class NetworkDataSource {
                     /* TODO notify user about response error in UI */
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
-                    Timber.tag("MyApp").d("onResponse: %s", response.code());
+                    Timber.tag("MyApp").d("NetworkDataSource: onResponse: %s", response.code());
                 }
                 MoviesList moviesLists = response.body();
                 switch (path) {
                     case POPULAR:
+                        Timber.tag("MyApp").d("NetworkDataSource: getPopularMovies from Retrofit");
                         popularMovies.setValue(moviesLists.getMovies());
                         break;
                     case TOP_RATED:
+                        Timber.tag("MyApp").d("NetworkDataSource: getTopRatedMovies from Retrofit");
                         topRatedMovies.setValue(moviesLists.getMovies());
                 }
             }
@@ -94,11 +96,13 @@ public class NetworkDataSource {
 
     public LiveData<List<Movie>> getPopularMoviesLiveData() {
         getMoviesByPath(POPULAR);
+        Timber.tag("MyApp").d("NetworkDataSource: return PopularMovies LiveData");
         return popularMovies;
     }
 
     public LiveData<List<Movie>> getTopRatedMoviesLiveData() {
         getMoviesByPath(TOP_RATED);
+        Timber.tag("MyApp").d("NetworkDataSource: return TopRatedMovies LiveData");
         return topRatedMovies;
     }
 }

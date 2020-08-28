@@ -26,7 +26,7 @@ public class MoviesApp extends Application {
 
 
     public AppRepository getAppRepository() {
-        Timber.tag("MyApp").d("getAppRepository: from MoviesApp");
+        Timber.tag("MyApp").d("MoviesApp: getAppRepository");
         return AppRepository.getInstance(this);
     }
 
