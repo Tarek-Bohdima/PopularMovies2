@@ -4,15 +4,15 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.ui.detail;
+package com.example.android.popularmovies2.di.qualifier;
 
-import android.app.Application;
+import java.lang.annotation.Retention;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
+import javax.inject.Qualifier;
 
-public class DetailActivityViewModel extends AndroidViewModel {
-    public DetailActivityViewModel(@NonNull Application application) {
-        super(application);
-    }
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Qualifier
+@Retention(RUNTIME)
+public @interface ActivityContext {
 }

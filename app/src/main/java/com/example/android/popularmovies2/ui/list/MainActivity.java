@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         errorImageView = findViewById(R.id.connection_error_imageview);
         Context context = this;
 
+        mainActivityViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         // Credits to https://stackoverflow.com/a/44187816/8899344
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private void setupViewModel(String path) {
-        mainActivityViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
         switch (path) {
             case POPULAR:
                 mainActivityViewModel.getPopularMovies().observe(this, new Observer<List<Movie>>() {

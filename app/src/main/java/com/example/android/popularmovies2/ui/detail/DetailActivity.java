@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,13 +37,13 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 import static com.example.android.popularmovies2.ui.list.MainActivity.MOVIE_OBJECT;
 import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildBackdropImageUrl;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private static final String TAG = DetailActivity.class.getSimpleName();
     private final Context context = DetailActivity.this;
     String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     TextView reviewsTV;
@@ -106,7 +105,7 @@ public class DetailActivity extends AppCompatActivity {
                     /* TODO notify user about response error in UI */
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
-                    Log.d(TAG, "onResponse: " + response.code());
+                    Timber.tag("MyApp").d("onResponse: %s", response.code());
                     Toast.makeText(DetailActivity.this, "OnResponse " + error.message(), Toast.LENGTH_LONG).show();
                 }
 
@@ -128,7 +127,7 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<TrailerList> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.getMessage());
+                Timber.tag("MyApp").d("onFailure: %s", t.getMessage());
                 Toast.makeText(DetailActivity.this, "onFailure: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
@@ -156,7 +155,7 @@ public class DetailActivity extends AppCompatActivity {
                     /* TODO notify user about response error in UI */
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
-                    Log.d(TAG, "onResponse: " + response.code());
+                    Timber.tag("MyApp").d("onResponse: %s", response.code());
                     Toast.makeText(DetailActivity.this, "OnResponse " + error.message(), Toast.LENGTH_LONG).show();
                 }
                 ReviewsList reviewsList = response.body();
@@ -171,7 +170,7 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ReviewsList> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.getMessage());
+                Timber.tag("MyApp").d("onFailure: %s", t.getMessage());
                 Toast.makeText(DetailActivity.this, "onFailure: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });

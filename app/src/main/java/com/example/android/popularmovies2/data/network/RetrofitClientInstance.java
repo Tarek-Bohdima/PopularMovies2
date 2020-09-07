@@ -15,7 +15,7 @@ public class RetrofitClientInstance {
     private static final String TAG = RetrofitClientInstance.class.getSimpleName();
     private static Retrofit retrofit;
     private static final Object LOCK = new Object();
-    private static String BASE_URL = "http://api.themoviedb.org/3/movie/";
+    private static String BASE_URL = "https://api.themoviedb.org/3/movie/";
 
     public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {
