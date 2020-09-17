@@ -8,11 +8,11 @@ package com.example.android.popularmovies2.di.qualifier;
 
 import java.lang.annotation.Retention;
 
-import javax.inject.Scope;
+import javax.inject.Qualifier;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Scope
+@Qualifier
 @Retention(RUNTIME)
 public @interface ApplicationContext {
 }

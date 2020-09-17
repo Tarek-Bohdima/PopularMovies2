@@ -11,7 +11,6 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.android.popularmovies2.AppExecutors;
 import com.example.android.popularmovies2.BuildConfig;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.MoviesList;
@@ -41,19 +40,13 @@ public class NetworkDataSource {
     private MutableLiveData<List<Movie>> topRatedMovies;
     private List<Movie> dowonloadedMovies;
 
-
-    private AppExecutors executors;
-
     private NetworkDataSource(Application application) {
-
         /*Create handle for the RetrofitInstance interface*/
         retrofit = RetrofitClientInstance.getRetrofitInstance();
         popularMovies = new MutableLiveData<>();
         topRatedMovies = new MutableLiveData<>();
         dowonloadedMovies = new ArrayList<>();
-
     }
-
 
     /**
      * Get the singleton for this class

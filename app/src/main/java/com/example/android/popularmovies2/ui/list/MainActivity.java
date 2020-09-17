@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 return activeNetwork != null && activeNetwork.isConnected();
             }
         }
-
         return false;
     }
 
@@ -85,13 +84,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         recyclerView.setHasFixedSize(true);
-
         adapter = new MovieAdapter(context, movieList, (MovieAdapter.MovieAdapterClickListener) context);
         recyclerView.setAdapter(adapter);
 
-
         checkAndCall(context, POPULAR);
-
     }
 
     private void setupViewModel(String path) {
@@ -115,11 +111,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     }
                 });
                 break;
-
         }
-
     }
-
 
     private void setGridLayoutManager(Context context, int spanCount) {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, spanCount);

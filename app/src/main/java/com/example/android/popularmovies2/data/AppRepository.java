@@ -38,15 +38,6 @@ public class AppRepository {
         return sInstance;
     }
 
-  /*  public List<Movie> getPopularMovies() {
-        return popularMovies;
-    }
-
-    public List<Movie> getTopRatedMovies() {
-        return topRatedMovies;
-    }*/
-
-
     public LiveData<List<Movie>> getPopularMovies() {
         Timber.tag("MyApp").d("AppRepository: getPopularMovies");
         return networkDataSource.getPopularMoviesLiveData();

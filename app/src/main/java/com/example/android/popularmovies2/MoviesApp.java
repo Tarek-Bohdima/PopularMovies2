@@ -14,20 +14,16 @@ import timber.log.Timber;
 
 public class MoviesApp extends Application {
 
-
     @Override
     public void onCreate() {
         super.onCreate();
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
-
     }
-
 
     public AppRepository getAppRepository() {
         Timber.tag("MyApp").d("MoviesApp: getAppRepository");
         return AppRepository.getInstance(this);
     }
-
 }

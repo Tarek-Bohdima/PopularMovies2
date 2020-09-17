@@ -22,10 +22,8 @@ import timber.log.Timber;
 
 public class MainViewModel extends AndroidViewModel {
 
-
     private LiveData<List<Movie>> popularMoviesLiveData;
     private LiveData<List<Movie>> topRatedMoviesLiveData;
-
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -34,14 +32,11 @@ public class MainViewModel extends AndroidViewModel {
 
         popularMoviesLiveData = appRepository.getPopularMovies();
         topRatedMoviesLiveData = appRepository.getTopRatedMovies();
-
     }
-
 
     public LiveData<List<Movie>> getPopularMovies() {
         Timber.tag("MyApp").d("MainViewModel: getPopularMovies");
         return popularMoviesLiveData;
-
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
