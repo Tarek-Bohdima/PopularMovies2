@@ -27,7 +27,7 @@ public class MainViewModel extends AndroidViewModel {
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        AppRepository appRepository = ((MoviesApp) getApplication()).getAppRepository();
+        AppRepository appRepository = ((MoviesApp) getApplication()).getMovieComponent().getAppRepository();
         Timber.tag("MyApp").d("MainViewModel: get AppRepository instance");
 
         popularMoviesLiveData = appRepository.getPopularMovies();

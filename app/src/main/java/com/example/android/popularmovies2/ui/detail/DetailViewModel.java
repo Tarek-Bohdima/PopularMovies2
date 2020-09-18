@@ -20,7 +20,7 @@ public class DetailViewModel extends AndroidViewModel {
 
     public DetailViewModel(@NonNull Application application) {
         super(application);
-        AppRepository appRepository = ((MoviesApp) getApplication()).getAppRepository();
+        AppRepository appRepository = ((MoviesApp) getApplication()).getMovieComponent().getAppRepository();
         Timber.tag("MyApp").d("DetailViewModel: get AppRepository instance");
     }
 }

@@ -6,17 +6,19 @@
 
 package com.example.android.popularmovies2.data;
 
-import android.app.Application;
-
 import androidx.lifecycle.LiveData;
 
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.network.NetworkDataSource;
+import com.example.android.popularmovies2.di.scopes.ApplicationScope;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import timber.log.Timber;
 
+@ApplicationScope
 public class AppRepository {
     // For Singleton instantiation
     private static final Object LOCK = new Object();
@@ -24,11 +26,13 @@ public class AppRepository {
     private NetworkDataSource networkDataSource;
 
 
-    private AppRepository(Application application) {
-        networkDataSource = NetworkDataSource.getInstance(application);
+    @Inject
+    AppRepository(NetworkDataSource networkDataSource) {
+//        networkDataSource = NetworkDataSource.getInstance(application);
+        this.networkDataSource = networkDataSource;
     }
 
-    public synchronized static AppRepository getInstance(Application application) {
+   /* public synchronized static AppRepository getInstance(Application application) {
         if (sInstance == null) {
             synchronized (LOCK) {
                 Timber.tag("MyApp").d("AppRepository: getInstance: Creating new repository instance");
@@ -36,7 +40,7 @@ public class AppRepository {
             }
         }
         return sInstance;
-    }
+    }*/
 
     public LiveData<List<Movie>> getPopularMovies() {
         Timber.tag("MyApp").d("AppRepository: getPopularMovies");

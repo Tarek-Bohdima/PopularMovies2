@@ -8,11 +8,16 @@ package com.example.android.popularmovies2;
 
 import android.app.Application;
 
-import com.example.android.popularmovies2.data.AppRepository;
+import com.example.android.popularmovies2.di.component.DaggerMovieComponent;
+import com.example.android.popularmovies2.di.component.MovieComponent;
+import com.example.android.popularmovies2.di.module.NetworkModule;
 
 import timber.log.Timber;
 
 public class MoviesApp extends Application {
+
+    private static String BASE_URL = "https://api.themoviedb.org/3/movie/";
+    private MovieComponent movieComponent;
 
     @Override
     public void onCreate() {
@@ -20,10 +25,17 @@ public class MoviesApp extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+
+        movieComponent = DaggerMovieComponent.builder()
+                .networkModule(new NetworkModule(BASE_URL))
+                .build();
     }
 
-    public AppRepository getAppRepository() {
+    public MovieComponent getMovieComponent() {
+        return movieComponent;
+    }
+    /*public AppRepository getAppRepository() {
         Timber.tag("MyApp").d("MoviesApp: getAppRepository");
         return AppRepository.getInstance(this);
-    }
+    }*/
 }

@@ -25,7 +25,7 @@ public class ContextModule {
     @Provides
     @ApplicationContext
     public Context provideContext() {
-        return context;
+        return context.getApplicationContext();
     }
 
 }

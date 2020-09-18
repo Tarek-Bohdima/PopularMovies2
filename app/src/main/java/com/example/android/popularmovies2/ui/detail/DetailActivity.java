@@ -29,7 +29,6 @@ import com.example.android.popularmovies2.data.model.TrailerList;
 import com.example.android.popularmovies2.data.network.APIError;
 import com.example.android.popularmovies2.data.network.ErrorUtils;
 import com.example.android.popularmovies2.data.network.MovieApi;
-import com.example.android.popularmovies2.data.network.RetrofitClientInstance;
 import com.example.android.popularmovies2.ui.list.MovieAdapter;
 
 import java.util.List;
@@ -65,7 +64,7 @@ public class DetailActivity extends AppCompatActivity {
 
         reviewsTV = findViewById(R.id.review);
 
-        movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
+//        movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
 
         Intent extraIntent = getIntent();
         if (extraIntent != null) {

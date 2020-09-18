@@ -6,17 +6,18 @@
 
 package com.example.android.popularmovies2.data.network;
 
-import android.app.Application;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.android.popularmovies2.BuildConfig;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.MoviesList;
+import com.example.android.popularmovies2.di.scopes.ApplicationScope;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,6 +25,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import timber.log.Timber;
 
+@ApplicationScope
 public class NetworkDataSource {
 
 
@@ -32,25 +34,32 @@ public class NetworkDataSource {
     private static NetworkDataSource sInstance;
     // please acquire your API KEY from https://www.themoviedb.org/ then:
     // user your API key in the project's gradle.properties file: MY_TMDB_API_KEY="<your API KEY>"
-    private static Retrofit retrofit;
+//    private static Retrofit retrofit;
+
+    private static String BASE_URL = "https://api.themoviedb.org/3/movie/";
     String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
     private MutableLiveData<List<Movie>> popularMovies;
     private MutableLiveData<List<Movie>> topRatedMovies;
     private List<Movie> dowonloadedMovies;
+    private Retrofit retrofit;
 
-    private NetworkDataSource(Application application) {
+    @Inject
+    NetworkDataSource(Retrofit retrofit) {
         /*Create handle for the RetrofitInstance interface*/
-        retrofit = RetrofitClientInstance.getRetrofitInstance();
+//        retrofit = RetrofitClientInstance.getRetrofitInstance();
+        this.retrofit = retrofit;
         popularMovies = new MutableLiveData<>();
         topRatedMovies = new MutableLiveData<>();
         dowonloadedMovies = new ArrayList<>();
     }
 
+    /*  */
+
     /**
      * Get the singleton for this class
-     */
+     *//*
     public static NetworkDataSource getInstance(Application application) {
         Timber.tag("MyApp").d("NetworkDataSource: getting the network data source");
         if (sInstance == null) {
@@ -60,8 +69,7 @@ public class NetworkDataSource {
             }
         }
         return sInstance;
-    }
-
+    }*/
     private void getMoviesByPath(String path) {
 
         MovieApi movieApi = retrofit.create(MovieApi.class);
