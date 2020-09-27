@@ -10,6 +10,7 @@ import android.app.Application;
 
 import com.example.android.popularmovies2.di.component.DaggerMovieComponent;
 import com.example.android.popularmovies2.di.component.MovieComponent;
+import com.example.android.popularmovies2.di.module.ContextModule;
 import com.example.android.popularmovies2.di.module.NetworkModule;
 
 import timber.log.Timber;
@@ -28,6 +29,7 @@ public class MoviesApp extends Application {
 
         movieComponent = DaggerMovieComponent.builder()
                 .networkModule(new NetworkModule(BASE_URL))
+                .contextModule(new ContextModule(this))
                 .build();
     }
 

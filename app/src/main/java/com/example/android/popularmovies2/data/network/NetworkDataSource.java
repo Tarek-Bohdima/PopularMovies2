@@ -28,48 +28,23 @@ import timber.log.Timber;
 @ApplicationScope
 public class NetworkDataSource {
 
-
-    // For Singleton instantiation
-    private static final Object LOCK = new Object();
-    private static NetworkDataSource sInstance;
-    // please acquire your API KEY from https://www.themoviedb.org/ then:
-    // user your API key in the project's gradle.properties file: MY_TMDB_API_KEY="<your API KEY>"
-//    private static Retrofit retrofit;
-
-    private static String BASE_URL = "https://api.themoviedb.org/3/movie/";
-    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
+    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     private MutableLiveData<List<Movie>> popularMovies;
     private MutableLiveData<List<Movie>> topRatedMovies;
-    private List<Movie> dowonloadedMovies;
+    private List<Movie> downloadedMovies;
     private Retrofit retrofit;
 
     @Inject
     NetworkDataSource(Retrofit retrofit) {
-        /*Create handle for the RetrofitInstance interface*/
-//        retrofit = RetrofitClientInstance.getRetrofitInstance();
+
         this.retrofit = retrofit;
         popularMovies = new MutableLiveData<>();
         topRatedMovies = new MutableLiveData<>();
-        dowonloadedMovies = new ArrayList<>();
+        downloadedMovies = new ArrayList<>();
     }
 
-    /*  */
-
-    /**
-     * Get the singleton for this class
-     *//*
-    public static NetworkDataSource getInstance(Application application) {
-        Timber.tag("MyApp").d("NetworkDataSource: getting the network data source");
-        if (sInstance == null) {
-            synchronized (LOCK) {
-                sInstance = new NetworkDataSource(application);
-                Timber.tag("MyApp").d("NetworkDataSource: Made new Network Data source");
-            }
-        }
-        return sInstance;
-    }*/
     private void getMoviesByPath(String path) {
 
         MovieApi movieApi = retrofit.create(MovieApi.class);
@@ -78,32 +53,34 @@ public class NetworkDataSource {
             @Override
             public void onResponse(Call<MoviesList> call, Response<MoviesList> response) {
                 if (!response.isSuccessful()) {
-                    /* TODO notify user about response error in UI */
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
-                    Timber.tag("MyApp").d("NetworkDataSource: onResponse: %s", response.code());
+                    Timber.tag("MyApp").d("NetworkDataSource: onResponse: %s", error.message());
                 }
+
                 Timber.tag("MyApp").d("onResponse() called with: call = [" + call + "], response = [" + response + "]");
                 MoviesList moviesLists = response.body();
                 switch (path) {
                     case POPULAR:
-                        dowonloadedMovies = moviesLists.getMovies();
+                        downloadedMovies = moviesLists.getMovies();
                         Timber.tag("MyApp").d("NetworkDataSource: getPopularMovies from Retrofit");
-                        popularMovies.postValue(dowonloadedMovies);
+                        popularMovies.postValue(downloadedMovies);
                         break;
                     case TOP_RATED:
-                        dowonloadedMovies = moviesLists.getMovies();
+                        downloadedMovies = moviesLists.getMovies();
                         Timber.tag("MyApp").d("NetworkDataSource: getTopRatedMovies from Retrofit");
-                        topRatedMovies.postValue(dowonloadedMovies);
+                        topRatedMovies.postValue(downloadedMovies);
                 }
             }
 
             @Override
             public void onFailure(Call<MoviesList> call, Throwable t) {
                 Timber.tag("MyApp").d("onFailure: %s", t.getMessage());
+
             }
         });
     }
+
 
     public LiveData<List<Movie>> getPopularMoviesLiveData() {
         getMoviesByPath(POPULAR);
@@ -112,6 +89,7 @@ public class NetworkDataSource {
     }
 
     public LiveData<List<Movie>> getTopRatedMoviesLiveData() {
+
         getMoviesByPath(TOP_RATED);
         Timber.tag("MyApp").d("NetworkDataSource: return TopRatedMovies LiveData");
         return topRatedMovies;

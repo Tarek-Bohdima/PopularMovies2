@@ -8,7 +8,7 @@ package com.example.android.popularmovies2.di.module;
 
 import android.content.Context;
 
-import com.example.android.popularmovies2.di.qualifier.ApplicationContext;
+import com.example.android.popularmovies2.di.scopes.ApplicationScope;
 
 import dagger.Module;
 import dagger.Provides;
@@ -23,7 +23,7 @@ public class ContextModule {
     }
 
     @Provides
-    @ApplicationContext
+    @ApplicationScope
     public Context provideContext() {
         return context.getApplicationContext();
     }

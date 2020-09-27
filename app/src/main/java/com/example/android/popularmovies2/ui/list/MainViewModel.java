@@ -29,7 +29,6 @@ public class MainViewModel extends AndroidViewModel {
         super(application);
         AppRepository appRepository = ((MoviesApp) getApplication()).getMovieComponent().getAppRepository();
         Timber.tag("MyApp").d("MainViewModel: get AppRepository instance");
-
         popularMoviesLiveData = appRepository.getPopularMovies();
         topRatedMoviesLiveData = appRepository.getTopRatedMovies();
     }
@@ -43,4 +42,6 @@ public class MainViewModel extends AndroidViewModel {
         Timber.tag("MyApp").d("MainViewModel: getTopRatedMovies");
         return topRatedMoviesLiveData;
     }
+
+
 }

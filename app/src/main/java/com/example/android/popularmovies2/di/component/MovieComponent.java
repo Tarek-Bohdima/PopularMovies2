@@ -7,16 +7,19 @@
 package com.example.android.popularmovies2.di.component;
 
 import com.example.android.popularmovies2.data.AppRepository;
-import com.example.android.popularmovies2.di.module.ContextModule;
 import com.example.android.popularmovies2.di.module.NetworkModule;
 import com.example.android.popularmovies2.di.scopes.ApplicationScope;
 
 import dagger.Component;
+import retrofit2.Retrofit;
 
 @ApplicationScope
-@Component(modules = {ContextModule.class, NetworkModule.class})
+@Component(modules = {NetworkModule.class})
 public interface MovieComponent {
 
 
     AppRepository getAppRepository();
+
+    Retrofit getRetrofit();
+
 }

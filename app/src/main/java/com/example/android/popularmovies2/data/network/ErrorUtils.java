@@ -34,7 +34,7 @@ public class ErrorUtils {
         try {
             error = converter.convert(response.errorBody());
         } catch (IOException e) {
-            return new APIError();
+            return new APIError(response.code(), response.message());
         }
 
         return error;

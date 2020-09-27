@@ -9,10 +9,6 @@ package com.example.android.popularmovies2.ui.list;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +31,8 @@ import java.util.List;
 
 import timber.log.Timber;
 
+import static com.example.android.popularmovies2.data.network.ConnectionUtils.isNetworkConnected;
+
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterClickListener {
     public static final String MOVIE_OBJECT = "movie_object";
     private static final String POPULAR = "popular";
@@ -45,26 +43,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private MovieAdapter adapter;
     MainViewModel mainActivityViewModel;
 
-    // Credits to https://stackoverflow.com/a/61566780/8899344
-    private static boolean isNetworkConnected(Context context) {
-
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (connectivityManager != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                NetworkCapabilities capabilities = connectivityManager.
-                        getNetworkCapabilities(connectivityManager.getActiveNetwork());
-                return capabilities != null &&
-                        (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-            } else {
-                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-                return activeNetwork != null && activeNetwork.isConnected();
-            }
-        }
-        return false;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +65,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         adapter = new MovieAdapter(context, movieList, (MovieAdapter.MovieAdapterClickListener) context);
         recyclerView.setAdapter(adapter);
 
-        checkAndCall(context, POPULAR);
+        checkConnectivityAndCall(this, POPULAR);
+    }
+
+    private void checkConnectivityAndCall(Context context, String path) {
+        if (isNetworkConnected(context)) {
+            makeMoviesQuery(path);
+        } else {
+            showErrorImageView();
+        }
     }
 
     private void setupViewModel(String path) {
@@ -119,13 +105,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         recyclerView.setLayoutManager(gridLayoutManager);
     }
 
-    private void checkAndCall(Context context, String path) {
-        if (isNetworkConnected(context)) {
-            makeMoviesQuery(path);
-        } else {
-            showErrorImageView();
-        }
-    }
 
     private void makeMoviesQuery(String path) {
         showRecyclerView();
@@ -153,11 +132,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         int itemId = item.getItemId();
         switch (itemId) {
             case R.id.sort_by_popularity:
-                checkAndCall(this, POPULAR);
+                checkConnectivityAndCall(this, POPULAR);
                 setTitle("Popular Movies");
                 return true;
             case R.id.sort_by_rating:
-                checkAndCall(this, TOP_RATED);
+                checkConnectivityAndCall(this, TOP_RATED);
                 setTitle("Top Rated Movies");
                 return true;
             default:

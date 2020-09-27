@@ -4,11 +4,17 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.utilities;
+package com.example.android.popularmovies2.data.network;
 
-public class InjetcorUtils {
+import androidx.annotation.Nullable;
 
-//    public static AppRepository provideRepository(Context context) {
-//        return new AppRepository()
-//    }
+import java.io.IOException;
+
+public class NoInternetException extends IOException {
+    @Nullable
+    @Override
+    public String getMessage() {
+//        Timber.tag("MyApp").d("getMessage() called: No internet available, please check your connected WIFi or Data");
+        return "No internet available, please check your connected WIFi or Data";
+    }
 }

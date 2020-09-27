@@ -20,27 +20,13 @@ import timber.log.Timber;
 
 @ApplicationScope
 public class AppRepository {
-    // For Singleton instantiation
-    private static final Object LOCK = new Object();
-    private static AppRepository sInstance;
-    private NetworkDataSource networkDataSource;
 
+    private NetworkDataSource networkDataSource;
 
     @Inject
     AppRepository(NetworkDataSource networkDataSource) {
-//        networkDataSource = NetworkDataSource.getInstance(application);
         this.networkDataSource = networkDataSource;
     }
-
-   /* public synchronized static AppRepository getInstance(Application application) {
-        if (sInstance == null) {
-            synchronized (LOCK) {
-                Timber.tag("MyApp").d("AppRepository: getInstance: Creating new repository instance");
-                sInstance = new AppRepository(application);
-            }
-        }
-        return sInstance;
-    }*/
 
     public LiveData<List<Movie>> getPopularMovies() {
         Timber.tag("MyApp").d("AppRepository: getPopularMovies");
@@ -50,5 +36,6 @@ public class AppRepository {
     public LiveData<List<Movie>> getTopRatedMovies() {
         Timber.tag("MyApp").d("AppRepository: getTopRatedMovies");
         return networkDataSource.getTopRatedMoviesLiveData();
+
     }
 }

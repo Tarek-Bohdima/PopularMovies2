@@ -12,10 +12,11 @@ import com.google.gson.GsonBuilder;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-@Module
+@Module(includes = OkHttpClientModule.class)
 public class NetworkModule {
 
     private String baseUrl;
@@ -26,8 +27,9 @@ public class NetworkModule {
 
     @ApplicationScope
     @Provides
-    public Retrofit retrofit(GsonConverterFactory gsonConverterFactory, Gson gson) {
+    public Retrofit retrofit(OkHttpClient okHttpClient, GsonConverterFactory gsonConverterFactory, Gson gson) {
         return new Retrofit.Builder()
+                .client(okHttpClient)
                 .baseUrl(baseUrl)
                 .addConverterFactory(gsonConverterFactory)
                 .build();

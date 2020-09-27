@@ -6,21 +6,18 @@
 
 package com.example.android.popularmovies2.data.network;
 
-public class APIError {
+import androidx.annotation.Nullable;
 
-    private int statusCode;
-    private String message;
+import java.io.IOException;
 
-    public APIError(int statusCode, String message) {
-        this.statusCode = statusCode;
-        this.message = message;
-    }
+public class NoConnectivityException extends IOException {
 
-    public int status() {
-        return statusCode;
-    }
+    @Nullable
+    @Override
+    public String getMessage() {
+//        Timber.tag("MyApp").d("getMessage() called: No network available, please check your WiFi or Data connection");
 
-    public String message() {
-        return message;
+        // fire callback to show com.example.android.popularmovies2.ui.list.MainActivity.showErrorImageView ?
+        return "No network available, please check your WiFi or Data connection";
     }
 }
