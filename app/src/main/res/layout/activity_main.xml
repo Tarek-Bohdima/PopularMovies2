@@ -5,10 +5,20 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.example.android.popularmovies2.ui.list.MainViewModel" />
+
+        <variable
+            name="isConnected"
+            type="boolean" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -26,12 +36,14 @@
             android:contentDescription="@string/connection_error_placeholder"
             android:padding="116dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/error_network" />
+            android:src="@drawable/error_network"
+            app:visibleGone="@{!isConnected}" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:visibleGone="@{isConnected}" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

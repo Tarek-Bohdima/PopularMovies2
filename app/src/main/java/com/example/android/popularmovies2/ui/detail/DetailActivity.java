@@ -11,12 +11,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies2.BuildConfig;
@@ -31,6 +34,7 @@ import com.example.android.popularmovies2.data.network.ErrorUtils;
 import com.example.android.popularmovies2.data.network.MovieApi;
 import com.example.android.popularmovies2.ui.list.MovieAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -49,6 +53,9 @@ public class DetailActivity extends AppCompatActivity {
     String movieId;
     MovieApi movieApi;
     private Movie detailMovie;
+    private LiveData<List<Review>> reviews;
+    private LiveData<List<Trailer>> trailers;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,7 +69,6 @@ public class DetailActivity extends AppCompatActivity {
         TextView userRating = findViewById(R.id.user_rating);
         TextView synopsisText = findViewById(R.id.synopsis_text);
 
-        reviewsTV = findViewById(R.id.review);
 
 //        movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
 
@@ -85,14 +91,33 @@ public class DetailActivity extends AppCompatActivity {
         releaseDate.setText(detailMovie.getReleaseDate());
         userRating.setText(String.valueOf(detailMovie.getVoteAverage()));
         synopsisText.setText(detailMovie.getOverview());
+        synopsisText.setMovementMethod(new ScrollingMovementMethod());
+        synopsisText.getScrollBarDefaultDelayBeforeFade();
 
         setTitle(detailMovie.getOriginalTitle());
 
         movieId = String.valueOf(detailMovie.getMovieId());
 
+        DetailViewModelFactory factory = new DetailViewModelFactory(this.getApplication(), movieId);
+        DetailViewModel detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
+//        detailViewModel.getReviewsByMovieId(movieId).observe(this, new Observer<List<Review>>() {
+//            @Override
+//            public void onChanged(List<Review> reviews) {
+//
+//            }
+//        });
+
+//        detailViewModel.getTrailersByMovieId(movieId).observe(this, new Observer<List<Trailer>>() {
+//            @Override
+//            public void onChanged(List<Trailer> trailers) {
+//
+//            }
+//        });
+
+
         //Experimental
-        getReviewsOnMovie();
-        getTrailersOnMovie();
+//        getReviewsOnMovie();
+//        getTrailersOnMovie();
     }
 
     private void getTrailersOnMovie() {
@@ -114,9 +139,15 @@ public class DetailActivity extends AppCompatActivity {
                     trailers = trailerList.getTrailers();
                 }
 
+
                 String key = "dr2dnVLJmyY";
+                ArrayList<String> keys = new ArrayList<>();
                 if (trailers != null && !trailers.isEmpty()) {
-                    key = trailers.get(0).getKey();
+                    for (int i = 0; i < trailers.size(); i++) {
+                        key = trailers.get(i).getKey();
+                        keys.add(i, key);
+                    }
+//                    key = trailers.get(0).getKey();
                 }
 
                 //credits to: https://stackoverflow.com/a/12439378/8899344

@@ -6,96 +6,29 @@
 
 package com.example.android.popularmovies2.ui.list;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
+import com.example.android.popularmovies2.databinding.MovieListItemBinding;
 
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
-    private Context context;
-    private List<Movie> moviesArrayList;
     private static final String BASE_IMAGE_URL = "https://image.tmdb.org/t/p/";
     final private MovieAdapterClickListener onClickListener;
+    private List<Movie> moviesArrayList;
 
-    public interface MovieAdapterClickListener {
-        void onListItemClick(Movie currentMovie);
-    }
-
-    public MovieAdapter(Context context, List<Movie> moviesArrayList, MovieAdapterClickListener onClickListener) {
-        this.context = context;
+    public MovieAdapter(List<Movie> moviesArrayList, MovieAdapterClickListener onClickListener) {
         this.moviesArrayList = moviesArrayList;
         this.onClickListener = onClickListener;
-    }
-
-    @NonNull
-    @Override
-    public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        context = parent.getContext();
-        int layoutIdForListItem = R.layout.movie_list_item;
-        LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmediately = false;
-
-        View itemViewHolder = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
-        return new MovieViewHolder(itemViewHolder);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-        context = holder.movieListItem.getContext();
-        Movie currentMovie = moviesArrayList.get(position);
-        Glide.with(context)
-                .load(buildPosterImageUrl(currentMovie.getPosterPath()))
-                .placeholder(R.drawable.film_poster_placeholder)
-                .centerCrop()
-                .into(holder.movieListItem);
-
-    }
-
-    @Override
-    public int getItemCount() {
-       /* if (moviesArrayList == null) {
-            return 0;
-        }else {
-            return moviesArrayList.size();
-        }*/
-        // OR better ternary operator https://www.tutorialspoint.com/Java-Ternary-Operator-Examples
-        // https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op2.html
-        return moviesArrayList == null ? 0 : moviesArrayList.size();
-    }
-
-    public void setMovieData(List<Movie> movieData) {
-        moviesArrayList = movieData;
-        notifyDataSetChanged();
-    }
-
-    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        final ImageView movieListItem;
-
-        MovieViewHolder(@NonNull View itemView) {
-            super(itemView);
-            movieListItem = itemView.findViewById(R.id.poster_img);
-            itemView.setOnClickListener(this);
-
-        }
-
-        @Override
-        public void onClick(View v) {
-            int clickedPosition = getAdapterPosition();
-            Movie currentMovie = moviesArrayList.get(clickedPosition);
-            onClickListener.onListItemClick(currentMovie);
-        }
     }
 
     public static String buildPosterImageUrl(String filepath) {
@@ -104,5 +37,61 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     public static String buildBackdropImageUrl(String filepath) {
         return BASE_IMAGE_URL + "w500" + filepath;
+    }
+
+    @NonNull
+    @Override
+    public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        MovieListItemBinding itemBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.getContext()),
+                R.layout.movie_list_item,
+                parent, false);
+
+        return new MovieViewHolder(itemBinding);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
+
+        holder.bind();
+        holder.itemBinding.setPosition(position);
+        Movie currentMovie = moviesArrayList.get(position);
+        holder.itemBinding.setUrl(buildPosterImageUrl(currentMovie.getPosterPath()));
+    }
+
+    @Override
+    public int getItemCount() {
+        return moviesArrayList == null ? 0 : moviesArrayList.size();
+    }
+
+    public void setMovieData(List<Movie> movieData) {
+        moviesArrayList = movieData;
+        notifyDataSetChanged();
+    }
+
+    public interface MovieAdapterClickListener {
+        void onListItemClick(Movie currentMovie);
+    }
+
+    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        MovieListItemBinding itemBinding;
+
+        MovieViewHolder(MovieListItemBinding itemBinding) {
+            super(itemBinding.getRoot());
+            this.itemBinding = itemBinding;
+        }
+
+        public void bind() {
+            itemBinding.posterImg.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int clickedPosition = getAdapterPosition();
+            Movie currentMovie = moviesArrayList.get(clickedPosition);
+            onClickListener.onListItemClick(currentMovie);
+        }
     }
 }

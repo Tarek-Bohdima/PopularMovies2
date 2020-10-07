@@ -5,19 +5,40 @@
   ~ Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
 
-    <ImageView
-        android:id="@+id/poster_img"
+        <variable
+            name="position"
+            type="int" />
+
+        <variable
+            name="movie"
+            type="com.example.android.popularmovies2.data.model.Movie" />
+
+        <variable
+            name="url"
+            type="String" />
+
+    </data>
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        tools:src="@tools:sample/backgrounds/scenic"
-        android:contentDescription="@string/description_movie_poster" />
+        android:layout_height="wrap_content">
 
 
-</FrameLayout>
+        <ImageView
+            android:id="@+id/poster_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/description_movie_poster"
+            app:imageUrl="@{url}"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
+
+    </FrameLayout>
+</layout>

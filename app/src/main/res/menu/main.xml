@@ -5,10 +5,15 @@
         android:id="@+id/sort_by_popularity"
         android:title="@string/popular"
         android:orderInCategory="1"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
     <item
         android:id="@+id/sort_by_rating"
         android:title="@string/top_rated"
         android:orderInCategory="2"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/favorite"
+        android:orderInCategory="3"
+        android:title="@string/favorite"
+        app:showAsAction="never" />
 </menu>

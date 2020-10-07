@@ -51,7 +51,7 @@ public class Movie implements Parcelable {
 
 
     public Movie(int movieId, String originalTitle, String posterPath, String backdropPath,
-                 String overview, double voteAverage, String releaseDate) {
+                 String overview, double voteAverage, String releaseDate, boolean isFavorite) {
         this.movieId = movieId;
         this.originalTitle = originalTitle;
         this.posterPath = posterPath;
@@ -59,6 +59,7 @@ public class Movie implements Parcelable {
         this.overview = overview;
         this.voteAverage = voteAverage;
         this.releaseDate = releaseDate;
+        this.isFavorite = isFavorite;
     }
 
     private Movie(Parcel in) {

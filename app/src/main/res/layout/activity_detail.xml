@@ -103,18 +103,46 @@
                 android:id="@+id/synopsis_text"
                 style="@style/detail_text_small"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="8dp"
                 android:paddingStart="8dp"
                 android:paddingLeft="8dp"
                 android:paddingEnd="8dp"
                 android:paddingRight="8dp"
+                android:scrollbars="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/synopsis_title"
                 app:layout_constraintTop_toBottomOf="@+id/synopsis_title"
                 tools:text="@tools:sample/lorem/random" />
 
+
+            <TextView
+                android:id="@+id/reviews"
+                style="@style/detail_text_small"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/synopsis_text"
+                tools:text="@tools:sample/lorem/random" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/trailers_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/reviews" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier"
@@ -124,23 +152,6 @@
                 app:barrierDirection="right"
                 app:constraint_referenced_ids="original_title,release_date,user_rating"
                 app:layout_constraintEnd_toEndOf="parent" />
-
-            <TextView
-                android:id="@+id/review"
-                style="@style/detail_text_small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="16dp"
-                android:text="Reviews Reviews Reviews Reviews Reviews Reviews"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/synopsis_text" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

@@ -12,18 +12,17 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
+import com.example.android.popularmovies2.databinding.ActivityMainBinding;
 import com.example.android.popularmovies2.ui.detail.DetailActivity;
 
 import java.util.ArrayList;
@@ -38,18 +37,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
     public List<Movie> movieList = new ArrayList<>();
-    private ImageView errorImageView;
-    private RecyclerView recyclerView;
-    private MovieAdapter adapter;
+    ActivityMainBinding activityMainBinding;
     MainViewModel mainActivityViewModel;
-
+    private MovieAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        recyclerView = findViewById(R.id.recycler_view);
-        errorImageView = findViewById(R.id.connection_error_imageview);
+        activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
         Context context = this;
 
         mainActivityViewModel = new ViewModelProvider(this).get(MainViewModel.class);
@@ -60,19 +56,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         } else {
             setGridLayoutManager(context, 4);
         }
+        activityMainBinding.recyclerView.setHasFixedSize(true);
+        adapter = new MovieAdapter(movieList, (MovieAdapter.MovieAdapterClickListener) context);
+        activityMainBinding.recyclerView.setAdapter(adapter);
 
-        recyclerView.setHasFixedSize(true);
-        adapter = new MovieAdapter(context, movieList, (MovieAdapter.MovieAdapterClickListener) context);
-        recyclerView.setAdapter(adapter);
-
-        checkConnectivityAndCall(this, POPULAR);
+        checkConnectivityAndCall(context, POPULAR);
     }
 
     private void checkConnectivityAndCall(Context context, String path) {
         if (isNetworkConnected(context)) {
-            makeMoviesQuery(path);
+            activityMainBinding.setIsConnected(true);
+            setupViewModel(path);
         } else {
-            showErrorImageView();
+            activityMainBinding.setIsConnected(false);
         }
     }
 
@@ -102,23 +98,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private void setGridLayoutManager(Context context, int spanCount) {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, spanCount);
-        recyclerView.setLayoutManager(gridLayoutManager);
-    }
-
-
-    private void makeMoviesQuery(String path) {
-        showRecyclerView();
-        setupViewModel(path);
-    }
-
-    private void showRecyclerView() {
-        errorImageView.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.VISIBLE);
-    }
-
-    private void showErrorImageView() {
-        errorImageView.setVisibility(View.VISIBLE);
-        recyclerView.setVisibility(View.GONE);
+        activityMainBinding.recyclerView.setLayoutManager(gridLayoutManager);
     }
 
     @Override
@@ -139,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 checkConnectivityAndCall(this, TOP_RATED);
                 setTitle("Top Rated Movies");
                 return true;
+            case R.id.favorite:
+                setTitle("Favorites");
             default:
                 return super.onOptionsItemSelected(item);
         }

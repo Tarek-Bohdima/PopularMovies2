@@ -8,33 +8,33 @@ package com.example.android.popularmovies2.ui.detail;
 
 import android.app.Application;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
-import com.example.android.popularmovies2.BuildConfig;
 import com.example.android.popularmovies2.MoviesApp;
-import com.example.android.popularmovies2.data.network.MovieApi;
+import com.example.android.popularmovies2.data.AppRepository;
+import com.example.android.popularmovies2.data.model.Review;
+import com.example.android.popularmovies2.data.model.Trailer;
 
-import retrofit2.Retrofit;
-import timber.log.Timber;
+import java.util.List;
 
-public class DetailViewModel extends AndroidViewModel {
+public class DetailViewModel extends ViewModel {
 
-    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
-    String movieId;
-    private Retrofit retrofit;
+    private LiveData<List<Review>> reviews;
+    private LiveData<List<Trailer>> trailers;
 
-    public DetailViewModel(@NonNull Application application) {
-        super(application);
-        Timber.tag("MyApp").d("DetailViewModel: get AppRepository instance");
 
-        retrofit = ((MoviesApp) getApplication()).getMovieComponent().getRetrofit();
+    public DetailViewModel(Application application, String movieId) {
+        AppRepository appRepository = ((MoviesApp) application).getMovieComponent().getAppRepository();
+        reviews = appRepository.getReviewsByMovieId(movieId);
+        trailers = appRepository.getTrailersByMovieId(movieId);
     }
 
-    public void getTrailersOnMovie() {
-        MovieApi movieApi = retrofit.create(MovieApi.class);
-//        Call<TrailerList> callTrailersByMovieId = movieApi.getTrailers()
-
+    public LiveData<List<Review>> getReviewsByMovieId(String movieId) {
+        return reviews;
     }
 
+    public LiveData<List<Trailer>> getTrailersByMovieId(String movieId) {
+        return trailers;
+    }
 }
