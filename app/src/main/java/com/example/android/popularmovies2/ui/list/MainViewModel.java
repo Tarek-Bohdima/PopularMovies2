@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.MoviesApp;
 import com.example.android.popularmovies2.data.AppRepository;
 import com.example.android.popularmovies2.data.model.Movie;
@@ -28,18 +29,18 @@ public class MainViewModel extends AndroidViewModel {
     public MainViewModel(@NonNull Application application) {
         super(application);
         AppRepository appRepository = ((MoviesApp) getApplication()).getMovieComponent().getAppRepository();
-        Timber.tag("MyApp").d("MainViewModel: get AppRepository instance");
+        Timber.tag(Constants.TAG).d("MainViewModel: get AppRepository instance");
         popularMoviesLiveData = appRepository.getPopularMovies();
         topRatedMoviesLiveData = appRepository.getTopRatedMovies();
     }
 
     public LiveData<List<Movie>> getPopularMovies() {
-        Timber.tag("MyApp").d("MainViewModel: getPopularMovies");
+        Timber.tag(Constants.TAG).d("MainViewModel: getPopularMovies");
         return popularMoviesLiveData;
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
-        Timber.tag("MyApp").d("MainViewModel: getTopRatedMovies");
+        Timber.tag(Constants.TAG).d("MainViewModel: getTopRatedMovies");
         return topRatedMoviesLiveData;
     }
 

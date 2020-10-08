@@ -6,7 +6,7 @@
 
 package com.example.android.popularmovies2.ui;
 
-import android.view.View;
+import android.text.TextUtils;
 import android.widget.ImageView;
 
 import androidx.databinding.BindingAdapter;
@@ -15,21 +15,15 @@ import com.bumptech.glide.Glide;
 import com.example.android.popularmovies2.R;
 
 public class BindingAdapters {
-    private String BASE_IMAGE_URL = "https://image.tmdb.org/t/p/";
 
     @BindingAdapter("imageUrl")
     public static void loadImage(ImageView imageView, String url) {
-        if (!url.isEmpty()) {
+        if (!TextUtils.isEmpty(url)) {
             Glide.with(imageView.getContext())
                     .load(url)
                     .placeholder(R.drawable.film_poster_placeholder)
                     .centerCrop()
                     .into(imageView);
         }
-    }
-
-    @BindingAdapter("visibleGone")
-    public static void showHide(View view, boolean show) {
-        view.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

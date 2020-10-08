@@ -8,6 +8,7 @@ package com.example.android.popularmovies2.di.module;
 
 import android.content.Context;
 
+import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.data.network.NoConnectionInterceptor;
 
 import dagger.Module;
@@ -36,7 +37,7 @@ public class OkHttpClientModule {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
-                Timber.tag("MyApp").d("httpLoggingInterceptor%s", message);
+                Timber.tag(Constants.TAG).d("httpLoggingInterceptor%s", message);
             }
         });
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);

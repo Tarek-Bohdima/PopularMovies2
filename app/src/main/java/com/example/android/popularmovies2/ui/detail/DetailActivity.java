@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies2.BuildConfig;
+import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.Review;
@@ -129,7 +130,7 @@ public class DetailActivity extends AppCompatActivity {
                     /* TODO notify user about response error in UI */
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
-                    Timber.tag("MyApp").d("onResponse: %s", response.code());
+                    Timber.tag(Constants.TAG).d("onResponse: %s", response.code());
                     Toast.makeText(DetailActivity.this, "OnResponse " + error.message(), Toast.LENGTH_LONG).show();
                 }
 
@@ -157,7 +158,7 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<TrailerList> call, Throwable t) {
-                Timber.tag("MyApp").d("onFailure: %s", t.getMessage());
+                Timber.tag(Constants.TAG).d("onFailure: %s", t.getMessage());
                 Toast.makeText(DetailActivity.this, "onFailure: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
@@ -185,7 +186,7 @@ public class DetailActivity extends AppCompatActivity {
                     /* TODO notify user about response error in UI */
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
-                    Timber.tag("MyApp").d("onResponse: %s", response.code());
+                    Timber.tag(Constants.TAG).d("onResponse: %s", response.code());
                     Toast.makeText(DetailActivity.this, "OnResponse " + error.message(), Toast.LENGTH_LONG).show();
                 }
                 ReviewsList reviewsList = response.body();
@@ -200,7 +201,7 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ReviewsList> call, Throwable t) {
-                Timber.tag("MyApp").d("onFailure: %s", t.getMessage());
+                Timber.tag(Constants.TAG).d("onFailure: %s", t.getMessage());
                 Toast.makeText(DetailActivity.this, "onFailure: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });

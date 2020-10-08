@@ -55,7 +55,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
 
         holder.bind();
-        holder.itemBinding.setPosition(position);
         Movie currentMovie = moviesArrayList.get(position);
         holder.itemBinding.setUrl(buildPosterImageUrl(currentMovie.getPosterPath()));
     }

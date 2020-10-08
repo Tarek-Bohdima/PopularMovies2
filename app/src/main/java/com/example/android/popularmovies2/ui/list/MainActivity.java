@@ -20,6 +20,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.databinding.ActivityMainBinding;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 mainActivityViewModel.getPopularMovies().observe(this, new Observer<List<Movie>>() {
                     @Override
                     public void onChanged(List<Movie> movies) {
-                        Timber.tag("MyApp").d("MainActivity: getPopularMovies Observed");
+                        Timber.tag(Constants.TAG).d("MainActivity: getPopularMovies Observed");
                         adapter.setMovieData(movies);
                     }
                 });
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 mainActivityViewModel.getTopRatedMovies().observe(this, new Observer<List<Movie>>() {
                     @Override
                     public void onChanged(List<Movie> movies) {
-                        Timber.tag("MyApp").d("MainActivity: getTopRatedMovies Observed");
+                        Timber.tag(Constants.TAG).d("MainActivity: getTopRatedMovies Observed");
                         adapter.setMovieData(movies);
                     }
                 });

@@ -12,6 +12,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.data.model.Movie;
 
 import timber.log.Timber;
@@ -25,14 +26,14 @@ public abstract class AppDatabase extends RoomDatabase {
     public static AppDatabase getInstance(Context context) {
         if (sInstance == null) {
             synchronized (LOCK) {
-                Timber.tag("MyApp").d("getInstance: Creating new database instance");
+                Timber.tag(Constants.TAG).d("getInstance: Creating new database instance");
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, AppDatabase.DATABASE_NAME)
                         .fallbackToDestructiveMigration()
                         .build();
             }
         }
-        Timber.tag("MyApp").d("getInstance: Getting the database instance");
+        Timber.tag(Constants.TAG).d("getInstance: Getting the database instance");
         return sInstance;
     }
 

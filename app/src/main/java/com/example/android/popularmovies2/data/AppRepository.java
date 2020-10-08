@@ -8,6 +8,7 @@ package com.example.android.popularmovies2.data;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.Review;
 import com.example.android.popularmovies2.data.model.Trailer;
@@ -31,22 +32,22 @@ public class AppRepository {
     }
 
     public LiveData<List<Movie>> getPopularMovies() {
-        Timber.tag("MyApp").d("AppRepository: getPopularMovies");
+        Timber.tag(Constants.TAG).d("AppRepository: getPopularMovies");
         return networkDataSource.getPopularMoviesLiveData();
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
-        Timber.tag("MyApp").d("AppRepository: getTopRatedMovies");
+        Timber.tag(Constants.TAG).d("AppRepository: getTopRatedMovies");
         return networkDataSource.getTopRatedMoviesLiveData();
     }
 
     public LiveData<List<Review>> getReviewsByMovieId(String movieId) {
-        Timber.tag("MyApp").d("AppRepository: getReviewsByMovieId() called with: movieId = [" + movieId + "]");
+        Timber.tag(Constants.TAG).d("AppRepository: getReviewsByMovieId() called with: movieId = [" + movieId + "]");
         return networkDataSource.getReviewsLiveDataByMovieId(movieId);
     }
 
     public LiveData<List<Trailer>> getTrailersByMovieId(String movieId) {
-        Timber.tag("MyApp").d("AppRepository: getTrailersByMovieId() called with: movieId = [" + movieId + "]");
+        Timber.tag(Constants.TAG).d("AppRepository: getTrailersByMovieId() called with: movieId = [" + movieId + "]");
         return networkDataSource.getTrailersLiveDataByMovieId(movieId);
     }
 }

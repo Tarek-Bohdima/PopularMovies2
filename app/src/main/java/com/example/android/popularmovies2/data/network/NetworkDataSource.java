@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.android.popularmovies2.BuildConfig;
+import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.MoviesList;
 import com.example.android.popularmovies2.data.model.Review;
@@ -64,31 +65,31 @@ public class NetworkDataSource {
                 if (!response.isSuccessful()) {
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
-                    Timber.tag("MyApp").d("NetworkDataSource: onResponse: %s", error.message());
+                    Timber.tag(Constants.TAG).d("NetworkDataSource: onResponse: %s", error.message());
                 }
                 parseMovies(call, response, path);
             }
 
             @Override
             public void onFailure(Call<MoviesList> call, Throwable t) {
-                Timber.tag("MyApp").d("onFailure: %s", t.getMessage());
+                Timber.tag(Constants.TAG).d("onFailure: %s", t.getMessage());
 
             }
         });
     }
 
     private void parseMovies(Call<MoviesList> call, Response<MoviesList> response, String path) {
-        Timber.tag("MyApp").d("onResponse() called with: call = [" + call + "], response = [" + response + "]");
+        Timber.tag(Constants.TAG).d("onResponse() called with: call = [" + call + "], response = [" + response + "]");
         MoviesList moviesLists = response.body();
         switch (path) {
             case POPULAR:
                 downloadedMovies = moviesLists.getMovies();
-                Timber.tag("MyApp").d("NetworkDataSource: getPopularMovies from Retrofit");
+                Timber.tag(Constants.TAG).d("NetworkDataSource: getPopularMovies from Retrofit");
                 popularMovies.postValue(downloadedMovies);
                 break;
             case TOP_RATED:
                 downloadedMovies = moviesLists.getMovies();
-                Timber.tag("MyApp").d("NetworkDataSource: getTopRatedMovies from Retrofit");
+                Timber.tag(Constants.TAG).d("NetworkDataSource: getTopRatedMovies from Retrofit");
                 topRatedMovies.postValue(downloadedMovies);
         }
     }
@@ -102,14 +103,14 @@ public class NetworkDataSource {
                     /* TODO notify user about response error in UI */
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
-                    Timber.tag("MyApp").d("NetworkDataSource: Reviews: onResponse: %s", error.message());
+                    Timber.tag(Constants.TAG).d("NetworkDataSource: Reviews: onResponse: %s", error.message());
                 }
                 parseReviews(response);
             }
 
             @Override
             public void onFailure(Call<ReviewsList> call, Throwable t) {
-                Timber.tag("MyApp").d("NetWorkDataSource: getReviewsByMovie: onFailure() called with: call = [" + call + "], t = [" + t + "]");
+                Timber.tag(Constants.TAG).d("NetWorkDataSource: getReviewsByMovie: onFailure() called with: call = [" + call + "], t = [" + t + "]");
             }
         });
     }
@@ -120,7 +121,7 @@ public class NetworkDataSource {
         if (reviewsList != null) {
             reviews = reviewsList.getReviews();
         } else {
-            Timber.tag("MyApp").d("parseReviews() called with: response = [" + response + "]");
+            Timber.tag(Constants.TAG).d("parseReviews() called with: response = [" + response + "]");
             // TODO: Do or pass something when there are no Reviews
         }
         reviewsLiveData.setValue(reviews); // TODO: parse the list on DetailViewModel or here?!
@@ -133,14 +134,14 @@ public class NetworkDataSource {
             public void onResponse(Call<TrailerList> call, Response<TrailerList> response) {
                 if (!response.isSuccessful()) {
                     APIError error = ErrorUtils.parseError(response);
-                    Timber.tag("MyApp").d("NetworkDataSource: Trailers: onResponse: %s", error.message());
+                    Timber.tag(Constants.TAG).d("NetworkDataSource: Trailers: onResponse: %s", error.message());
                 }
 //                parseTrailers(response);
             }
 
             @Override
             public void onFailure(Call<TrailerList> call, Throwable t) {
-                Timber.tag("MyApp").d("NetWorkDataSource:  getTrailersByMovie: onFailure() called with: call = [" + call + "], t = [" + t + "]");
+                Timber.tag(Constants.TAG).d("NetWorkDataSource:  getTrailersByMovie: onFailure() called with: call = [" + call + "], t = [" + t + "]");
             }
         });
     }
@@ -151,7 +152,7 @@ public class NetworkDataSource {
         if (trailerList != null) {
             trailers = trailerList.getTrailers();
         } else {
-            Timber.tag("MyApp").d("parseTrailers() called with: response = [" + response + "]");
+            Timber.tag(Constants.TAG).d("parseTrailers() called with: response = [" + response + "]");
             // TODO: do something when there are no trailers
         }
 //        trailersLiveData.setValue(trailers); // TODO: parse the list here or on DetailViewModel?
@@ -159,26 +160,26 @@ public class NetworkDataSource {
 
     public LiveData<List<Movie>> getPopularMoviesLiveData() {
         getMoviesByPath(POPULAR);
-        Timber.tag("MyApp").d("NetworkDataSource: return PopularMovies LiveData");
+        Timber.tag(Constants.TAG).d("NetworkDataSource: return PopularMovies LiveData");
         return popularMovies;
     }
 
     public LiveData<List<Movie>> getTopRatedMoviesLiveData() {
 
         getMoviesByPath(TOP_RATED);
-        Timber.tag("MyApp").d("NetworkDataSource: return TopRatedMovies LiveData");
+        Timber.tag(Constants.TAG).d("NetworkDataSource: return TopRatedMovies LiveData");
         return topRatedMovies;
     }
 
     public LiveData<List<Review>> getReviewsLiveDataByMovieId(String movieId) {
         getReviewsByMovie(movieId);
-        Timber.tag("MyApp").d("NetWorkDataSource: getReviewsLiveDataByMovieId() called with: movieId = [" + movieId + "]");
+        Timber.tag(Constants.TAG).d("NetWorkDataSource: getReviewsLiveDataByMovieId() called with: movieId = [" + movieId + "]");
         return reviewsLiveData;
     }
 
     public LiveData<List<Trailer>> getTrailersLiveDataByMovieId(String movieId) {
         getTrailersByMovie(movieId);
-        Timber.tag("MyApp").d("NetWorkDataSource: getTrailersLiveDataByMovieId() called with: movieId = [" + movieId + "]");
+        Timber.tag(Constants.TAG).d("NetWorkDataSource: getTrailersLiveDataByMovieId() called with: movieId = [" + movieId + "]");
         return trailersLiveData;
     }
 }
