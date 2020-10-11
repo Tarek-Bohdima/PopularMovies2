@@ -8,6 +8,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+<!--        TODO: find a way to put url for both poster and backdrop images for Glide in BindingAdapters -->
 
     </data>
 

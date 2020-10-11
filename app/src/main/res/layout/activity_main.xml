@@ -20,7 +20,7 @@
             type="boolean" />
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
@@ -44,5 +44,5 @@
             android:layout_height="match_parent"
             android:visibility="@{isConnected ? View.VISIBLE : View.GONE}" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </LinearLayout>
 </layout>

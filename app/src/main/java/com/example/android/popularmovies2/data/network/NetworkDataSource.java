@@ -19,13 +19,13 @@ import com.example.android.popularmovies2.data.model.Trailer;
 import com.example.android.popularmovies2.data.model.TrailerList;
 import com.example.android.popularmovies2.di.scopes.ApplicationScope;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import timber.log.Timber;
@@ -38,12 +38,11 @@ public class NetworkDataSource {
     String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     private MutableLiveData<List<Movie>> popularMovies;
     private MutableLiveData<List<Movie>> topRatedMovies;
-    private List<Movie> downloadedMovies;
+    //    private List<Movie> downloadedMovies;
     private Integer movieId;
     private MutableLiveData<List<Review>> reviewsLiveData;
     private MutableLiveData<List<Trailer>> trailersLiveData;
     private Retrofit retrofit;
-    private MovieApi movieApi;
 
     @Inject
     NetworkDataSource(Retrofit retrofit) {
@@ -51,56 +50,71 @@ public class NetworkDataSource {
         this.retrofit = retrofit;
         popularMovies = new MutableLiveData<>();
         topRatedMovies = new MutableLiveData<>();
-        downloadedMovies = new ArrayList<>();
+//        downloadedMovies = new ArrayList<>();
         reviewsLiveData = new MutableLiveData<>();
     }
 
     private void getMoviesByPath(String path) {
 
-        movieApi = retrofit.create(MovieApi.class);
-        Call<MoviesList> callMoviesByPath = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY);
-        callMoviesByPath.enqueue(new Callback<MoviesList>() {
-            @Override
-            public void onResponse(Call<MoviesList> call, Response<MoviesList> response) {
-                if (!response.isSuccessful()) {
-                    // parse the response body …
-                    APIError error = ErrorUtils.parseError(response);
-                    Timber.tag(Constants.TAG).d("NetworkDataSource: onResponse: %s", error.message());
-                }
-                parseMovies(call, response, path);
-            }
+        MovieApi movieApi = retrofit.create(MovieApi.class);
+        Observable<MoviesList> moviesListObservable = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
 
-            @Override
-            public void onFailure(Call<MoviesList> call, Throwable t) {
-                Timber.tag(Constants.TAG).d("onFailure: %s", t.getMessage());
-
-            }
-        });
-    }
-
-    private void parseMovies(Call<MoviesList> call, Response<MoviesList> response, String path) {
-        Timber.tag(Constants.TAG).d("onResponse() called with: call = [" + call + "], response = [" + response + "]");
-        MoviesList moviesLists = response.body();
         switch (path) {
             case POPULAR:
-                downloadedMovies = moviesLists.getMovies();
-                Timber.tag(Constants.TAG).d("NetworkDataSource: getPopularMovies from Retrofit");
-                popularMovies.postValue(downloadedMovies);
+                moviesListObservable.subscribe(o -> popularMovies.setValue(o.getMovies()), e -> Timber.tag(Constants.TAG).d("getMoviesByPath() called with: error = [" + e.getMessage() + "]"));
                 break;
             case TOP_RATED:
-                downloadedMovies = moviesLists.getMovies();
-                Timber.tag(Constants.TAG).d("NetworkDataSource: getTopRatedMovies from Retrofit");
-                topRatedMovies.postValue(downloadedMovies);
+                moviesListObservable.subscribe(o -> topRatedMovies.setValue(o.getMovies()), e -> Timber.tag(Constants.TAG).d("getMoviesByPath() called with: error = [" + e.getMessage() + "]"));
         }
+
+       /* Observer<MoviesList> moviesListObserver = new Observer<MoviesList>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(@NonNull MoviesList moviesList) {
+                downloadedMovies = moviesList.getMovies();
+                switch (path) {
+                    case POPULAR:
+                        popularMovies.setValue(downloadedMovies);
+                        Timber.tag(Constants.TAG).d("NetworkDataSource: getPopularMovies from Retrofit");
+                        break;
+                    case TOP_RATED:
+                        topRatedMovies.setValue(downloadedMovies);
+                        Timber.tag(Constants.TAG).d("NetworkDataSource: getTopRatedMovies from Retrofit");
+                        break;
+                }
+
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+                Timber.tag(Constants.TAG).d("onError() called with: e = [" + e.getMessage() + "]");
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        };
+
+        moviesListObservable.subscribe(moviesListObserver);*/
+
     }
 
+
+
     private void getReviewsByMovie(String movieId) {
-        Call<ReviewsList> callReviewsByMovieId = movieApi.getReviews(movieId, MY_TMDB_API_KEY);
+       /* Call<ReviewsList> callReviewsByMovieId = movieApi.getReviews(movieId, MY_TMDB_API_KEY);
         callReviewsByMovieId.enqueue(new Callback<ReviewsList>() {
             @Override
             public void onResponse(Call<ReviewsList> call, Response<ReviewsList> response) {
                 if (!response.isSuccessful()) {
-                    /* TODO notify user about response error in UI */
+                    *//* TODO notify user about response error in UI *//*
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
                     Timber.tag(Constants.TAG).d("NetworkDataSource: Reviews: onResponse: %s", error.message());
@@ -112,7 +126,7 @@ public class NetworkDataSource {
             public void onFailure(Call<ReviewsList> call, Throwable t) {
                 Timber.tag(Constants.TAG).d("NetWorkDataSource: getReviewsByMovie: onFailure() called with: call = [" + call + "], t = [" + t + "]");
             }
-        });
+        });*/
     }
 
     private void parseReviews(Response<ReviewsList> response) {
@@ -128,7 +142,7 @@ public class NetworkDataSource {
     }
 
     private void getTrailersByMovie(String movieId) {
-        Call<TrailerList> callTrailersByMovieId = movieApi.getTrailers(movieId, MY_TMDB_API_KEY);
+      /*  Call<TrailerList> callTrailersByMovieId = movieApi.getTrailers(movieId, MY_TMDB_API_KEY);
         callTrailersByMovieId.enqueue(new Callback<TrailerList>() {
             @Override
             public void onResponse(Call<TrailerList> call, Response<TrailerList> response) {
@@ -143,7 +157,7 @@ public class NetworkDataSource {
             public void onFailure(Call<TrailerList> call, Throwable t) {
                 Timber.tag(Constants.TAG).d("NetWorkDataSource:  getTrailersByMovie: onFailure() called with: call = [" + call + "], t = [" + t + "]");
             }
-        });
+        });*/
     }
 
     private void parseTrailers(Response<TrailerList> response) {

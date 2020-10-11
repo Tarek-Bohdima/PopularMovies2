@@ -16,7 +16,7 @@ import com.example.android.popularmovies2.R;
 
 public class BindingAdapters {
 
-    @BindingAdapter("imageUrl")
+    @BindingAdapter("posterUrl")
     public static void loadImage(ImageView imageView, String url) {
         if (!TextUtils.isEmpty(url)) {
             Glide.with(imageView.getContext())
@@ -24,6 +24,17 @@ public class BindingAdapters {
                     .placeholder(R.drawable.film_poster_placeholder)
                     .centerCrop()
                     .into(imageView);
+        }
+    }
+
+    @BindingAdapter("BackDropUrl")
+    public static void loadBackground(ImageView imageView, String url) {
+        if (!TextUtils.isEmpty(url)) {
+            Glide.with(imageView.getContext())
+                    .load(url)
+                    .centerCrop()
+                    .into(imageView);
+
         }
     }
 }

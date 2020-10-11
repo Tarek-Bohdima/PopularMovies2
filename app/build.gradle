@@ -56,6 +56,9 @@ dependencies {
     def lifecycle_version = "2.2.0"
     def timber_version = "4.7.1"
     def dagger_version = "2.28.3"
+    def rx_java3_version = "3.0.7"
+    def rx_android_version = "3.0.0"
+    def rx_java3_adapter_version = "2.9.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -94,5 +97,17 @@ dependencies {
     // Dagger
     implementation "com.google.dagger:dagger:$dagger_version"
     annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
+
+    // RX Java + RX Android
+    implementation "io.reactivex.rxjava3:rxandroid:$rx_android_version"
+    // Because RxAndroid releases are few and far between, it is recommended you also
+    // explicitly depend on RxJava's latest version for bug fixes and new features.
+    // (see https://github.com/ReactiveX/RxJava/releases for latest 3.x.x version)
+    implementation "io.reactivex.rxjava3:rxjava:$rx_java3_version"
+
+    // RX Java3 adapter for Retrofit 2.9.0 Credits to
+    //https://stackoverflow.com/a/62263180/8899344
+    //https://github.com/square/retrofit/blob/master/CHANGELOG.md#version-290-2020-05-20
+    implementation "com.squareup.retrofit2:adapter-rxjava3:$rx_java3_adapter_version"
 
 }

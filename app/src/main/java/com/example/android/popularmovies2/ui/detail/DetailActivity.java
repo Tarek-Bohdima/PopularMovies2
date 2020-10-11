@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,28 +22,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies2.BuildConfig;
-import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.Review;
-import com.example.android.popularmovies2.data.model.ReviewsList;
 import com.example.android.popularmovies2.data.model.Trailer;
-import com.example.android.popularmovies2.data.model.TrailerList;
-import com.example.android.popularmovies2.data.network.APIError;
-import com.example.android.popularmovies2.data.network.ErrorUtils;
 import com.example.android.popularmovies2.data.network.MovieApi;
-import com.example.android.popularmovies2.ui.list.MovieAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import timber.log.Timber;
 
 import static com.example.android.popularmovies2.ui.list.MainActivity.MOVIE_OBJECT;
 import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildBackdropImageUrl;
+import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildPosterImageUrl;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -80,8 +68,13 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
 
+        // TODO: set those as variables to use in glide in activity_detail.xml
+        String backdropUrl = buildBackdropImageUrl(detailMovie.getBackdropPath());
+        String posterUrl = buildPosterImageUrl(detailMovie.getPosterPath());
+
+        // TODO: move to BindingAdapters
         Glide.with(context)
-                .load(MovieAdapter.buildPosterImageUrl(detailMovie.getPosterPath()))
+                .load(buildPosterImageUrl(detailMovie.getPosterPath()))
                 .into(poster);
 
         Glide.with(context)
@@ -122,12 +115,12 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void getTrailersOnMovie() {
-        Call<TrailerList> callTrailersByMovieId = movieApi.getTrailers(movieId, MY_TMDB_API_KEY);
+       /* Call<TrailerList> callTrailersByMovieId = movieApi.getTrailers(movieId, MY_TMDB_API_KEY);
         callTrailersByMovieId.enqueue(new Callback<TrailerList>() {
             @Override
             public void onResponse(Call<TrailerList> call, Response<TrailerList> response) {
                 if (!response.isSuccessful()) {
-                    /* TODO notify user about response error in UI */
+                    *//* TODO notify user about response error in UI *//*
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
                     Timber.tag(Constants.TAG).d("onResponse: %s", response.code());
@@ -161,7 +154,7 @@ public class DetailActivity extends AppCompatActivity {
                 Timber.tag(Constants.TAG).d("onFailure: %s", t.getMessage());
                 Toast.makeText(DetailActivity.this, "onFailure: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
     }
 
     //credits to: https://stackoverflow.com/a/12439378/8899344
@@ -178,12 +171,12 @@ public class DetailActivity extends AppCompatActivity {
 
     private void getReviewsOnMovie() {
 
-        Call<ReviewsList> callReviewsByMovieId = movieApi.getReviews(movieId, MY_TMDB_API_KEY);
+    /*    Call<ReviewsList> callReviewsByMovieId = movieApi.getReviews(movieId, MY_TMDB_API_KEY);
         callReviewsByMovieId.enqueue(new Callback<ReviewsList>() {
             @Override
             public void onResponse(Call<ReviewsList> call, Response<ReviewsList> response) {
                 if (!response.isSuccessful()) {
-                    /* TODO notify user about response error in UI */
+                    *//* TODO notify user about response error in UI *//*
                     // parse the response body …
                     APIError error = ErrorUtils.parseError(response);
                     Timber.tag(Constants.TAG).d("onResponse: %s", response.code());
@@ -204,6 +197,6 @@ public class DetailActivity extends AppCompatActivity {
                 Timber.tag(Constants.TAG).d("onFailure: %s", t.getMessage());
                 Toast.makeText(DetailActivity.this, "onFailure: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
     }
 }

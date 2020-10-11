@@ -16,7 +16,7 @@
 
     </data>
 
-    <FrameLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -26,8 +26,8 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:contentDescription="@string/description_movie_poster"
-            app:imageUrl="@{url}"
+            app:posterUrl="@{url}"
             tools:src="@tools:sample/backgrounds/scenic" />
 
-    </FrameLayout>
+    </androidx.cardview.widget.CardView>
 </layout>
