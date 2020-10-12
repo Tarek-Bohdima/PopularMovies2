@@ -110,4 +110,7 @@ dependencies {
     //https://github.com/square/retrofit/blob/master/CHANGELOG.md#version-290-2020-05-20
     implementation "com.squareup.retrofit2:adapter-rxjava3:$rx_java3_adapter_version"
 
+    // SwipeRefreshLayout
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
 }

@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -43,6 +44,7 @@ public class NetworkDataSource {
     private MutableLiveData<List<Review>> reviewsLiveData;
     private MutableLiveData<List<Trailer>> trailersLiveData;
     private Retrofit retrofit;
+    private CompositeDisposable compositeDisposable;
 
     @Inject
     NetworkDataSource(Retrofit retrofit) {
@@ -52,6 +54,7 @@ public class NetworkDataSource {
         topRatedMovies = new MutableLiveData<>();
 //        downloadedMovies = new ArrayList<>();
         reviewsLiveData = new MutableLiveData<>();
+        compositeDisposable = new CompositeDisposable();
     }
 
     private void getMoviesByPath(String path) {
@@ -63,10 +66,16 @@ public class NetworkDataSource {
 
         switch (path) {
             case POPULAR:
-                moviesListObservable.subscribe(o -> popularMovies.setValue(o.getMovies()), e -> Timber.tag(Constants.TAG).d("getMoviesByPath() called with: error = [" + e.getMessage() + "]"));
+                compositeDisposable.add(moviesListObservable.
+                        subscribe(o -> popularMovies.setValue(o.getMovies()),
+                                e -> Timber.tag(Constants.TAG)
+                                        .d("getMoviesByPath() called with: error = [" + e.getMessage() + "]")));
                 break;
             case TOP_RATED:
-                moviesListObservable.subscribe(o -> topRatedMovies.setValue(o.getMovies()), e -> Timber.tag(Constants.TAG).d("getMoviesByPath() called with: error = [" + e.getMessage() + "]"));
+                compositeDisposable.add(moviesListObservable
+                        .subscribe(o -> topRatedMovies.setValue(o.getMovies()),
+                                e -> Timber.tag(Constants.TAG)
+                                        .d("getMoviesByPath() called with: error = [" + e.getMessage() + "]")));
         }
 
        /* Observer<MoviesList> moviesListObserver = new Observer<MoviesList>() {
@@ -195,5 +204,11 @@ public class NetworkDataSource {
         getTrailersByMovie(movieId);
         Timber.tag(Constants.TAG).d("NetWorkDataSource: getTrailersLiveDataByMovieId() called with: movieId = [" + movieId + "]");
         return trailersLiveData;
+    }
+
+    public void clearDisposables() {
+        // Using clear will clear all, but can accept new disposable
+        compositeDisposable.clear();
+        Timber.tag(Constants.TAG).d("NetworkDataSource: clearDisposables() called");
     }
 }

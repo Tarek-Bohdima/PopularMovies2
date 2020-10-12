@@ -20,29 +20,35 @@
             type="boolean" />
     </data>
 
-    <LinearLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        tools:context=".ui.list.MainActivity">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/connection_error_imageview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/connection_error_placeholder"
-            android:padding="116dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/error_network"
-            android:visibility="@{isConnected ? View.GONE : View.VISIBLE}" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="@{isConnected ? View.VISIBLE : View.GONE}" />
+            android:fitsSystemWindows="true"
+            tools:context=".ui.list.MainActivity">
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/connection_error_imageview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/connection_error_placeholder"
+                android:padding="116dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/error_network"
+                android:visibility="@{isConnected ? View.GONE : View.VISIBLE}" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{isConnected ? View.VISIBLE : View.GONE}" />
+
+        </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

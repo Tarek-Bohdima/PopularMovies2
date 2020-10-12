@@ -7,4 +7,5 @@
     <string name="backdrop">Backdrop</string>
     <string name="overview">Overview</string>
     <string name="favorite">Favorites</string>
+    <string name="menu_refresh">Refresh</string>
 </resources>

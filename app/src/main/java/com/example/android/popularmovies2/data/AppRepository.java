@@ -50,4 +50,9 @@ public class AppRepository {
         Timber.tag(Constants.TAG).d("AppRepository: getTrailersByMovieId() called with: movieId = [" + movieId + "]");
         return networkDataSource.getTrailersLiveDataByMovieId(movieId);
     }
+
+    public void clearDisposables() {
+        networkDataSource.clearDisposables();
+        Timber.tag(Constants.TAG).d("AppRepository: clearDisposables() called");
+    }
 }

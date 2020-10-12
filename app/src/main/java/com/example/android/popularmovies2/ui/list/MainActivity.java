@@ -19,6 +19,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.R;
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     ActivityMainBinding activityMainBinding;
     MainViewModel mainActivityViewModel;
     private MovieAdapter adapter;
+    private SwipeRefreshLayout mySwipeRefreshLayout;
+    private MenuItem menuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         Context context = this;
+
+        mySwipeRefreshLayout = activityMainBinding.swiperefresh;
+        /*
+         * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
+         * performs a swipe-to-refresh gesture.
+         */
+        mySwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                // This method performs the actual data-refresh operation.
+                // The method calls setRefreshing(false) when it's finished.
+                String pathForSwipe = "";
+                if (menuItem != null) {
+                    pathForSwipe = menuItem.getTitle().toString();
+                }
+                mySwipeUpdateOperation(pathForSwipe);
+            }
+        });
 
         mainActivityViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
@@ -71,6 +93,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         } else {
             activityMainBinding.setIsConnected(false);
         }
+    }
+
+    private void mySwipeUpdateOperation(String path) {
+        Timber.tag(Constants.TAG).d("onRefresh() called from SwipeRefreshLayout");
+        checkConnectivityAndCall(this, path);
+        mySwipeRefreshLayout.setRefreshing(false);
+//        pathForSwipe = null;
     }
 
     private void setupViewModel(String path) {
@@ -111,7 +140,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
+        menuItem = item;
+
+        String pathForSwipe = item.getTitle().toString();
         switch (itemId) {
+            case R.id.menu_refresh:
+                Timber.tag(Constants.TAG).d("Refresh menu item selected");
+                // Signal SwipeRefreshLayout to start the progress indicator
+                mySwipeRefreshLayout.setRefreshing(true);
+                // Start the refresh background task.
+                // This method calls setRefreshing(false) when it's finished.
+                mySwipeUpdateOperation(pathForSwipe);
+                return true;
+
             case R.id.sort_by_popularity:
                 checkConnectivityAndCall(this, POPULAR);
                 setTitle("Popular Movies");
@@ -133,4 +174,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mainToDetailIntent.putExtra(MOVIE_OBJECT, currentMovie);
         startActivity(mainToDetailIntent);
     }
+
+
+
+    /*@Override
+    public void onRefresh() {
+        Timber.tag(Constants.TAG).d("onRefresh() called from SwipeRefreshLayout");
+        String path = menuItem.getTitle().toString();
+        checkConnectivityAndCall(this, path);
+    }*/
 }
