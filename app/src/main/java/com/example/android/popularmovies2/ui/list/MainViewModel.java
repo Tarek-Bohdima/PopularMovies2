@@ -25,10 +25,12 @@ public class MainViewModel extends AndroidViewModel {
 
     private LiveData<List<Movie>> popularMoviesLiveData;
     private LiveData<List<Movie>> topRatedMoviesLiveData;
+    private AppRepository appRepository;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        AppRepository appRepository = ((MoviesApp) getApplication()).getMovieComponent().getAppRepository();
+
+        appRepository = ((MoviesApp) getApplication()).getMovieComponent().getAppRepository();
         Timber.tag(Constants.TAG).d("MainViewModel: get AppRepository instance");
         popularMoviesLiveData = appRepository.getPopularMovies();
         topRatedMoviesLiveData = appRepository.getTopRatedMovies();
@@ -44,5 +46,10 @@ public class MainViewModel extends AndroidViewModel {
         return topRatedMoviesLiveData;
     }
 
-
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        appRepository.clearDisposables();
+        Timber.tag(Constants.TAG).d("MainViewModel: onCleared() called");
+    }
 }
