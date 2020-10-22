@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     ActivityMainBinding activityMainBinding;
     MainViewModel mainActivityViewModel;
     private MovieAdapter adapter;
-    private SwipeRefreshLayout mySwipeRefreshLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private MenuItem menuItem;
     private String menuItemSelected;
 
@@ -56,46 +56,40 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         activityMainBinding.setLifecycleOwner(this);
 
-        Context context = this;
+        mainActivityViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
-        mySwipeRefreshLayout = activityMainBinding.swiperefresh;
+        changeSpanCountByOrientation();
+
+        activityMainBinding.recyclerView.setHasFixedSize(true);
+        adapter = new MovieAdapter(movieList, (MovieAdapter.MovieAdapterClickListener) this);
+        activityMainBinding.recyclerView.setAdapter(adapter);
+
+        checkStateAfterOrientationChange(savedInstanceState);
+
+        setScreenTitleByMenuSelected();
+
+        checkConnectivityAndCall(this, menuItemSelected);
+
+        swipeRefreshLayout = activityMainBinding.swiperefresh;
         /*
          * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
          * performs a swipe-to-refresh gesture.
          */
-        mySwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
 
                 // This method performs the actual data-refresh operation.
                 // The method calls setRefreshing(false) when it's finished.
                 if (!TextUtils.isEmpty(menuItemSelected)) {
-                    mySwipeUpdateOperation(menuItemSelected);
+                    swipeUpdateOperation();
                 }
-                mySwipeRefreshLayout.setRefreshing(false);
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
 
-        mainActivityViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-
-        // Credits to https://stackoverflow.com/a/44187816/8899344
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            setGridLayoutManager(context, 2);
-        } else {
-            setGridLayoutManager(context, 4);
-        }
-
-        activityMainBinding.recyclerView.setHasFixedSize(true);
-        adapter = new MovieAdapter(movieList, (MovieAdapter.MovieAdapterClickListener) context);
-        activityMainBinding.recyclerView.setAdapter(adapter);
-
-        if (savedInstanceState == null) {
-            menuItemSelected = POPULAR;
-        } else {
-            menuItemSelected = savedInstanceState.getString(MENU_ITEM_SELECTED);
-        }
-
-        checkConnectivityAndCall(context, menuItemSelected);
+    private void setScreenTitleByMenuSelected() {
         switch (menuItemSelected) {
             case POPULAR:
                 setTitle(POPULAR_MOVIES_TITLE);
@@ -106,18 +100,26 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
     }
 
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        menuItemSelected = savedInstanceState.getString(MENU_ITEM_SELECTED);
+    private void changeSpanCountByOrientation() {
+        // Credits to https://stackoverflow.com/a/44187816/8899344
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            setGridLayoutManager(this, 2);
+        } else {
+            setGridLayoutManager(this, 4);
+        }
+    }
 
-        Timber.tag(Constants.TAG).d("onRestoreInstanceState() called with: savedInstanceState = [" + menuItemSelected + "]");
+    private void checkStateAfterOrientationChange(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            menuItemSelected = POPULAR;
+        } else {
+            menuItemSelected = savedInstanceState.getString(MENU_ITEM_SELECTED);
+        }
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
 
         if (menuItem != null) {
             menuItemSelected = menuItem.getTitle().toString();
@@ -135,10 +137,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
     }
 
-    private void mySwipeUpdateOperation(String path) {
+    private void swipeUpdateOperation() {
+        if (menuItem != null) {
+            menuItemSelected = menuItem.getTitle().toString();
+        }
+        // Signal SwipeRefreshLayout to start the progress indicator
+        swipeRefreshLayout.setRefreshing(true);
         Timber.tag(Constants.TAG).d("onRefresh() called from SwipeRefreshLayout");
-        checkConnectivityAndCall(this, path);
-        mySwipeRefreshLayout.setRefreshing(false);
+        checkConnectivityAndCall(this, menuItemSelected);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     private void setupViewModel(String path) {
@@ -181,31 +188,29 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
 
-        switch (itemId) {
-            case R.id.menu_refresh:
-                Timber.tag(Constants.TAG).d("Refresh menu item selected");
-                // Signal SwipeRefreshLayout to start the progress indicator
-                mySwipeRefreshLayout.setRefreshing(true);
-                // Start the refresh background task.
-                // This method calls setRefreshing(false) when it's finished.
-                mySwipeUpdateOperation(menuItemSelected);
-                return true;
+        if (itemId == R.id.menu_refresh) {
+            Timber.tag(Constants.TAG).d("Refresh menu item selected");
 
-            case R.id.sort_by_popularity:
-                menuItem = item;
-                checkConnectivityAndCall(this, POPULAR);
-                setTitle(POPULAR_MOVIES_TITLE);
-                return true;
-            case R.id.sort_by_rating:
-                menuItem = item;
-                checkConnectivityAndCall(this, TOP_RATED);
-                setTitle(TOP_RATED_MOVIES_TITLE);
-                return true;
-            case R.id.favorite:
-                setTitle("Favorites");
-            default:
-                return super.onOptionsItemSelected(item);
+            // Start the refresh background task.
+            // This method calls setRefreshing(false) when it's finished.
+            swipeUpdateOperation();
+            return true;
+        } else if (itemId == R.id.sort_by_popularity) {
+            menuItem = item;
+            checkConnectivityAndCall(this, POPULAR);
+            setTitle(POPULAR_MOVIES_TITLE);
+            return true;
+        } else if (itemId == R.id.sort_by_rating) {
+            menuItem = item;
+            checkConnectivityAndCall(this, TOP_RATED);
+            setTitle(TOP_RATED_MOVIES_TITLE);
+            return true;
+        } else if (itemId == R.id.favorite) {
+            setTitle("Favorites");
+
+            return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
