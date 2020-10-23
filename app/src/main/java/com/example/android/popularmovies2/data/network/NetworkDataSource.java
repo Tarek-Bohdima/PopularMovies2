@@ -24,7 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Response;
@@ -39,12 +39,12 @@ public class NetworkDataSource {
     String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     private MutableLiveData<List<Movie>> popularMovies;
     private MutableLiveData<List<Movie>> topRatedMovies;
-    //    private List<Movie> downloadedMovies;
     private Integer movieId;
     private MutableLiveData<List<Review>> reviewsLiveData;
     private MutableLiveData<List<Trailer>> trailersLiveData;
     private Retrofit retrofit;
     private CompositeDisposable compositeDisposable;
+    private MovieApi movieApi;
 
     @Inject
     NetworkDataSource(Retrofit retrofit) {
@@ -52,72 +52,43 @@ public class NetworkDataSource {
         this.retrofit = retrofit;
         popularMovies = new MutableLiveData<>();
         topRatedMovies = new MutableLiveData<>();
-//        downloadedMovies = new ArrayList<>();
         reviewsLiveData = new MutableLiveData<>();
         compositeDisposable = new CompositeDisposable();
     }
 
     private void getMoviesByPath(String path) {
 
-        MovieApi movieApi = retrofit.create(MovieApi.class);
-        Observable<MoviesList> moviesListObservable = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY)
+
+        movieApi = retrofit.create(MovieApi.class);
+        Single<MoviesList> moviesListSingle = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
 
         switch (path) {
             case POPULAR:
-                compositeDisposable.add(moviesListObservable.
-                        subscribe(o -> popularMovies.setValue(o.getMovies()),
+                compositeDisposable.add(moviesListSingle
+                        .subscribe(o -> popularMovies.postValue(o.getMovies()),
                                 e -> Timber.tag(Constants.TAG)
                                         .d("getMoviesByPath() called with: error = [" + e.getMessage() + "]")));
                 break;
             case TOP_RATED:
-                compositeDisposable.add(moviesListObservable
-                        .subscribe(o -> topRatedMovies.setValue(o.getMovies()),
+                compositeDisposable.add(moviesListSingle
+                        .subscribe(o -> topRatedMovies.postValue(o.getMovies()),
                                 e -> Timber.tag(Constants.TAG)
                                         .d("getMoviesByPath() called with: error = [" + e.getMessage() + "]")));
         }
-
-       /* Observer<MoviesList> moviesListObserver = new Observer<MoviesList>() {
-            @Override
-            public void onSubscribe(@NonNull Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(@NonNull MoviesList moviesList) {
-                downloadedMovies = moviesList.getMovies();
-                switch (path) {
-                    case POPULAR:
-                        popularMovies.setValue(downloadedMovies);
-                        Timber.tag(Constants.TAG).d("NetworkDataSource: getPopularMovies from Retrofit");
-                        break;
-                    case TOP_RATED:
-                        topRatedMovies.setValue(downloadedMovies);
-                        Timber.tag(Constants.TAG).d("NetworkDataSource: getTopRatedMovies from Retrofit");
-                        break;
-                }
-
-            }
-
-            @Override
-            public void onError(@NonNull Throwable e) {
-                Timber.tag(Constants.TAG).d("onError() called with: e = [" + e.getMessage() + "]");
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        };
-
-        moviesListObservable.subscribe(moviesListObserver);*/
-
     }
 
-
-
     private void getReviewsByMovie(String movieId) {
+        Single<ReviewsList> reviewsListSingle = movieApi.getReviews(movieId, MY_TMDB_API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        // TODO: just starting
+        compositeDisposable.add(reviewsListSingle
+                .subscribe(o -> reviewsLiveData.postValue(o.getReviews()),
+                        e -> Timber.tag(Constants.TAG).d("NetWorkDataSource: getReviewsByMovie() error: [" + e.getMessage() + "]")));
+
        /* Call<ReviewsList> callReviewsByMovieId = movieApi.getReviews(movieId, MY_TMDB_API_KEY);
         callReviewsByMovieId.enqueue(new Callback<ReviewsList>() {
             @Override
@@ -133,7 +104,7 @@ public class NetworkDataSource {
 
             @Override
             public void onFailure(Call<ReviewsList> call, Throwable t) {
-                Timber.tag(Constants.TAG).d("NetWorkDataSource: getReviewsByMovie: onFailure() called with: call = [" + call + "], t = [" + t + "]");
+                Timber.tag(Constants.TAG).d("getReviewsByMovie: onFailure() called with: call = [" + call + "], t = [" + t + "]");
             }
         });*/
     }
@@ -147,7 +118,7 @@ public class NetworkDataSource {
             Timber.tag(Constants.TAG).d("parseReviews() called with: response = [" + response + "]");
             // TODO: Do or pass something when there are no Reviews
         }
-        reviewsLiveData.setValue(reviews); // TODO: parse the list on DetailViewModel or here?!
+        reviewsLiveData.postValue(reviews); // TODO: parse the list on DetailViewModel or here?!
     }
 
     private void getTrailersByMovie(String movieId) {

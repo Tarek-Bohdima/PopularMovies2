@@ -10,7 +10,7 @@ import com.example.android.popularmovies2.data.model.MoviesList;
 import com.example.android.popularmovies2.data.model.ReviewsList;
 import com.example.android.popularmovies2.data.model.TrailerList;
 
-import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -23,14 +23,14 @@ public interface MovieApi {
     String VIDEOS = "videos";
 
     @GET(PATH)
-    Observable<MoviesList> getMoviesByPath(@Path("path") String path,
-                                           @Query(API_PARAMETER) String key);
-
-    @GET("{id}/" + REVIEWS)
-    Observable<ReviewsList> getReviews(@Path("id") String movieId,
+    Single<MoviesList> getMoviesByPath(@Path("path") String path,
                                        @Query(API_PARAMETER) String key);
 
+    @GET("{id}/" + REVIEWS)
+    Single<ReviewsList> getReviews(@Path("id") String movieId,
+                                   @Query(API_PARAMETER) String key);
+
     @GET("{id}/" + VIDEOS)
-    Observable<TrailerList> getTrailers(@Path("id") String movieId,
-                                        @Query(API_PARAMETER) String key);
+    Single<TrailerList> getTrailers(@Path("id") String movieId,
+                                    @Query(API_PARAMETER) String key);
 }
