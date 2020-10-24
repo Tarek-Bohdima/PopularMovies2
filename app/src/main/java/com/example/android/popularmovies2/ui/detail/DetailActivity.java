@@ -12,7 +12,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.widget.ImageView;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -22,11 +22,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies2.BuildConfig;
-import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.Review;
 import com.example.android.popularmovies2.data.model.Trailer;
 import com.example.android.popularmovies2.data.network.MovieApi;
+import com.example.android.popularmovies2.databinding.ActivityDetailBinding;
 
 import java.util.List;
 
@@ -38,6 +38,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private final Context context = DetailActivity.this;
     String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
+    private ActivityDetailBinding activityDetailBinding;
     TextView reviewsTV;
     String movieId;
     MovieApi movieApi;
@@ -49,17 +50,10 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
 
-        ImageView poster = findViewById(R.id.imageview_poster);
-        ImageView backdrop = findViewById(R.id.imageview_backdrop);
-        TextView originalTitle = findViewById(R.id.original_title);
-        TextView releaseDate = findViewById(R.id.release_date);
-        TextView userRating = findViewById(R.id.user_rating);
-        TextView synopsisText = findViewById(R.id.synopsis_text);
-
-
-//        movieApi = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
+        activityDetailBinding = ActivityDetailBinding.inflate(getLayoutInflater());
+        View view = activityDetailBinding.getRoot();
+        setContentView(view);
 
         Intent extraIntent = getIntent();
         if (extraIntent != null) {
@@ -68,25 +62,22 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
 
-        // TODO: set those as variables to use in glide in activity_detail.xml
-        String backdropUrl = buildBackdropImageUrl(detailMovie.getBackdropPath());
-        String posterUrl = buildPosterImageUrl(detailMovie.getPosterPath());
 
         // TODO: move to BindingAdapters
         Glide.with(context)
                 .load(buildPosterImageUrl(detailMovie.getPosterPath()))
-                .into(poster);
+                .into(activityDetailBinding.imageviewPoster);
 
         Glide.with(context)
                 .load(buildBackdropImageUrl(detailMovie.getBackdropPath()))
-                .into(backdrop);
+                .into(activityDetailBinding.imageviewBackdrop);
 
-        originalTitle.setText(detailMovie.getOriginalTitle());
-        releaseDate.setText(detailMovie.getReleaseDate());
-        userRating.setText(String.valueOf(detailMovie.getVoteAverage()));
-        synopsisText.setText(detailMovie.getOverview());
-        synopsisText.setMovementMethod(new ScrollingMovementMethod());
-        synopsisText.getScrollBarDefaultDelayBeforeFade();
+        activityDetailBinding.originalTitle.setText(detailMovie.getOriginalTitle());
+        activityDetailBinding.releaseDate.setText(detailMovie.getReleaseDate());
+        activityDetailBinding.userRating.setText(String.valueOf(detailMovie.getVoteAverage()));
+        activityDetailBinding.synopsisText.setText(detailMovie.getOverview());
+        activityDetailBinding.synopsisText.setMovementMethod(new ScrollingMovementMethod());
+        activityDetailBinding.synopsisText.getScrollBarDefaultDelayBeforeFade();
 
         setTitle(detailMovie.getOriginalTitle());
 
