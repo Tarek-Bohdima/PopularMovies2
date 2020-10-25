@@ -60,9 +60,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         changeSpanCountByOrientation();
 
-        activityMainBinding.recyclerView.setHasFixedSize(true);
-        adapter = new MovieAdapter(movieList, (MovieAdapter.MovieAdapterClickListener) this);
-        activityMainBinding.recyclerView.setAdapter(adapter);
+        setRecyclerView();
 
         checkStateAfterOrientationChange(savedInstanceState);
 
@@ -87,6 +85,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    private void setRecyclerView() {
+        activityMainBinding.recyclerView.setHasFixedSize(true);
+        adapter = new MovieAdapter(movieList, (MovieAdapter.MovieAdapterClickListener) this);
+        activityMainBinding.recyclerView.setAdapter(adapter);
     }
 
     private void setScreenTitleByMenuSelected() {

@@ -30,7 +30,8 @@ public class DetailViewModel extends ViewModel {
         trailers = appRepository.getTrailersByMovieId(movieId);
     }
 
-    public LiveData<List<Review>> getReviewsByMovieId(String movieId) {
+    public LiveData<List<Review>> getReviewsByMovieId() {
+
         return reviews;
     }
 

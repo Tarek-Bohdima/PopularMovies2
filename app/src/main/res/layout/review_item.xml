@@ -14,6 +14,7 @@
 
     <TextView
         android:id="@+id/author_text_view"
+        style="@style/detail_text_small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -22,6 +23,7 @@
 
     <TextView
         android:id="@+id/review_text_view"
+        style="@style/detail_text_small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -30,6 +32,7 @@
 
     <TextView
         android:id="@+id/url_text_view"
+        style="@style/detail_text_small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

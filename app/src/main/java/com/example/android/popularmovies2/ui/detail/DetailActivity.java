@@ -13,22 +13,24 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.example.android.popularmovies2.BuildConfig;
+import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.Review;
 import com.example.android.popularmovies2.data.model.Trailer;
-import com.example.android.popularmovies2.data.network.MovieApi;
 import com.example.android.popularmovies2.databinding.ActivityDetailBinding;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 import static com.example.android.popularmovies2.ui.list.MainActivity.MOVIE_OBJECT;
 import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildBackdropImageUrl;
@@ -37,12 +39,11 @@ import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildPoste
 public class DetailActivity extends AppCompatActivity {
 
     private final Context context = DetailActivity.this;
-    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     private ActivityDetailBinding activityDetailBinding;
-    TextView reviewsTV;
-    String movieId;
-    MovieApi movieApi;
+    private String movieId;
+    private ReviewsAdapter reviewsAdapter;
     private Movie detailMovie;
+    private List<Review> reviewList = new ArrayList<>();
     private LiveData<List<Review>> reviews;
     private LiveData<List<Trailer>> trailers;
 
@@ -64,27 +65,31 @@ public class DetailActivity extends AppCompatActivity {
 
 
         // TODO: move to BindingAdapters
-        Glide.with(context)
-                .load(buildPosterImageUrl(detailMovie.getPosterPath()))
-                .into(activityDetailBinding.imageviewPoster);
+        loadPosterandBackdropImages();
 
-        Glide.with(context)
-                .load(buildBackdropImageUrl(detailMovie.getBackdropPath()))
-                .into(activityDetailBinding.imageviewBackdrop);
-
-        activityDetailBinding.originalTitle.setText(detailMovie.getOriginalTitle());
-        activityDetailBinding.releaseDate.setText(detailMovie.getReleaseDate());
-        activityDetailBinding.userRating.setText(String.valueOf(detailMovie.getVoteAverage()));
-        activityDetailBinding.synopsisText.setText(detailMovie.getOverview());
-        activityDetailBinding.synopsisText.setMovementMethod(new ScrollingMovementMethod());
-        activityDetailBinding.synopsisText.getScrollBarDefaultDelayBeforeFade();
+        setViews();
 
         setTitle(detailMovie.getOriginalTitle());
 
         movieId = String.valueOf(detailMovie.getMovieId());
 
+        activityDetailBinding.reviewsView.setVisibility(View.VISIBLE);
+        activityDetailBinding.reviewsView.setHasFixedSize(true);
+        reviewsAdapter = new ReviewsAdapter(reviewList);
+        activityDetailBinding.reviewsView.setAdapter(reviewsAdapter);
+
+
         DetailViewModelFactory factory = new DetailViewModelFactory(this.getApplication(), movieId);
         DetailViewModel detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
+
+        detailViewModel.getReviewsByMovieId().observe(this, new Observer<List<Review>>() {
+            @Override
+            public void onChanged(List<Review> reviews) {
+                Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: reviews empty = [" + reviews.isEmpty() + "]");
+                reviewsAdapter.setReviewsData(reviews);
+            }
+        });
+
 //        detailViewModel.getReviewsByMovieId(movieId).observe(this, new Observer<List<Review>>() {
 //            @Override
 //            public void onChanged(List<Review> reviews) {
@@ -103,6 +108,25 @@ public class DetailActivity extends AppCompatActivity {
         //Experimental
 //        getReviewsOnMovie();
 //        getTrailersOnMovie();
+    }
+
+    private void loadPosterandBackdropImages() {
+        Glide.with(context)
+                .load(buildPosterImageUrl(detailMovie.getPosterPath()))
+                .into(activityDetailBinding.imageviewPoster);
+
+        Glide.with(context)
+                .load(buildBackdropImageUrl(detailMovie.getBackdropPath()))
+                .into(activityDetailBinding.imageviewBackdrop);
+    }
+
+    private void setViews() {
+        activityDetailBinding.originalTitle.setText(detailMovie.getOriginalTitle());
+        activityDetailBinding.releaseDate.setText(detailMovie.getReleaseDate());
+        activityDetailBinding.userRating.setText(String.valueOf(detailMovie.getVoteAverage()));
+        activityDetailBinding.synopsisText.setText(detailMovie.getOverview());
+        activityDetailBinding.synopsisText.setMovementMethod(new ScrollingMovementMethod());
+        activityDetailBinding.synopsisText.getScrollBarDefaultDelayBeforeFade();
     }
 
     private void getTrailersOnMovie() {

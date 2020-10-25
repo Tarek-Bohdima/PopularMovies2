@@ -36,14 +36,14 @@ public class NetworkDataSource {
 
     private static final String POPULAR = "popular";
     private static final String TOP_RATED = "top_rated";
+    private final MutableLiveData<List<Movie>> popularMovies;
+    private final MutableLiveData<List<Movie>> topRatedMovies;
+    private final MutableLiveData<List<Review>> reviewsLiveData;
+    private final Retrofit retrofit;
+    private final CompositeDisposable compositeDisposable;
     String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
-    private MutableLiveData<List<Movie>> popularMovies;
-    private MutableLiveData<List<Movie>> topRatedMovies;
     private Integer movieId;
-    private MutableLiveData<List<Review>> reviewsLiveData;
     private MutableLiveData<List<Trailer>> trailersLiveData;
-    private Retrofit retrofit;
-    private CompositeDisposable compositeDisposable;
     private MovieApi movieApi;
 
     @Inject
@@ -69,13 +69,13 @@ public class NetworkDataSource {
                 compositeDisposable.add(moviesListSingle
                         .subscribe(o -> popularMovies.postValue(o.getMovies()),
                                 e -> Timber.tag(Constants.TAG)
-                                        .d("getMoviesByPath() called with: error = [" + e.getMessage() + "]")));
+                                        .d("NetworkDataSource: getMoviesByPath() called with: error = [" + e.getMessage() + "]")));
                 break;
             case TOP_RATED:
                 compositeDisposable.add(moviesListSingle
                         .subscribe(o -> topRatedMovies.postValue(o.getMovies()),
                                 e -> Timber.tag(Constants.TAG)
-                                        .d("getMoviesByPath() called with: error = [" + e.getMessage() + "]")));
+                                        .d("NetworkDataSource: getMoviesByPath() called with: error = [" + e.getMessage() + "]")));
         }
     }
 
@@ -84,41 +84,15 @@ public class NetworkDataSource {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
 
-        // TODO: just starting
         compositeDisposable.add(reviewsListSingle
-                .subscribe(o -> reviewsLiveData.postValue(o.getReviews()),
+                .subscribe(o -> {
+                            List<Review> reviews = null;
+                            if (o != null) {
+                                reviews = o.getReviews();
+                            }
+                            reviewsLiveData.postValue(reviews);
+                        },
                         e -> Timber.tag(Constants.TAG).d("NetWorkDataSource: getReviewsByMovie() error: [" + e.getMessage() + "]")));
-
-       /* Call<ReviewsList> callReviewsByMovieId = movieApi.getReviews(movieId, MY_TMDB_API_KEY);
-        callReviewsByMovieId.enqueue(new Callback<ReviewsList>() {
-            @Override
-            public void onResponse(Call<ReviewsList> call, Response<ReviewsList> response) {
-                if (!response.isSuccessful()) {
-                    *//* TODO notify user about response error in UI *//*
-                    // parse the response body …
-                    APIError error = ErrorUtils.parseError(response);
-                    Timber.tag(Constants.TAG).d("NetworkDataSource: Reviews: onResponse: %s", error.message());
-                }
-                parseReviews(response);
-            }
-
-            @Override
-            public void onFailure(Call<ReviewsList> call, Throwable t) {
-                Timber.tag(Constants.TAG).d("getReviewsByMovie: onFailure() called with: call = [" + call + "], t = [" + t + "]");
-            }
-        });*/
-    }
-
-    private void parseReviews(Response<ReviewsList> response) {
-        ReviewsList reviewsList = response.body();
-        List<Review> reviews = null;
-        if (reviewsList != null) {
-            reviews = reviewsList.getReviews();
-        } else {
-            Timber.tag(Constants.TAG).d("parseReviews() called with: response = [" + response + "]");
-            // TODO: Do or pass something when there are no Reviews
-        }
-        reviewsLiveData.postValue(reviews); // TODO: parse the list on DetailViewModel or here?!
     }
 
     private void getTrailersByMovie(String movieId) {

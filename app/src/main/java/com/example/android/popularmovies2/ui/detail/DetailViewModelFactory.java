@@ -13,8 +13,8 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 public class DetailViewModelFactory extends ViewModelProvider.NewInstanceFactory {
-    private Application application;
-    private String movieId;
+    private final Application application;
+    private final String movieId;
 
     public DetailViewModelFactory(Application application, String movieId) {
         this.application = application;
@@ -23,6 +23,7 @@ public class DetailViewModelFactory extends ViewModelProvider.NewInstanceFactory
 
     @NonNull
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         return (T) new DetailViewModel(application, movieId);
     }
