@@ -63,9 +63,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
 
-
-        // TODO: move to BindingAdapters
-        loadPosterandBackdropImages();
+        loadPosterAndBackdropImages();
 
         setViews();
 
@@ -73,12 +71,13 @@ public class DetailActivity extends AppCompatActivity {
 
         movieId = String.valueOf(detailMovie.getMovieId());
 
-        activityDetailBinding.reviewsView.setVisibility(View.VISIBLE);
-        activityDetailBinding.reviewsView.setHasFixedSize(true);
-        reviewsAdapter = new ReviewsAdapter(reviewList);
-        activityDetailBinding.reviewsView.setAdapter(reviewsAdapter);
+        setReviewsRecyclerView();
 
+        setupViewModel();
 
+    }
+
+    private void setupViewModel() {
         DetailViewModelFactory factory = new DetailViewModelFactory(this.getApplication(), movieId);
         DetailViewModel detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
 
@@ -87,30 +86,24 @@ public class DetailActivity extends AppCompatActivity {
             public void onChanged(List<Review> reviews) {
                 Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: reviews empty = [" + reviews.isEmpty() + "]");
                 reviewsAdapter.setReviewsData(reviews);
+                if (reviews.size() < 1) {
+                    activityDetailBinding.reviewsTitle.setVisibility(View.GONE);
+                } else {
+                    activityDetailBinding.reviewsTitle.setVisibility(View.VISIBLE);
+                }
             }
         });
-
-//        detailViewModel.getReviewsByMovieId(movieId).observe(this, new Observer<List<Review>>() {
-//            @Override
-//            public void onChanged(List<Review> reviews) {
-//
-//            }
-//        });
-
-//        detailViewModel.getTrailersByMovieId(movieId).observe(this, new Observer<List<Trailer>>() {
-//            @Override
-//            public void onChanged(List<Trailer> trailers) {
-//
-//            }
-//        });
-
-
-        //Experimental
-//        getReviewsOnMovie();
-//        getTrailersOnMovie();
     }
 
-    private void loadPosterandBackdropImages() {
+    private void setReviewsRecyclerView() {
+        activityDetailBinding.reviewsView.setVisibility(View.VISIBLE);
+        activityDetailBinding.reviewsView.setHasFixedSize(true);
+
+        reviewsAdapter = new ReviewsAdapter(reviewList);
+        activityDetailBinding.reviewsView.setAdapter(reviewsAdapter);
+    }
+
+    private void loadPosterAndBackdropImages() {
         Glide.with(context)
                 .load(buildPosterImageUrl(detailMovie.getPosterPath()))
                 .into(activityDetailBinding.imageviewPoster);
@@ -182,36 +175,5 @@ public class DetailActivity extends AppCompatActivity {
         } catch (ActivityNotFoundException ex) {
             context.startActivity(webIntent);
         }
-    }
-
-    private void getReviewsOnMovie() {
-
-    /*    Call<ReviewsList> callReviewsByMovieId = movieApi.getReviews(movieId, MY_TMDB_API_KEY);
-        callReviewsByMovieId.enqueue(new Callback<ReviewsList>() {
-            @Override
-            public void onResponse(Call<ReviewsList> call, Response<ReviewsList> response) {
-                if (!response.isSuccessful()) {
-                    *//* TODO notify user about response error in UI *//*
-                    // parse the response body …
-                    APIError error = ErrorUtils.parseError(response);
-                    Timber.tag(Constants.TAG).d("onResponse: %s", response.code());
-                    Toast.makeText(DetailActivity.this, "OnResponse " + error.message(), Toast.LENGTH_LONG).show();
-                }
-                ReviewsList reviewsList = response.body();
-                List<Review> reviews = reviewsList.getReviews();
-                String review = "No reviews yet";
-                if (reviews.size() != 0) {
-                    review = reviews.get(0).getContent();
-                }
-                reviewsTV.setText(review);
-
-            }
-
-            @Override
-            public void onFailure(Call<ReviewsList> call, Throwable t) {
-                Timber.tag(Constants.TAG).d("onFailure: %s", t.getMessage());
-                Toast.makeText(DetailActivity.this, "onFailure: " + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });*/
     }
 }

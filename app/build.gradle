@@ -115,4 +115,7 @@ dependencies {
     // SwipeRefreshLayout
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
+    // ExpandableTextView
+    implementation "com.ms-square:expandableTextView:0.1.4"
+
 }

@@ -20,8 +20,8 @@ import java.util.List;
 
 public class DetailViewModel extends ViewModel {
 
-    private LiveData<List<Review>> reviews;
-    private LiveData<List<Trailer>> trailers;
+    private final LiveData<List<Review>> reviews;
+    private final LiveData<List<Trailer>> trailers;
 
 
     public DetailViewModel(Application application, String movieId) {

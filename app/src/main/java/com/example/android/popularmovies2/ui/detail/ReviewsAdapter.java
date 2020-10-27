@@ -6,14 +6,17 @@
 
 package com.example.android.popularmovies2.ui.detail;
 
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.popularmovies2.data.model.Review;
 import com.example.android.popularmovies2.databinding.ReviewItemBinding;
+import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.List;
 
@@ -21,9 +24,11 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
 
     ReviewItemBinding reviewItemBinding;
     private List<Review> reviews;
+    private final SparseBooleanArray mCollapsedStatus;
 
     public ReviewsAdapter(List<Review> reviews) {
         this.reviews = reviews;
+        mCollapsedStatus = new SparseBooleanArray();
     }
 
     @NonNull
@@ -51,6 +56,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
 
     public class ReviewViewHolder extends RecyclerView.ViewHolder {
         ReviewItemBinding reviewItemBinding;
+        ExpandableTextView expandableTextView;
 
         public ReviewViewHolder(ReviewItemBinding reviewItemBinding) {
             super(reviewItemBinding.getRoot());
@@ -59,8 +65,14 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
 
         public void bind(Review review) {
             reviewItemBinding.authorTextView.setText(review.getAuthor());
-            reviewItemBinding.reviewTextView.setText(review.getContent());
+            reviewItemBinding.expandTextView.setText(review.getContent(), mCollapsedStatus, getAdapterPosition());
             reviewItemBinding.urlTextView.setText(review.getReviewUrl());
+            reviewItemBinding.expandTextView.setOnExpandStateChangeListener(new ExpandableTextView.OnExpandStateChangeListener() {
+                @Override
+                public void onExpandStateChanged(TextView textView, boolean isExpanded) {
+
+                }
+            });
         }
     }
 }
