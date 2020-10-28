@@ -24,7 +24,7 @@ import timber.log.Timber;
 @ApplicationScope
 public class AppRepository {
 
-    private NetworkDataSource networkDataSource;
+    private final NetworkDataSource networkDataSource;
 
     @Inject
     AppRepository(NetworkDataSource networkDataSource) {

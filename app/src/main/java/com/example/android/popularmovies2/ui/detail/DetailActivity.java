@@ -6,10 +6,8 @@
 
 package com.example.android.popularmovies2.ui.detail;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
@@ -38,12 +36,12 @@ import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildPoste
 public class DetailActivity extends AppCompatActivity {
 
     private final Context context = DetailActivity.this;
+    private final List<Review> reviewList = new ArrayList<>();
+    private final List<Trailer> trailersList = new ArrayList<>();
     private ActivityDetailBinding activityDetailBinding;
     private String movieId;
     private ReviewsAdapter reviewsAdapter;
-    private final List<Review> reviewList = new ArrayList<>();
     private Movie detailMovie;
-    private final List<Trailer> trailersList = new ArrayList<>();
     private TrailersAdapter trailersAdapter;
 
     @Override
@@ -142,60 +140,5 @@ public class DetailActivity extends AppCompatActivity {
         activityDetailBinding.synopsisText.setText(detailMovie.getOverview());
         activityDetailBinding.synopsisText.setMovementMethod(new ScrollingMovementMethod());
         activityDetailBinding.synopsisText.getScrollBarDefaultDelayBeforeFade();
-    }
-
-    private void getTrailersOnMovie() {
-       /* Call<TrailerList> callTrailersByMovieId = movieApi.getTrailers(movieId, MY_TMDB_API_KEY);
-        callTrailersByMovieId.enqueue(new Callback<TrailerList>() {
-            @Override
-            public void onResponse(Call<TrailerList> call, Response<TrailerList> response) {
-                if (!response.isSuccessful()) {
-                    *//* TODO notify user about response error in UI *//*
-                    // parse the response body …
-                    APIError error = ErrorUtils.parseError(response);
-                    Timber.tag(Constants.TAG).d("onResponse: %s", response.code());
-                    Toast.makeText(DetailActivity.this, "OnResponse " + error.message(), Toast.LENGTH_LONG).show();
-                }
-
-                TrailerList trailerList = response.body();
-                List<Trailer> trailers = null;
-                if (trailerList != null) {
-                    trailers = trailerList.getTrailers();
-                }
-
-
-                String key = "dr2dnVLJmyY";
-                ArrayList<String> keys = new ArrayList<>();
-                if (trailers != null && !trailers.isEmpty()) {
-                    for (int i = 0; i < trailers.size(); i++) {
-                        key = trailers.get(i).getKey();
-                        keys.add(i, key);
-                    }
-//                    key = trailers.get(0).getKey();
-                }
-
-                //credits to: https://stackoverflow.com/a/12439378/8899344
-                watchYoutubeVideo(context, key);
-
-            }
-
-            @Override
-            public void onFailure(Call<TrailerList> call, Throwable t) {
-                Timber.tag(Constants.TAG).d("onFailure: %s", t.getMessage());
-                Toast.makeText(DetailActivity.this, "onFailure: " + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });*/
-    }
-
-    //credits to: https://stackoverflow.com/a/12439378/8899344
-    private void watchYoutubeVideo(Context context, String key) {
-        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + key));
-        Intent webIntent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("http://www.youtube.com/watch?v=" + key));
-        try {
-            context.startActivity(appIntent);
-        } catch (ActivityNotFoundException ex) {
-            context.startActivity(webIntent);
-        }
     }
 }

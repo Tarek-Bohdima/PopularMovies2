@@ -27,7 +27,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import timber.log.Timber;
 
@@ -110,18 +109,6 @@ public class NetworkDataSource {
                             trailersLiveData.postValue(trailers);
                         },
                         e -> Timber.tag(Constants.TAG).d("NetworkDataSource: getTrailersByMovie() error = [" + e.getMessage() + "]")));
-    }
-
-    private void parseTrailers(Response<TrailerList> response) {
-        TrailerList trailerList = response.body();
-        List<Trailer> trailers = null;
-        if (trailerList != null) {
-            trailers = trailerList.getTrailers();
-        } else {
-            Timber.tag(Constants.TAG).d("parseTrailers() called with: response = [" + response + "]");
-            // TODO: do something when there are no trailers
-        }
-//        trailersLiveData.setValue(trailers); // TODO: parse the list here or on DetailViewModel?
     }
 
     public LiveData<List<Movie>> getPopularMoviesLiveData() {
