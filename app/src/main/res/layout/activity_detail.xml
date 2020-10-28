@@ -3,7 +3,7 @@
   ~ As part of Udacity Honor code, your submissions must be your own work, hence submitting this project as yours will cause you to break the Udacity Honor Code and the suspension of your account.
   ~ Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
   -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -92,24 +92,32 @@
             app:layout_constraintStart_toStartOf="@+id/imageview_poster"
             app:layout_constraintTop_toBottomOf="@+id/imageview_poster" />
 
-        <TextView
-            android:id="@+id/synopsis_text"
-            style="@style/detail_text_small"
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:paddingStart="8dp"
-            android:paddingLeft="8dp"
-            android:paddingEnd="8dp"
-            android:paddingRight="8dp"
-            android:scrollbars="vertical"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nested_scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/synopsis_title"
-            app:layout_constraintTop_toBottomOf="@+id/synopsis_title"
-            tools:text="@tools:sample/lorem/random" />
+            app:layout_constraintTop_toBottomOf="@+id/synopsis_title">
+
+            <TextView
+                android:id="@+id/synopsis_text"
+                style="@style/detail_text_small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
+                android:maxLines="7"
+                android:paddingStart="8dp"
+                android:paddingLeft="8dp"
+                android:paddingEnd="8dp"
+                android:paddingRight="8dp"
+                android:scrollbars="vertical"
+                tools:text="@tools:sample/lorem/random" />
+
+        </androidx.core.widget.NestedScrollView>
 
         <TextView
             android:id="@+id/reviews_title"
@@ -122,7 +130,7 @@
             android:text="@string/reviews_title"
             app:layout_constraintBottom_toTopOf="@+id/reviews_view"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/synopsis_text" />
+            app:layout_constraintTop_toBottomOf="@+id/nested_scrollView" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/reviews_view"
@@ -180,4 +188,4 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
