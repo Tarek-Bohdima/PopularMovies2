@@ -35,7 +35,8 @@ public class DetailViewModel extends ViewModel {
         return reviews;
     }
 
-    public LiveData<List<Trailer>> getTrailersByMovieId(String movieId) {
+    public LiveData<List<Trailer>> getTrailersByMovieId() {
+
         return trailers;
     }
 }

@@ -39,11 +39,11 @@ public class NetworkDataSource {
     private final MutableLiveData<List<Movie>> popularMovies;
     private final MutableLiveData<List<Movie>> topRatedMovies;
     private final MutableLiveData<List<Review>> reviewsLiveData;
+    private final MutableLiveData<List<Trailer>> trailersLiveData;
     private final Retrofit retrofit;
     private final CompositeDisposable compositeDisposable;
     String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     private Integer movieId;
-    private MutableLiveData<List<Trailer>> trailersLiveData;
     private MovieApi movieApi;
 
     @Inject
@@ -53,6 +53,7 @@ public class NetworkDataSource {
         popularMovies = new MutableLiveData<>();
         topRatedMovies = new MutableLiveData<>();
         reviewsLiveData = new MutableLiveData<>();
+        trailersLiveData = new MutableLiveData<>();
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -96,22 +97,19 @@ public class NetworkDataSource {
     }
 
     private void getTrailersByMovie(String movieId) {
-      /*  Call<TrailerList> callTrailersByMovieId = movieApi.getTrailers(movieId, MY_TMDB_API_KEY);
-        callTrailersByMovieId.enqueue(new Callback<TrailerList>() {
-            @Override
-            public void onResponse(Call<TrailerList> call, Response<TrailerList> response) {
-                if (!response.isSuccessful()) {
-                    APIError error = ErrorUtils.parseError(response);
-                    Timber.tag(Constants.TAG).d("NetworkDataSource: Trailers: onResponse: %s", error.message());
-                }
-//                parseTrailers(response);
-            }
+        Single<TrailerList> trailerListSingle = movieApi.getTrailers(movieId, MY_TMDB_API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
 
-            @Override
-            public void onFailure(Call<TrailerList> call, Throwable t) {
-                Timber.tag(Constants.TAG).d("NetWorkDataSource:  getTrailersByMovie: onFailure() called with: call = [" + call + "], t = [" + t + "]");
-            }
-        });*/
+        compositeDisposable.add(trailerListSingle
+                .subscribe(o -> {
+                            List<Trailer> trailers = null;
+                            if (o != null) {
+                                trailers = o.getTrailers();
+                            }
+                            trailersLiveData.postValue(trailers);
+                        },
+                        e -> Timber.tag(Constants.TAG).d("NetworkDataSource: getTrailersByMovie() error = [" + e.getMessage() + "]")));
     }
 
     private void parseTrailers(Response<TrailerList> response) {

@@ -24,6 +24,17 @@ public class Trailer {
     @SerializedName("type")
     private String type;
 
+    @SerializedName(("name"))
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getTrailerId() {
         return TrailerId;
     }

@@ -16,7 +16,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -42,11 +41,10 @@ public class DetailActivity extends AppCompatActivity {
     private ActivityDetailBinding activityDetailBinding;
     private String movieId;
     private ReviewsAdapter reviewsAdapter;
+    private final List<Review> reviewList = new ArrayList<>();
     private Movie detailMovie;
-    private List<Review> reviewList = new ArrayList<>();
-    private LiveData<List<Review>> reviews;
-    private LiveData<List<Trailer>> trailers;
-
+    private final List<Trailer> trailersList = new ArrayList<>();
+    private TrailersAdapter trailersAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +70,7 @@ public class DetailActivity extends AppCompatActivity {
         movieId = String.valueOf(detailMovie.getMovieId());
 
         setReviewsRecyclerView();
+        setTrailersRecyclerView();
 
         setupViewModel();
 
@@ -93,6 +92,19 @@ public class DetailActivity extends AppCompatActivity {
                 }
             }
         });
+
+        detailViewModel.getTrailersByMovieId().observe(this, new Observer<List<Trailer>>() {
+            @Override
+            public void onChanged(List<Trailer> trailers) {
+                Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: trailers empty = [" + trailers.isEmpty() + "]");
+                trailersAdapter.setTrailersData(trailers);
+                if (trailers.size() < 1) {
+                    activityDetailBinding.trailersTitle.setVisibility(View.GONE);
+                } else {
+                    activityDetailBinding.trailersTitle.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     private void setReviewsRecyclerView() {
@@ -102,6 +114,16 @@ public class DetailActivity extends AppCompatActivity {
         reviewsAdapter = new ReviewsAdapter(reviewList);
         activityDetailBinding.reviewsView.setAdapter(reviewsAdapter);
     }
+
+    private void setTrailersRecyclerView() {
+        activityDetailBinding.trailersView.setVisibility(View.VISIBLE);
+        activityDetailBinding.trailersView.setHasFixedSize(true);
+
+
+        trailersAdapter = new TrailersAdapter(trailersList);
+        activityDetailBinding.trailersView.setAdapter(trailersAdapter);
+    }
+
 
     private void loadPosterAndBackdropImages() {
         Glide.with(context)

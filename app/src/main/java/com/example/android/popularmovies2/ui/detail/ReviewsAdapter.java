@@ -9,14 +9,12 @@ package com.example.android.popularmovies2.ui.detail;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.popularmovies2.data.model.Review;
 import com.example.android.popularmovies2.databinding.ReviewItemBinding;
-import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.List;
 
@@ -56,7 +54,6 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
 
     public class ReviewViewHolder extends RecyclerView.ViewHolder {
         ReviewItemBinding reviewItemBinding;
-        ExpandableTextView expandableTextView;
 
         public ReviewViewHolder(ReviewItemBinding reviewItemBinding) {
             super(reviewItemBinding.getRoot());
@@ -67,11 +64,8 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
             reviewItemBinding.authorTextView.setText(review.getAuthor());
             reviewItemBinding.expandTextView.setText(review.getContent(), mCollapsedStatus, getAdapterPosition());
             reviewItemBinding.urlTextView.setText(review.getReviewUrl());
-            reviewItemBinding.expandTextView.setOnExpandStateChangeListener(new ExpandableTextView.OnExpandStateChangeListener() {
-                @Override
-                public void onExpandStateChanged(TextView textView, boolean isExpanded) {
+            reviewItemBinding.expandTextView.setOnExpandStateChangeListener((textView, isExpanded) -> {
 
-                }
             });
         }
     }
