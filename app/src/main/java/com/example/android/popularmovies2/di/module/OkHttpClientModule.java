@@ -6,42 +6,18 @@
 
 package com.example.android.popularmovies2.di.module;
 
-import android.content.Context;
-
-import com.example.android.popularmovies2.Constants;
-import com.example.android.popularmovies2.data.network.NoConnectionInterceptor;
-
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import timber.log.Timber;
 
-@Module(includes = ContextModule.class)
+@Module()
 public class OkHttpClientModule {
 
     @Provides
-    public OkHttpClient okHttpClient(NoConnectionInterceptor noConnectionInterceptor,
-                                     Context context) {
+    public OkHttpClient okHttpClient() {
         return new OkHttpClient()
                 .newBuilder()
-//                .addInterceptor(httpLoggingInterceptor)
-//                .addInterceptor(noConnectionInterceptor)
-//                .addInterceptor(new NoConnectionInterceptor(context))
                 .build();
-    }
-
-
-    @Provides
-    public HttpLoggingInterceptor httpLoggingInterceptor() {
-        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-            @Override
-            public void log(String message) {
-                Timber.tag(Constants.TAG).d("httpLoggingInterceptor%s", message);
-            }
-        });
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        return httpLoggingInterceptor;
     }
 
 }

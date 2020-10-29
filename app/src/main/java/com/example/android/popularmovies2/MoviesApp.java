@@ -36,8 +36,5 @@ public class MoviesApp extends Application {
     public MovieComponent getMovieComponent() {
         return movieComponent;
     }
-    /*public AppRepository getAppRepository() {
-        Timber.tag("MyApp").d("MoviesApp: getAppRepository");
-        return AppRepository.getInstance(this);
-    }*/
+
 }

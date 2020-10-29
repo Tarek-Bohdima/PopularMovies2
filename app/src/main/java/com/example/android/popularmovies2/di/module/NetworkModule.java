@@ -20,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module(includes = OkHttpClientModule.class)
 public class NetworkModule {
 
-    private String baseUrl;
+    private final String baseUrl;
 
     public NetworkModule(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -28,7 +28,7 @@ public class NetworkModule {
 
     @ApplicationScope
     @Provides
-    public Retrofit retrofit(OkHttpClient okHttpClient, GsonConverterFactory gsonConverterFactory, Gson gson) {
+    public Retrofit retrofit(OkHttpClient okHttpClient, GsonConverterFactory gsonConverterFactory) {
         return new Retrofit.Builder()
                 .client(okHttpClient)
                 .baseUrl(baseUrl)
