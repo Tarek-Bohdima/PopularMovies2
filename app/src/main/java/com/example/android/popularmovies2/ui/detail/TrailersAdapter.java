@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -80,12 +79,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
         public void bind(Trailer trailer) {
             String key = trailer.getKey();
             trailerItemBinding.trailerTitle.setText(trailer.getName());
-            trailerItemBinding.trailerTitle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    watchYoutubeVideo(context, key);
-                }
-            });
+            trailerItemBinding.trailerTitle.setOnClickListener(v -> watchYoutubeVideo(context, key));
         }
     }
 }

@@ -23,9 +23,10 @@ import timber.log.Timber;
 
 public class MainViewModel extends AndroidViewModel {
 
-    private LiveData<List<Movie>> popularMoviesLiveData;
-    private LiveData<List<Movie>> topRatedMoviesLiveData;
-    private AppRepository appRepository;
+    private final LiveData<List<Movie>> popularMoviesLiveData;
+    private final LiveData<List<Movie>> topRatedMoviesLiveData;
+    private final LiveData<List<Movie>> favouriteMoviesLiveData;
+    private final AppRepository appRepository;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -34,16 +35,37 @@ public class MainViewModel extends AndroidViewModel {
         Timber.tag(Constants.TAG).d("MainViewModel: get AppRepository instance");
         popularMoviesLiveData = appRepository.getPopularMovies();
         topRatedMoviesLiveData = appRepository.getTopRatedMovies();
+        favouriteMoviesLiveData = appRepository.getAllFavouriteMovies();
     }
 
     public LiveData<List<Movie>> getPopularMovies() {
-        Timber.tag(Constants.TAG).d("MainViewModel: getPopularMovies");
+        Timber.tag(Constants.TAG).d("MainViewModel: getPopularMovies() called");
         return popularMoviesLiveData;
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
-        Timber.tag(Constants.TAG).d("MainViewModel: getTopRatedMovies");
+        Timber.tag(Constants.TAG).d("MainViewModel: getTopRatedMovies() called");
         return topRatedMoviesLiveData;
+    }
+
+    public LiveData<List<Movie>> getFavouriteMovies() {
+        Timber.tag(Constants.TAG).d("MainViewModel: getFavouriteMovies() called");
+        return favouriteMoviesLiveData;
+    }
+
+    public long insertFavouriteMovie(Movie movie) {
+        Timber.tag(Constants.TAG).d("MainViewModel: insertFavouriteMovie() called with: movie = [" + movie + "]");
+        return appRepository.insertFavouriteMovie(movie);
+    }
+
+    public void deleteFavouriteMovie(Movie movie) {
+        Timber.tag(Constants.TAG).d("MainViewModel: deleteFavouriteMovie() called with: movie = [ %s ]", movie);
+        appRepository.deleteFavouriteMovie(movie);
+    }
+
+    public void deleteAllFavouriteMovies() {
+        Timber.tag(Constants.TAG).d("MainViewModel: deleteAllFavouriteMovies() called");
+        appRepository.deleteAllFavouriteMovies();
     }
 
     @Override

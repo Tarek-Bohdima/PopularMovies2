@@ -7,6 +7,7 @@
 package com.example.android.popularmovies2.di.module;
 
 import com.example.android.popularmovies2.di.scopes.ApplicationScope;
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -40,7 +41,8 @@ public class NetworkModule {
     @ApplicationScope
     @Provides
     public Gson gson() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
+        GsonBuilder gsonBuilder = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
         return gsonBuilder.create();
     }
 

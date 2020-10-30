@@ -6,36 +6,14 @@
 
 package com.example.android.popularmovies2.data.local;
 
-import android.content.Context;
-
 import androidx.room.Database;
-import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.data.model.Movie;
-
-import timber.log.Timber;
 
 @Database(entities = {Movie.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
-    public static final Object LOCK = new Object();
-    public static final String DATABASE_NAME = "movies_db";
-    private static AppDatabase sInstance;
-
-    public static AppDatabase getInstance(Context context) {
-        if (sInstance == null) {
-            synchronized (LOCK) {
-                Timber.tag(Constants.TAG).d("getInstance: Creating new database instance");
-                sInstance = Room.databaseBuilder(context.getApplicationContext(),
-                        AppDatabase.class, AppDatabase.DATABASE_NAME)
-                        .fallbackToDestructiveMigration()
-                        .build();
-            }
-        }
-        Timber.tag(Constants.TAG).d("getInstance: Getting the database instance");
-        return sInstance;
-    }
+    public static final String DATABASE_NAME = "favourite_movies.db";
 
     public abstract MovieDao movieDao();
 }

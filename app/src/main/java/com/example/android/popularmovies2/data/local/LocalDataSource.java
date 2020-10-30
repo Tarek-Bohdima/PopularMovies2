@@ -7,32 +7,38 @@
 package com.example.android.popularmovies2.data.local;
 
 import androidx.lifecycle.LiveData;
-import androidx.room.Dao;
-import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
 
 import com.example.android.popularmovies2.data.model.Movie;
 
 import java.util.List;
 
-@Dao
-public interface MovieDao {
+import javax.inject.Inject;
 
-    @Query("SELECT * FROM favourite_movies")
-    LiveData<List<Movie>> getAllMovies();
+public class LocalDataSource {
+    private final MovieDao movieDao;
 
-    @Query("SELECT * FROM favourite_movies where movieId = :id")
-    LiveData<Movie> getMovieById(String id);
+    @Inject
+    public LocalDataSource(MovieDao movieDao) {
+        this.movieDao = movieDao;
+    }
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insertMovie(Movie movie);
+    public LiveData<List<Movie>> getAllMovies() {
+        return movieDao.getAllMovies();
+    }
 
-    @Delete
-    void delete(Movie movie);
+    public LiveData<Movie> getMovieById(String movieId) {
+        return movieDao.getMovieById(movieId);
+    }
 
-    @Query("DELETE FROM favourite_movies")
-    void deleteAllMovies();
+    public long insertMovie(Movie movie) {
+        return movieDao.insertMovie(movie);
+    }
 
+    public void deleteMovie(Movie movie) {
+        movieDao.delete(movie);
+    }
+
+    public void deleteAllMovies() {
+        movieDao.deleteAllMovies();
+    }
 }

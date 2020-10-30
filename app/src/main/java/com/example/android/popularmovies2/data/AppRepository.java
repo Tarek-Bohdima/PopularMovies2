@@ -9,6 +9,7 @@ package com.example.android.popularmovies2.data;
 import androidx.lifecycle.LiveData;
 
 import com.example.android.popularmovies2.Constants;
+import com.example.android.popularmovies2.data.local.LocalDataSource;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.Review;
 import com.example.android.popularmovies2.data.model.Trailer;
@@ -25,10 +26,12 @@ import timber.log.Timber;
 public class AppRepository {
 
     private final NetworkDataSource networkDataSource;
+    private final LocalDataSource localDataSource;
 
     @Inject
-    AppRepository(NetworkDataSource networkDataSource) {
+    AppRepository(NetworkDataSource networkDataSource, LocalDataSource localDataSource) {
         this.networkDataSource = networkDataSource;
+        this.localDataSource = localDataSource;
     }
 
     public LiveData<List<Movie>> getPopularMovies() {
@@ -42,13 +45,38 @@ public class AppRepository {
     }
 
     public LiveData<List<Review>> getReviewsByMovieId(String movieId) {
-        Timber.tag(Constants.TAG).d("AppRepository: getReviewsByMovieId() called with: movieId = [" + movieId + "]");
+        Timber.tag(Constants.TAG).d("AppRepository: getReviewsByMovieId() called with: movieId = [ %s]", movieId);
         return networkDataSource.getReviewsLiveDataByMovieId(movieId);
     }
 
     public LiveData<List<Trailer>> getTrailersByMovieId(String movieId) {
-        Timber.tag(Constants.TAG).d("AppRepository: getTrailersByMovieId() called with: movieId = [" + movieId + "]");
+        Timber.tag(Constants.TAG).d("AppRepository: getTrailersByMovieId() called with: movieId = [ %s ]", movieId);
         return networkDataSource.getTrailersLiveDataByMovieId(movieId);
+    }
+
+    public LiveData<List<Movie>> getAllFavouriteMovies() {
+        Timber.tag(Constants.TAG).d("AppRepository: getAllFavouriteMovies() called");
+        return localDataSource.getAllMovies();
+    }
+
+    public LiveData<Movie> getFavouriteMovieById(String movieId) {
+        Timber.tag(Constants.TAG).d("AppRepository: getFavouriteMovieById() called with: movieId = [ %s ]", movieId);
+        return localDataSource.getMovieById(movieId);
+    }
+
+    public long insertFavouriteMovie(Movie movie) {
+        Timber.tag(Constants.TAG).d("AppRepository: insertFavouriteMovie() called with: movie = [ %s ]", movie);
+        return localDataSource.insertMovie(movie);
+    }
+
+    public void deleteFavouriteMovie(Movie movie) {
+        Timber.tag(Constants.TAG).d("AppRepository: deleteFavouriteMovie() called with: movie = [ %s ]", movie);
+        localDataSource.deleteMovie(movie);
+    }
+
+    public void deleteAllFavouriteMovies() {
+        Timber.tag(Constants.TAG).d("AppRepository: deleteAllFavouriteMovies() called");
+        localDataSource.deleteAllMovies();
     }
 
     public void clearDisposables() {

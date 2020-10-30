@@ -4,26 +4,7 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.data.model;
+package com.example.android.popularmovies2.ui.list;
 
-import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
-
-public class TrailerList {
-
-    @SerializedName("id")
-    private Integer movieId;
-
-    @SerializedName("results")
-    private final List<Trailer> trailers = null;
-
-    public Integer getMovieId() {
-        return movieId;
-    }
-
-    // use this to get list of trailers.
-    public List<Trailer> getTrailers() {
-        return trailers;
-    }
+public class FavouritesAdapter {
 }

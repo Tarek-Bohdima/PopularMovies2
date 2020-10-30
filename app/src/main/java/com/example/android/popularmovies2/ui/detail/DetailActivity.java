@@ -6,7 +6,6 @@
 
 package com.example.android.popularmovies2.ui.detail;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -14,7 +13,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -35,7 +33,6 @@ import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildPoste
 
 public class DetailActivity extends AppCompatActivity {
 
-    private final Context context = DetailActivity.this;
     private final List<Review> reviewList = new ArrayList<>();
     private final List<Trailer> trailersList = new ArrayList<>();
     private ActivityDetailBinding activityDetailBinding;
@@ -51,6 +48,9 @@ public class DetailActivity extends AppCompatActivity {
         activityDetailBinding = ActivityDetailBinding.inflate(getLayoutInflater());
         View view = activityDetailBinding.getRoot();
         setContentView(view);
+
+        //credits to https://programmersought.com/article/86885708618/
+        savedInstanceState.setClassLoader(getClass().getClassLoader());
 
         Intent extraIntent = getIntent();
         if (extraIntent != null) {
@@ -78,29 +78,23 @@ public class DetailActivity extends AppCompatActivity {
         DetailViewModelFactory factory = new DetailViewModelFactory(this.getApplication(), movieId);
         DetailViewModel detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
 
-        detailViewModel.getReviewsByMovieId().observe(this, new Observer<List<Review>>() {
-            @Override
-            public void onChanged(List<Review> reviews) {
-                Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: reviews empty = [" + reviews.isEmpty() + "]");
-                reviewsAdapter.setReviewsData(reviews);
-                if (reviews.size() < 1) {
-                    activityDetailBinding.reviewsTitle.setVisibility(View.GONE);
-                } else {
-                    activityDetailBinding.reviewsTitle.setVisibility(View.VISIBLE);
-                }
+        detailViewModel.getReviewsByMovieId().observe(this, reviews -> {
+            Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: reviews empty = [" + reviews.isEmpty() + "]");
+            reviewsAdapter.setReviewsData(reviews);
+            if (reviews.size() < 1) {
+                activityDetailBinding.reviewsTitle.setVisibility(View.GONE);
+            } else {
+                activityDetailBinding.reviewsTitle.setVisibility(View.VISIBLE);
             }
         });
 
-        detailViewModel.getTrailersByMovieId().observe(this, new Observer<List<Trailer>>() {
-            @Override
-            public void onChanged(List<Trailer> trailers) {
-                Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: trailers empty = [" + trailers.isEmpty() + "]");
-                trailersAdapter.setTrailersData(trailers);
-                if (trailers.size() < 1) {
-                    activityDetailBinding.trailersTitle.setVisibility(View.GONE);
-                } else {
-                    activityDetailBinding.trailersTitle.setVisibility(View.VISIBLE);
-                }
+        detailViewModel.getTrailersByMovieId().observe(this, trailers -> {
+            Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: trailers empty = [" + trailers.isEmpty() + "]");
+            trailersAdapter.setTrailersData(trailers);
+            if (trailers.size() < 1) {
+                activityDetailBinding.trailersTitle.setVisibility(View.GONE);
+            } else {
+                activityDetailBinding.trailersTitle.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -123,12 +117,13 @@ public class DetailActivity extends AppCompatActivity {
     }
 
 
+    // TODO: continue with com/example/android/popularmovies2/ui/BindingAdapters.java:31
     private void loadPosterAndBackdropImages() {
-        Glide.with(context)
+        Glide.with(this)
                 .load(buildPosterImageUrl(detailMovie.getPosterPath()))
                 .into(activityDetailBinding.imageviewPoster);
 
-        Glide.with(context)
+        Glide.with(this)
                 .load(buildBackdropImageUrl(detailMovie.getBackdropPath()))
                 .into(activityDetailBinding.imageviewBackdrop);
     }

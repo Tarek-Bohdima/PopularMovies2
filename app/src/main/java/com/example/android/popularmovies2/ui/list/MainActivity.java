@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public final String MENU_ITEM_SELECTED = "menuItemSelected";
     private final String POPULAR_MOVIES_TITLE = "Popular Movies";
     private final String TOP_RATED_MOVIES_TITLE = "Top Rated Movies";
-    public List<Movie> movieList = new ArrayList<>();
+    public final List<Movie> movieList = new ArrayList<>();
     ActivityMainBinding activityMainBinding;
     MainViewModel mainActivityViewModel;
     private MovieAdapter adapter;
@@ -73,23 +72,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
          * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
          * performs a swipe-to-refresh gesture.
          */
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
+        swipeRefreshLayout.setOnRefreshListener(() -> {
 
-                // This method performs the actual data-refresh operation.
-                // The method calls setRefreshing(false) when it's finished.
-                if (!TextUtils.isEmpty(menuItemSelected)) {
-                    swipeUpdateOperation();
-                }
-                swipeRefreshLayout.setRefreshing(false);
+            // This method performs the actual data-refresh operation.
+            // The method calls setRefreshing(false) when it's finished.
+            if (!TextUtils.isEmpty(menuItemSelected)) {
+                swipeUpdateOperation();
             }
+            swipeRefreshLayout.setRefreshing(false);
         });
     }
 
     private void setRecyclerView() {
         activityMainBinding.recyclerView.setHasFixedSize(true);
-        adapter = new MovieAdapter(movieList, (MovieAdapter.MovieAdapterClickListener) this);
+        adapter = new MovieAdapter(movieList, this);
         activityMainBinding.recyclerView.setAdapter(adapter);
     }
 
@@ -156,21 +152,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         switch (path) {
             case POPULAR:
-                mainActivityViewModel.getPopularMovies().observe(this, new Observer<List<Movie>>() {
-                    @Override
-                    public void onChanged(List<Movie> movies) {
-                        Timber.tag(Constants.TAG).d("MainActivity: getPopularMovies Observed");
-                        adapter.setMovieData(movies);
-                    }
+                mainActivityViewModel.getPopularMovies().observe(this, movies -> {
+                    Timber.tag(Constants.TAG).d("MainActivity: getPopularMovies Observed");
+                    adapter.setMovieData(movies);
                 });
                 break;
             case TOP_RATED:
-                mainActivityViewModel.getTopRatedMovies().observe(this, new Observer<List<Movie>>() {
-                    @Override
-                    public void onChanged(List<Movie> movies) {
-                        Timber.tag(Constants.TAG).d("MainActivity: getTopRatedMovies Observed");
-                        adapter.setMovieData(movies);
-                    }
+                mainActivityViewModel.getTopRatedMovies().observe(this, movies -> {
+                    Timber.tag(Constants.TAG).d("MainActivity: getTopRatedMovies Observed");
+                    adapter.setMovieData(movies);
                 });
                 break;
         }
@@ -188,13 +178,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         return true;
     }
 
+    // TODO: try cleaning this a bit by separating maybe!
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
 
         if (itemId == R.id.menu_refresh) {
-            Timber.tag(Constants.TAG).d("Refresh menu item selected");
-
             // Start the refresh background task.
             // This method calls setRefreshing(false) when it's finished.
             swipeUpdateOperation();
@@ -212,7 +201,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         } else if (itemId == R.id.favorite) {
             setTitle("Favorites");
 
-            return super.onOptionsItemSelected(item);
+
+            return false;
         }
         return super.onOptionsItemSelected(item);
     }
