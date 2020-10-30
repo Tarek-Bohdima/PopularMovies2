@@ -19,10 +19,8 @@ public class ReviewsList {
     @SerializedName("results")
     private final List<Review> reviews = null;
 
-    //    @SerializedName("total_pages")
     private Integer totalPages;
 
-    //    @SerializedName("total_results")
     private Integer totalReviews;
 
     public Integer getMovieId() {

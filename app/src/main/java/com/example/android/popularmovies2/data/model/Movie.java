@@ -22,21 +22,16 @@ public class Movie implements Parcelable {
     @SerializedName("id")
     private int movieId;
 
-    //    @SerializedName("original_title")
     private final String originalTitle;
 
-    //    @SerializedName("poster_path")
     private final String posterPath;
 
-    //    @SerializedName("backdrop_path")
     private final String backdropPath;
 
     private final String overview;
 
-    //    @SerializedName("vote_average")
     private final double voteAverage;
 
-    //    @SerializedName("release_date")
     private final String releaseDate;
 
 //    @ColumnInfo(name = "is_favorite")
