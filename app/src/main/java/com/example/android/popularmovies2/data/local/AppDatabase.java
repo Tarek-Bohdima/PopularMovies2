@@ -13,7 +13,7 @@ import com.example.android.popularmovies2.data.model.Movie;
 
 @Database(entities = {Movie.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
-    public static final String DATABASE_NAME = "favourite_movies.db";
+    public static final String DATABASE_NAME = "favorite_movies.db";
 
     public abstract MovieDao movieDao();
 }

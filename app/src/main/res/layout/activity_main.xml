@@ -41,13 +41,13 @@
                 android:padding="116dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/error_network"
-                android:visibility="@{isConnected ? View.GONE : View.VISIBLE}" />
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{isConnected ? View.VISIBLE : View.GONE}" />
+                android:visibility="visible" />
 
         </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

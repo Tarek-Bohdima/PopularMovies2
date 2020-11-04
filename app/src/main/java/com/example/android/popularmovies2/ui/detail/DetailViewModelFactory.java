@@ -12,19 +12,23 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.android.popularmovies2.data.model.Movie;
+
 public class DetailViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     private final Application application;
     private final String movieId;
+    private final Movie movie;
 
-    public DetailViewModelFactory(Application application, String movieId) {
+    public DetailViewModelFactory(Application application, String movieId, Movie movie) {
         this.application = application;
         this.movieId = movieId;
+        this.movie = movie;
     }
 
     @NonNull
     @Override
     @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new DetailViewModel(application, movieId);
+        return (T) new DetailViewModel(application, movieId, movie);
     }
 }

@@ -30,8 +30,8 @@ public class LocalDataSource {
         return movieDao.getMovieById(movieId);
     }
 
-    public long insertMovie(Movie movie) {
-        return movieDao.insertMovie(movie);
+    public void insertMovie(Movie movie) {
+        movieDao.insertMovie(movie);
     }
 
     public void deleteMovie(Movie movie) {

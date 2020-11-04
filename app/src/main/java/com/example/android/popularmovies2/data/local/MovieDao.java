@@ -20,19 +20,19 @@ import java.util.List;
 @Dao
 public interface MovieDao {
 
-    @Query("SELECT * FROM favourite_movies")
+    @Query("SELECT * FROM favorite_movies")
     LiveData<List<Movie>> getAllMovies();
 
-    @Query("SELECT * FROM favourite_movies where movieId = :id")
+    @Query("SELECT * FROM favorite_movies where movieId = :id")
     LiveData<Movie> getMovieById(String id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insertMovie(Movie movie);
+    void insertMovie(Movie movie);
 
     @Delete
     void delete(Movie movie);
 
-    @Query("DELETE FROM favourite_movies")
+    @Query("DELETE FROM favorite_movies")
     void deleteAllMovies();
 
 }

@@ -54,28 +54,28 @@ public class AppRepository {
         return networkDataSource.getTrailersLiveDataByMovieId(movieId);
     }
 
-    public LiveData<List<Movie>> getAllFavouriteMovies() {
-        Timber.tag(Constants.TAG).d("AppRepository: getAllFavouriteMovies() called");
+    public LiveData<List<Movie>> getAllFavoriteMovies() {
+        Timber.tag(Constants.TAG).d("AppRepository: getAllFavoriteMovies() called");
         return localDataSource.getAllMovies();
     }
 
-    public LiveData<Movie> getFavouriteMovieById(String movieId) {
-        Timber.tag(Constants.TAG).d("AppRepository: getFavouriteMovieById() called with: movieId = [ %s ]", movieId);
+    public LiveData<Movie> getFavoriteMovieById(String movieId) {
+        Timber.tag(Constants.TAG).d("AppRepository: getFavoriteMovieById() called with: movieId = [ %s ]", movieId);
         return localDataSource.getMovieById(movieId);
     }
 
-    public long insertFavouriteMovie(Movie movie) {
-        Timber.tag(Constants.TAG).d("AppRepository: insertFavouriteMovie() called with: movie = [ %s ]", movie);
-        return localDataSource.insertMovie(movie);
+    public void insertFavoriteMovie(Movie movie) {
+        Timber.tag(Constants.TAG).d("AppRepository: insertFavoriteMovie() called with: movie = [ %s ]", movie);
+        localDataSource.insertMovie(movie);
     }
 
-    public void deleteFavouriteMovie(Movie movie) {
-        Timber.tag(Constants.TAG).d("AppRepository: deleteFavouriteMovie() called with: movie = [ %s ]", movie);
+    public void deleteFavoriteMovie(Movie movie) {
+        Timber.tag(Constants.TAG).d("AppRepository: deleteFavoriteMovie() called with: movie = [ %s ]", movie);
         localDataSource.deleteMovie(movie);
     }
 
-    public void deleteAllFavouriteMovies() {
-        Timber.tag(Constants.TAG).d("AppRepository: deleteAllFavouriteMovies() called");
+    public void deleteAllFavoriteMovies() {
+        Timber.tag(Constants.TAG).d("AppRepository: deleteAllFavoriteMovies() called");
         localDataSource.deleteAllMovies();
     }
 

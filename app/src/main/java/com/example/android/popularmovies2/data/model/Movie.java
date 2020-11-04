@@ -9,13 +9,14 @@ package com.example.android.popularmovies2.data.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
 // implementation of Parcelable credits go to : https://stackoverflow.com/a/23647471/8899344
-@Entity(tableName = "favourite_movies")
+@Entity(tableName = "favorite_movies")
 public class Movie implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
@@ -34,12 +35,12 @@ public class Movie implements Parcelable {
 
     private final String releaseDate;
 
-//    @ColumnInfo(name = "is_favorite")
-//    private boolean isFavorite;
+    @ColumnInfo(name = "is_favorite")
+    private boolean isFavorite;
 
 
     public Movie(int movieId, String originalTitle, String posterPath, String backdropPath,
-                 String overview, double voteAverage, String releaseDate) {
+                 String overview, double voteAverage, String releaseDate, boolean isFavorite) {
         this.movieId = movieId;
         this.originalTitle = originalTitle;
         this.posterPath = posterPath;
@@ -47,7 +48,7 @@ public class Movie implements Parcelable {
         this.overview = overview;
         this.voteAverage = voteAverage;
         this.releaseDate = releaseDate;
-//        this.isFavorite = isFavorite;
+        this.isFavorite = isFavorite;
     }
 
     private Movie(Parcel in) {
@@ -58,7 +59,7 @@ public class Movie implements Parcelable {
         overview = in.readString();
         voteAverage = in.readDouble();
         releaseDate = in.readString();
-//        isFavorite = in.readByte() != 0;
+        isFavorite = in.readInt() == 1;
     }
 
     @Override
@@ -70,7 +71,7 @@ public class Movie implements Parcelable {
         dest.writeString(overview);
         dest.writeDouble(voteAverage);
         dest.writeString(releaseDate);
-//        dest.writeByte((byte) (isFavorite ? 1 : 0));
+        dest.writeInt(isFavorite ? 1 : 0);
     }
 
     @Override
@@ -118,15 +119,16 @@ public class Movie implements Parcelable {
         return voteAverage;
     }
 
-//    public boolean isFavorite() {
-//        return isFavorite;
-//    }
-//
-//    public void setFavorite(boolean favorite) {
-//        isFavorite = favorite;
-//    }
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
 
     public String getReleaseDate() {
         return releaseDate;
     }
+
 }

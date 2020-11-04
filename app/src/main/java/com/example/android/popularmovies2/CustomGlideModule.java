@@ -4,7 +4,11 @@
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
 
-package com.example.android.popularmovies2.ui.list;
+package com.example.android.popularmovies2;
 
-public class FavouritesAdapter {
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.module.AppGlideModule;
+
+@GlideModule
+public class CustomGlideModule extends AppGlideModule {
 }

@@ -18,7 +18,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module(includes = ContextModule.class)
-public abstract class FavouriteDatabaseModule {
+public abstract class FavoriteDatabaseModule {
 
     @ApplicationScope
     @Provides
@@ -26,7 +26,6 @@ public abstract class FavouriteDatabaseModule {
         return Room.databaseBuilder(context,
                 AppDatabase.class, AppDatabase.DATABASE_NAME)
                 .fallbackToDestructiveMigration()
-                .allowMainThreadQueries()
                 .build();
     }
 

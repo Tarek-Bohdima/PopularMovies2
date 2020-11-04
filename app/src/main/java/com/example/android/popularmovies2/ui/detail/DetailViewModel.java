@@ -9,6 +9,7 @@ package com.example.android.popularmovies2.ui.detail;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.android.popularmovies2.Constants;
@@ -24,17 +25,24 @@ import timber.log.Timber;
 
 public class DetailViewModel extends ViewModel {
 
+    private final AppRepository appRepository;
     private final LiveData<List<Review>> reviews;
     private final LiveData<List<Trailer>> trailers;
-    private final LiveData<Movie> favouriteMovie;
+    private final LiveData<Movie> favoriteMovie;
+    private final String movieId;
+    private final MutableLiveData<Boolean> isFavorite;
+    private Movie movie;
 
 
-    public DetailViewModel(Application application, String movieId) {
+    public DetailViewModel(Application application, String movieId, Movie movie) {
 
-        AppRepository appRepository = ((MoviesApp) application).getMovieComponent().getAppRepository();
+        appRepository = ((MoviesApp) application).getMovieComponent().getAppRepository();
         reviews = appRepository.getReviewsByMovieId(movieId);
         trailers = appRepository.getTrailersByMovieId(movieId);
-        favouriteMovie = appRepository.getFavouriteMovieById(movieId);
+        favoriteMovie = appRepository.getFavoriteMovieById(movieId);
+        this.movieId = movieId;
+        this.movie = movie;
+        isFavorite = new MutableLiveData<>();
     }
 
     public LiveData<List<Review>> getReviewsByMovieId() {
@@ -47,8 +55,24 @@ public class DetailViewModel extends ViewModel {
         return trailers;
     }
 
-    public LiveData<Movie> getFavouriteMovieById() {
-        Timber.tag(Constants.TAG).d("DetailViewModel: getFavouriteMovieById() called");
-        return favouriteMovie;
+    public LiveData<Movie> getFavoriteMovieById() {
+        Timber.tag(Constants.TAG).d("DetailViewModel: getFavoriteMovieById() called");
+        return favoriteMovie;
     }
+
+    public void insertFavoriteMovie(Movie movie) {
+        Timber.tag(Constants.TAG).d("DetailViewModel: insertFavoriteMovie() called with: movie = [" + movie + "]");
+        appRepository.insertFavoriteMovie(movie);
+    }
+
+    public void deleteFavoriteMovie(Movie movie) {
+        Timber.tag(Constants.TAG).d("DetailViewModel: deleteFavoriteMovie() called with: movie = [" + movie + "]");
+        appRepository.deleteFavoriteMovie(movie);
+    }
+
+    public LiveData<Boolean> isFavorite(Movie movie) {
+        isFavorite.postValue(movie.isFavorite());
+        return isFavorite;
+    }
+
 }

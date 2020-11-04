@@ -16,7 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.android.popularmovies2.AppExecutors;
 import com.example.android.popularmovies2.Constants;
+import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.Review;
 import com.example.android.popularmovies2.data.model.Trailer;
@@ -35,49 +37,56 @@ public class DetailActivity extends AppCompatActivity {
 
     private final List<Review> reviewList = new ArrayList<>();
     private final List<Trailer> trailersList = new ArrayList<>();
+    DetailViewModel detailViewModel;
     private ActivityDetailBinding activityDetailBinding;
     private String movieId;
     private ReviewsAdapter reviewsAdapter;
     private Movie detailMovie;
     private TrailersAdapter trailersAdapter;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         activityDetailBinding = ActivityDetailBinding.inflate(getLayoutInflater());
         View view = activityDetailBinding.getRoot();
         setContentView(view);
-
-        //credits to https://programmersought.com/article/86885708618/
-        savedInstanceState.setClassLoader(getClass().getClassLoader());
-
         Intent extraIntent = getIntent();
         if (extraIntent != null) {
             if (extraIntent.hasExtra(MOVIE_OBJECT)) {
                 detailMovie = extraIntent.getParcelableExtra(MOVIE_OBJECT);
             }
         }
-
         loadPosterAndBackdropImages();
-
-        setViews();
-
         setTitle(detailMovie.getOriginalTitle());
-
         movieId = String.valueOf(detailMovie.getMovieId());
-
         setReviewsRecyclerView();
         setTrailersRecyclerView();
-
         setupViewModel();
+        setViews();
+        likeDislikeMovie();
+    }
 
+    private void likeDislikeMovie() {
+        activityDetailBinding.like.setOnClickListener(v -> AppExecutors.getInstance().diskIO().execute(() -> {
+            if (!detailMovie.isFavorite()) {
+                detailViewModel.insertFavoriteMovie(detailMovie);
+                setFlag(true);
+            } else if (detailMovie.isFavorite()) {
+                detailViewModel.deleteFavoriteMovie(detailMovie);
+                setFlag(false);
+            }
+        }));
+    }
+
+    private void setFlag(boolean isMovieFavourite) {
+        runOnUiThread(() -> detailMovie.setFavorite(isMovieFavourite));
     }
 
     private void setupViewModel() {
-        DetailViewModelFactory factory = new DetailViewModelFactory(this.getApplication(), movieId);
-        DetailViewModel detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
+        DetailViewModelFactory factory = new DetailViewModelFactory(this.getApplication(), movieId, detailMovie);
 
+        detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
         detailViewModel.getReviewsByMovieId().observe(this, reviews -> {
             Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: reviews empty = [" + reviews.isEmpty() + "]");
             reviewsAdapter.setReviewsData(reviews);
@@ -97,12 +106,17 @@ public class DetailActivity extends AppCompatActivity {
                 activityDetailBinding.trailersTitle.setVisibility(View.VISIBLE);
             }
         });
+
+        detailViewModel.isFavorite(detailMovie).observe(this, aBoolean -> {
+            int icon = aBoolean ? R.drawable.ic_favorite_full : R.drawable.ic_favorite_empty;
+            Timber.tag(Constants.TAG).d("DetailActivity: setupViewModel() called , aBoolean = %s", aBoolean);
+            activityDetailBinding.like.setImageResource(icon);
+        });
     }
 
     private void setReviewsRecyclerView() {
         activityDetailBinding.reviewsView.setVisibility(View.VISIBLE);
         activityDetailBinding.reviewsView.setHasFixedSize(true);
-
         reviewsAdapter = new ReviewsAdapter(reviewList);
         activityDetailBinding.reviewsView.setAdapter(reviewsAdapter);
     }
@@ -110,8 +124,6 @@ public class DetailActivity extends AppCompatActivity {
     private void setTrailersRecyclerView() {
         activityDetailBinding.trailersView.setVisibility(View.VISIBLE);
         activityDetailBinding.trailersView.setHasFixedSize(true);
-
-
         trailersAdapter = new TrailersAdapter(trailersList);
         activityDetailBinding.trailersView.setAdapter(trailersAdapter);
     }
