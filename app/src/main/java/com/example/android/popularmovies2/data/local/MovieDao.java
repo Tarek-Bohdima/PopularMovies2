@@ -12,7 +12,6 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Update;
 
 import com.example.android.popularmovies2.data.model.Movie;
 
@@ -35,8 +34,4 @@ public interface MovieDao {
 
     @Query("DELETE FROM favorite_movies")
     void deleteAllMovies();
-
-    @Update
-    void update(Movie movie);
-
 }

@@ -86,7 +86,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setupViewModel() {
-        DetailViewModelFactory factory = new DetailViewModelFactory(this.getApplication(), movieId, detailMovie);
+        DetailViewModelFactory factory = new DetailViewModelFactory(this.getApplication(), movieId);
 
         detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
         detailViewModel.getReviewsByMovieId().observe(this, reviews -> {
@@ -122,7 +122,6 @@ public class DetailActivity extends AppCompatActivity {
                 isFavorite = false;
                 activityDetailBinding.like.setImageResource(iconEmpty);
             }
-
         });
     }
 
@@ -139,7 +138,6 @@ public class DetailActivity extends AppCompatActivity {
         trailersAdapter = new TrailersAdapter(trailersList);
         activityDetailBinding.trailersView.setAdapter(trailersAdapter);
     }
-
 
     // TODO: continue with com/example/android/popularmovies2/ui/BindingAdapters.java:31
     private void loadPosterAndBackdropImages() {

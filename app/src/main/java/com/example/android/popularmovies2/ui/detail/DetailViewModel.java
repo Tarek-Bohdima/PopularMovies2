@@ -30,7 +30,7 @@ public class DetailViewModel extends ViewModel {
     private final LiveData<Movie> favoriteMovie;
 
 
-    public DetailViewModel(Application application, String movieId, Movie movie) {
+    public DetailViewModel(Application application, String movieId) {
 
         appRepository = ((MoviesApp) application).getMovieComponent().getAppRepository();
         reviews = appRepository.getReviewsByMovieId(movieId);
@@ -55,19 +55,11 @@ public class DetailViewModel extends ViewModel {
 
     public void insertFavoriteMovie(Movie movie) {
         Timber.tag(Constants.TAG).d("DetailViewModel: insertFavoriteMovie() called with: movie = [" + movie + "]");
-        movie.setFavorite(true);
-        updateMovie(movie);
         appRepository.insertFavoriteMovie(movie);
     }
 
     public void deleteFavoriteMovie(Movie movie) {
         Timber.tag(Constants.TAG).d("DetailViewModel: deleteFavoriteMovie() called with: movie = [" + movie + "]");
         appRepository.deleteFavoriteMovie(movie);
-        movie.setFavorite(false);
-        updateMovie(movie);
-    }
-
-    public void updateMovie(Movie movie) {
-        appRepository.updateMovie(movie);
     }
 }
