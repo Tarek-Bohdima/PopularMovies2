@@ -69,10 +69,10 @@ public class DetailActivity extends AppCompatActivity {
         setReviewsRecyclerView();
         setTrailersRecyclerView();
         setupViewModel();
-        likeDislikeMovie();
+        toggleLikeMovie();
     }
 
-    private void likeDislikeMovie() {
+    private void toggleLikeMovie() {
         activityDetailBinding.like.setOnClickListener(v -> AppExecutors.getInstance().diskIO().execute(() -> {
             if (isFavorite) {
                 Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called , detailMovie = %s ", detailMovie);
