@@ -17,6 +17,11 @@
         android:title="@string/favorites"
         app:showAsAction="never" />
     <item
+        android:id="@+id/delete_all_favorites"
+        android:orderInCategory="4"
+        android:title="@string/delete_all_favorites"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/menu_refresh"
         android:title="@string/menu_refresh"
         app:showAsAction="never" />

@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.android.popularmovies2.AppExecutors;
 import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
@@ -226,6 +227,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             Timber.tag(Constants.TAG).d("MainActivity: onOptionsItemSelected() called with: item = [" + item + "]");
             checkConnectivityAndCall(this, FAVORITES);
             setTitle(FAVORITES);
+            return true;
+        } else if (itemId == R.id.delete_all_favorites) {
+            AppExecutors.getInstance().diskIO().execute(() -> mainActivityViewModel.deleteAllFavoriteMovies());
             return true;
         }
         return super.onOptionsItemSelected(item);
