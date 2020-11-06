@@ -8,8 +8,10 @@ package com.example.android.popularmovies2.ui.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -53,6 +55,7 @@ public class DetailActivity extends AppCompatActivity {
         activityDetailBinding = ActivityDetailBinding.inflate(getLayoutInflater());
         View view = activityDetailBinding.getRoot();
         setContentView(view);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent extraIntent = getIntent();
         if (extraIntent != null) {
             if (extraIntent.hasExtra(MOVIE_OBJECT)) {
@@ -70,6 +73,15 @@ public class DetailActivity extends AppCompatActivity {
         setTrailersRecyclerView();
         setupViewModel();
         toggleLikeMovie();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void toggleLikeMovie() {
