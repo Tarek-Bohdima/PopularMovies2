@@ -9,7 +9,6 @@ package com.example.android.popularmovies2.ui.detail;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.android.popularmovies2.Constants;
@@ -29,9 +28,6 @@ public class DetailViewModel extends ViewModel {
     private final LiveData<List<Review>> reviews;
     private final LiveData<List<Trailer>> trailers;
     private final LiveData<Movie> favoriteMovie;
-    private final String movieId;
-    private final MutableLiveData<Boolean> isFavorite;
-    private Movie movie;
 
 
     public DetailViewModel(Application application, String movieId, Movie movie) {
@@ -40,9 +36,6 @@ public class DetailViewModel extends ViewModel {
         reviews = appRepository.getReviewsByMovieId(movieId);
         trailers = appRepository.getTrailersByMovieId(movieId);
         favoriteMovie = appRepository.getFavoriteMovieById(movieId);
-        this.movieId = movieId;
-        this.movie = movie;
-        isFavorite = new MutableLiveData<>();
     }
 
     public LiveData<List<Review>> getReviewsByMovieId() {
@@ -62,17 +55,19 @@ public class DetailViewModel extends ViewModel {
 
     public void insertFavoriteMovie(Movie movie) {
         Timber.tag(Constants.TAG).d("DetailViewModel: insertFavoriteMovie() called with: movie = [" + movie + "]");
+        movie.setFavorite(true);
+        updateMovie(movie);
         appRepository.insertFavoriteMovie(movie);
     }
 
     public void deleteFavoriteMovie(Movie movie) {
         Timber.tag(Constants.TAG).d("DetailViewModel: deleteFavoriteMovie() called with: movie = [" + movie + "]");
         appRepository.deleteFavoriteMovie(movie);
+        movie.setFavorite(false);
+        updateMovie(movie);
     }
 
-    public LiveData<Boolean> isFavorite(Movie movie) {
-        isFavorite.postValue(movie.isFavorite());
-        return isFavorite;
+    public void updateMovie(Movie movie) {
+        appRepository.updateMovie(movie);
     }
-
 }

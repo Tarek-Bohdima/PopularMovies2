@@ -41,4 +41,8 @@ public class LocalDataSource {
     public void deleteAllMovies() {
         movieDao.deleteAllMovies();
     }
+
+    public void updateMovie(Movie movie) {
+        movieDao.update(movie);
+    }
 }

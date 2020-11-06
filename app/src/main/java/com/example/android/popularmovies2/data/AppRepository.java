@@ -79,6 +79,11 @@ public class AppRepository {
         localDataSource.deleteAllMovies();
     }
 
+    public void updateMovie(Movie movie) {
+        Timber.tag(Constants.TAG).d("AppRepository: updateMovie() called with: movie = [" + movie + "]");
+        localDataSource.updateMovie(movie);
+    }
+
     public void clearDisposables() {
         networkDataSource.clearDisposables();
         Timber.tag(Constants.TAG).d("AppRepository: clearDisposables() called");

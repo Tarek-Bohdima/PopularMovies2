@@ -8,7 +8,6 @@ package com.example.android.popularmovies2.ui.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -43,6 +42,9 @@ public class DetailActivity extends AppCompatActivity {
     private ReviewsAdapter reviewsAdapter;
     private Movie detailMovie;
     private TrailersAdapter trailersAdapter;
+    private boolean isFavorite;
+    private int iconEmpty;
+    private int iconFull;
 
 
     @Override
@@ -57,30 +59,30 @@ public class DetailActivity extends AppCompatActivity {
                 detailMovie = extraIntent.getParcelableExtra(MOVIE_OBJECT);
             }
         }
+
+        activityDetailBinding.setMovie(detailMovie);
+        iconEmpty = R.drawable.ic_favorite_empty;
+        iconFull = R.drawable.ic_favorite_full;
         loadPosterAndBackdropImages();
         setTitle(detailMovie.getOriginalTitle());
         movieId = String.valueOf(detailMovie.getMovieId());
         setReviewsRecyclerView();
         setTrailersRecyclerView();
         setupViewModel();
-        setViews();
         likeDislikeMovie();
     }
 
     private void likeDislikeMovie() {
         activityDetailBinding.like.setOnClickListener(v -> AppExecutors.getInstance().diskIO().execute(() -> {
-            if (!detailMovie.isFavorite()) {
-                detailViewModel.insertFavoriteMovie(detailMovie);
-                setFlag(true);
-            } else if (detailMovie.isFavorite()) {
+            if (isFavorite) {
+                Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called , detailMovie = %s ", detailMovie);
                 detailViewModel.deleteFavoriteMovie(detailMovie);
-                setFlag(false);
+            } else {
+                detailViewModel.insertFavoriteMovie(detailMovie);
+                Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called ");
             }
         }));
-    }
-
-    private void setFlag(boolean isMovieFavourite) {
-        runOnUiThread(() -> detailMovie.setFavorite(isMovieFavourite));
+        activityDetailBinding.executePendingBindings();
     }
 
     private void setupViewModel() {
@@ -107,10 +109,20 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        detailViewModel.isFavorite(detailMovie).observe(this, aBoolean -> {
-            int icon = aBoolean ? R.drawable.ic_favorite_full : R.drawable.ic_favorite_empty;
-            Timber.tag(Constants.TAG).d("DetailActivity: setupViewModel() called , aBoolean = %s", aBoolean);
-            activityDetailBinding.like.setImageResource(icon);
+        detailViewModel.getFavoriteMovieById().observe(this, movie -> {
+            if (movie != null) {
+                if (movie.equals(detailMovie)) {
+                    isFavorite = true;
+                    activityDetailBinding.like.setImageResource(iconFull);
+                } else {
+                    isFavorite = false;
+                    activityDetailBinding.like.setImageResource(iconEmpty);
+                }
+            } else {
+                isFavorite = false;
+                activityDetailBinding.like.setImageResource(iconEmpty);
+            }
+
         });
     }
 
@@ -138,14 +150,5 @@ public class DetailActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(buildBackdropImageUrl(detailMovie.getBackdropPath()))
                 .into(activityDetailBinding.imageviewBackdrop);
-    }
-
-    private void setViews() {
-        activityDetailBinding.originalTitle.setText(detailMovie.getOriginalTitle());
-        activityDetailBinding.releaseDate.setText(detailMovie.getReleaseDate());
-        activityDetailBinding.userRating.setText(String.valueOf(detailMovie.getVoteAverage()));
-        activityDetailBinding.synopsisText.setText(detailMovie.getOverview());
-        activityDetailBinding.synopsisText.setMovementMethod(new ScrollingMovementMethod());
-        activityDetailBinding.synopsisText.getScrollBarDefaultDelayBeforeFade();
     }
 }

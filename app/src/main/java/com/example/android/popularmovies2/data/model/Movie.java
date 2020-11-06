@@ -15,6 +15,8 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 // implementation of Parcelable credits go to : https://stackoverflow.com/a/23647471/8899344
 @Entity(tableName = "favorite_movies")
 public class Movie implements Parcelable {
@@ -119,7 +121,7 @@ public class Movie implements Parcelable {
         return voteAverage;
     }
 
-    public boolean isFavorite() {
+    public boolean getFavorite() {
         return isFavorite;
     }
 
@@ -131,4 +133,23 @@ public class Movie implements Parcelable {
         return releaseDate;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movie movie = (Movie) o;
+        return movieId == movie.movieId &&
+                Double.compare(movie.voteAverage, voteAverage) == 0 &&
+                isFavorite == movie.isFavorite &&
+                originalTitle.equals(movie.originalTitle) &&
+                posterPath.equals(movie.posterPath) &&
+                backdropPath.equals(movie.backdropPath) &&
+                overview.equals(movie.overview) &&
+                releaseDate.equals(movie.releaseDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(movieId, originalTitle, posterPath, backdropPath, overview, voteAverage, releaseDate, isFavorite);
+    }
 }
