@@ -33,9 +33,8 @@
                 android:layout_height="0dp"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/backdrop"
-                android:cropToPadding="true"
                 android:fitsSystemWindows="false"
-                android:scaleType="centerCrop"
+                app:backDropUrl="@{@string/backdrop_url(movie.backdropPath)}"
                 app:layout_constraintDimensionRatio="16:9"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +49,8 @@
                 app:layout_constraintBottom_toBottomOf="@+id/imageview_backdrop"
                 app:layout_constraintDimensionRatio="w,400:576"
                 app:layout_constraintStart_toStartOf="@+id/imageview_backdrop"
-                app:layout_constraintTop_toBottomOf="@+id/imageview_backdrop" />
+                app:layout_constraintTop_toBottomOf="@+id/imageview_backdrop"
+                app:posterUrl="@{@string/poster_url(movie.posterPath)}" />
 
             <TextView
                 android:id="@+id/original_title"

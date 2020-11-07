@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
 import com.example.android.popularmovies2.AppExecutors;
 import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.R;
@@ -31,8 +30,6 @@ import java.util.List;
 import timber.log.Timber;
 
 import static com.example.android.popularmovies2.ui.list.MainActivity.MOVIE_OBJECT;
-import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildBackdropImageUrl;
-import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildPosterImageUrl;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -66,7 +63,7 @@ public class DetailActivity extends AppCompatActivity {
         activityDetailBinding.setMovie(detailMovie);
         iconEmpty = R.drawable.ic_favorite_empty;
         iconFull = R.drawable.ic_favorite_full;
-        loadPosterAndBackdropImages();
+//        loadPosterAndBackdropImages();
         setTitle(detailMovie.getOriginalTitle());
         movieId = String.valueOf(detailMovie.getMovieId());
         setReviewsRecyclerView();
@@ -148,16 +145,5 @@ public class DetailActivity extends AppCompatActivity {
         activityDetailBinding.trailersView.setHasFixedSize(true);
         trailersAdapter = new TrailersAdapter(trailersList);
         activityDetailBinding.trailersView.setAdapter(trailersAdapter);
-    }
-
-    // TODO: continue with com/example/android/popularmovies2/ui/BindingAdapters.java:31
-    private void loadPosterAndBackdropImages() {
-        Glide.with(this)
-                .load(buildPosterImageUrl(detailMovie.getPosterPath()))
-                .into(activityDetailBinding.imageviewPoster);
-
-        Glide.with(this)
-                .load(buildBackdropImageUrl(detailMovie.getBackdropPath()))
-                .into(activityDetailBinding.imageviewBackdrop);
     }
 }

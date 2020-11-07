@@ -22,21 +22,12 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
-    private static final String BASE_IMAGE_URL = "https://image.tmdb.org/t/p/";
     final private MovieAdapterClickListener onClickListener;
     private List<Movie> moviesArrayList;
 
     public MovieAdapter(List<Movie> moviesArrayList, MovieAdapterClickListener onClickListener) {
         this.moviesArrayList = moviesArrayList;
         this.onClickListener = onClickListener;
-    }
-
-    public static String buildPosterImageUrl(String filepath) {
-        return BASE_IMAGE_URL + "w185/" + filepath;
-    }
-
-    public static String buildBackdropImageUrl(String filepath) {
-        return BASE_IMAGE_URL + "w500" + filepath;
     }
 
     @NonNull
@@ -56,7 +47,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         holder.bind();
         Movie currentMovie = moviesArrayList.get(position);
-        holder.itemBinding.setUrl(buildPosterImageUrl(currentMovie.getPosterPath()));
+        holder.itemBinding.setMovie(currentMovie);
     }
 
     @Override

@@ -11,8 +11,8 @@
     <data>
 
         <variable
-            name="url"
-            type="String" />
+            name="movie"
+            type="com.example.android.popularmovies2.data.model.Movie" />
 
     </data>
 
@@ -26,7 +26,7 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:contentDescription="@string/description_movie_poster"
-            app:posterUrl="@{url}"
+            app:posterUrl="@{@string/poster_url(movie.posterPath)}"
             tools:src="@tools:sample/backgrounds/scenic" />
 
     </androidx.cardview.widget.CardView>
