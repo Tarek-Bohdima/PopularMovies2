@@ -15,9 +15,6 @@
             name="viewModel"
             type="com.example.android.popularmovies2.ui.list.MainViewModel" />
 
-        <variable
-            name="isConnected"
-            type="boolean" />
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

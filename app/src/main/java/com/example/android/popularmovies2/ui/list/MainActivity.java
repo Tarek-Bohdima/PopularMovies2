@@ -36,7 +36,7 @@ import timber.log.Timber;
 
 import static com.example.android.popularmovies2.data.network.ConnectionUtils.isNetworkConnected;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterClickListener {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieItemClickListener {
     public static final String MOVIE_OBJECT = "movie_object";
     private static final String POPULAR = "Popular";
     private static final String TOP_RATED = "Top Rated";
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     @Override
-    public void onListItemClick(Movie currentMovie) {
+    public void onMovieItemClicked(Movie currentMovie) {
         Intent mainToDetailIntent = new Intent(MainActivity.this, DetailActivity.class);
         mainToDetailIntent.putExtra(MOVIE_OBJECT, currentMovie);
         startActivity(mainToDetailIntent);

@@ -63,7 +63,6 @@ public class DetailActivity extends AppCompatActivity {
         activityDetailBinding.setMovie(detailMovie);
         iconEmpty = R.drawable.ic_favorite_empty;
         iconFull = R.drawable.ic_favorite_full;
-//        loadPosterAndBackdropImages();
         setTitle(detailMovie.getOriginalTitle());
         movieId = String.valueOf(detailMovie.getMovieId());
         setReviewsRecyclerView();
