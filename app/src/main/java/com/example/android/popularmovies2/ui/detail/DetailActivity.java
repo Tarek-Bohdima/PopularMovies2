@@ -6,19 +6,20 @@
 
 package com.example.android.popularmovies2.ui.detail;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
+import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
+import com.example.android.popularmovies2.AppExecutors;
 import com.example.android.popularmovies2.Constants;
+import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
 import com.example.android.popularmovies2.data.model.Review;
 import com.example.android.popularmovies2.data.model.Trailer;
@@ -30,28 +31,31 @@ import java.util.List;
 import timber.log.Timber;
 
 import static com.example.android.popularmovies2.ui.list.MainActivity.MOVIE_OBJECT;
-import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildBackdropImageUrl;
-import static com.example.android.popularmovies2.ui.list.MovieAdapter.buildPosterImageUrl;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private final Context context = DetailActivity.this;
     private final List<Review> reviewList = new ArrayList<>();
     private final List<Trailer> trailersList = new ArrayList<>();
+    DetailViewModel detailViewModel;
     private ActivityDetailBinding activityDetailBinding;
     private String movieId;
     private ReviewsAdapter reviewsAdapter;
     private Movie detailMovie;
     private TrailersAdapter trailersAdapter;
+    private boolean isFavorite;
+    private int iconEmpty;
+    private int iconFull;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        activityDetailBinding = ActivityDetailBinding.inflate(getLayoutInflater());
-        View view = activityDetailBinding.getRoot();
-        setContentView(view);
-
+//        activityDetailBinding = ActivityDetailBinding.inflate(getLayoutInflater());
+//        View view = activityDetailBinding.getRoot();
+//        setContentView(view);
+        activityDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
+        activityDetailBinding.setLifecycleOwner(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent extraIntent = getIntent();
         if (extraIntent != null) {
             if (extraIntent.hasExtra(MOVIE_OBJECT)) {
@@ -59,48 +63,74 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
 
-        loadPosterAndBackdropImages();
-
-        setViews();
-
+        activityDetailBinding.setMovie(detailMovie);
+        iconEmpty = R.drawable.ic_favorite_empty;
+        iconFull = R.drawable.ic_favorite_full;
         setTitle(detailMovie.getOriginalTitle());
-
         movieId = String.valueOf(detailMovie.getMovieId());
-
         setReviewsRecyclerView();
         setTrailersRecyclerView();
-
         setupViewModel();
+        toggleLikeMovie();
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleLikeMovie() {
+        activityDetailBinding.like.setOnClickListener(v -> AppExecutors.getInstance().diskIO().execute(() -> {
+            if (isFavorite) {
+                Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called , detailMovie = %s ", detailMovie);
+                detailViewModel.deleteFavoriteMovie(detailMovie);
+            } else {
+                detailViewModel.insertFavoriteMovie(detailMovie);
+                Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called ");
+            }
+        }));
     }
 
     private void setupViewModel() {
         DetailViewModelFactory factory = new DetailViewModelFactory(this.getApplication(), movieId);
-        DetailViewModel detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
 
-        detailViewModel.getReviewsByMovieId().observe(this, new Observer<List<Review>>() {
-            @Override
-            public void onChanged(List<Review> reviews) {
-                Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: reviews empty = [" + reviews.isEmpty() + "]");
-                reviewsAdapter.setReviewsData(reviews);
-                if (reviews.size() < 1) {
-                    activityDetailBinding.reviewsTitle.setVisibility(View.GONE);
-                } else {
-                    activityDetailBinding.reviewsTitle.setVisibility(View.VISIBLE);
-                }
+        detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
+        detailViewModel.getReviewsByMovieId().observe(this, reviews -> {
+            Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: reviews empty = [" + reviews.isEmpty() + "]");
+            reviewsAdapter.setReviewsData(reviews);
+            if (reviews.size() < 1) {
+                activityDetailBinding.reviewsTitle.setVisibility(View.GONE);
+            } else {
+                activityDetailBinding.reviewsTitle.setVisibility(View.VISIBLE);
             }
         });
 
-        detailViewModel.getTrailersByMovieId().observe(this, new Observer<List<Trailer>>() {
-            @Override
-            public void onChanged(List<Trailer> trailers) {
-                Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: trailers empty = [" + trailers.isEmpty() + "]");
-                trailersAdapter.setTrailersData(trailers);
-                if (trailers.size() < 1) {
-                    activityDetailBinding.trailersTitle.setVisibility(View.GONE);
+        detailViewModel.getTrailersByMovieId().observe(this, trailers -> {
+            Timber.tag(Constants.TAG).d("DetailActivity: onChanged() called with: trailers empty = [" + trailers.isEmpty() + "]");
+            trailersAdapter.setTrailersData(trailers);
+            if (trailers.size() < 1) {
+                activityDetailBinding.trailersTitle.setVisibility(View.GONE);
+            } else {
+                activityDetailBinding.trailersTitle.setVisibility(View.VISIBLE);
+            }
+        });
+
+        detailViewModel.getFavoriteMovieById().observe(this, movie -> {
+            if (movie != null) {
+                if (movie.equals(detailMovie)) {
+                    isFavorite = true;
+                    activityDetailBinding.like.setImageResource(iconFull);
                 } else {
-                    activityDetailBinding.trailersTitle.setVisibility(View.VISIBLE);
+                    isFavorite = false;
+                    activityDetailBinding.like.setImageResource(iconEmpty);
                 }
+            } else {
+                isFavorite = false;
+                activityDetailBinding.like.setImageResource(iconEmpty);
             }
         });
     }
@@ -108,7 +138,6 @@ public class DetailActivity extends AppCompatActivity {
     private void setReviewsRecyclerView() {
         activityDetailBinding.reviewsView.setVisibility(View.VISIBLE);
         activityDetailBinding.reviewsView.setHasFixedSize(true);
-
         reviewsAdapter = new ReviewsAdapter(reviewList);
         activityDetailBinding.reviewsView.setAdapter(reviewsAdapter);
     }
@@ -116,29 +145,7 @@ public class DetailActivity extends AppCompatActivity {
     private void setTrailersRecyclerView() {
         activityDetailBinding.trailersView.setVisibility(View.VISIBLE);
         activityDetailBinding.trailersView.setHasFixedSize(true);
-
-
         trailersAdapter = new TrailersAdapter(trailersList);
         activityDetailBinding.trailersView.setAdapter(trailersAdapter);
-    }
-
-
-    private void loadPosterAndBackdropImages() {
-        Glide.with(context)
-                .load(buildPosterImageUrl(detailMovie.getPosterPath()))
-                .into(activityDetailBinding.imageviewPoster);
-
-        Glide.with(context)
-                .load(buildBackdropImageUrl(detailMovie.getBackdropPath()))
-                .into(activityDetailBinding.imageviewBackdrop);
-    }
-
-    private void setViews() {
-        activityDetailBinding.originalTitle.setText(detailMovie.getOriginalTitle());
-        activityDetailBinding.releaseDate.setText(detailMovie.getReleaseDate());
-        activityDetailBinding.userRating.setText(String.valueOf(detailMovie.getVoteAverage()));
-        activityDetailBinding.synopsisText.setText(detailMovie.getOverview());
-        activityDetailBinding.synopsisText.setMovementMethod(new ScrollingMovementMethod());
-        activityDetailBinding.synopsisText.getScrollBarDefaultDelayBeforeFade();
     }
 }

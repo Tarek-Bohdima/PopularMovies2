@@ -15,30 +15,27 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 // implementation of Parcelable credits go to : https://stackoverflow.com/a/23647471/8899344
-@Entity(tableName = "movies")
+@Entity(tableName = "favorite_movies")
 public class Movie implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     @SerializedName("id")
     private int movieId;
 
-    @SerializedName("original_title")
-    private String originalTitle;
+    private final String originalTitle;
 
-    @SerializedName("poster_path")
-    private String posterPath;
+    private final String posterPath;
 
-    @SerializedName("backdrop_path")
-    private String backdropPath;
+    private final String backdropPath;
 
-    private String overview;
+    private final String overview;
 
-    @SerializedName("vote_average")
-    private double voteAverage;
+    private final double voteAverage;
 
-    @SerializedName("release_date")
-    private String releaseDate;
+    private final String releaseDate;
 
     @ColumnInfo(name = "is_favorite")
     private boolean isFavorite;
@@ -64,7 +61,7 @@ public class Movie implements Parcelable {
         overview = in.readString();
         voteAverage = in.readDouble();
         releaseDate = in.readString();
-        isFavorite = in.readByte() != 0;
+        isFavorite = in.readInt() == 1;
     }
 
     @Override
@@ -76,7 +73,7 @@ public class Movie implements Parcelable {
         dest.writeString(overview);
         dest.writeDouble(voteAverage);
         dest.writeString(releaseDate);
-        dest.writeByte((byte) (isFavorite ? 1 : 0));
+        dest.writeInt(isFavorite ? 1 : 0);
     }
 
     @Override
@@ -108,39 +105,23 @@ public class Movie implements Parcelable {
         return originalTitle;
     }
 
-    public void setOriginalTitle(String originalTitle) {
-        this.originalTitle = originalTitle;
-    }
-
     public String getPosterPath() {
         return posterPath;
-    }
-
-    public void setPosterPath(String posterPath) {
-        this.posterPath = posterPath;
     }
 
     public String getBackdropPath() {
         return backdropPath;
     }
 
-    public void setBackdropPath(String backdropPath) {
-        this.backdropPath = backdropPath;
-    }
-
     public String getOverview() {
         return overview;
-    }
-
-    public void setOverview(String overview) {
-        this.overview = overview;
     }
 
     public double getVoteAverage() {
         return voteAverage;
     }
 
-    public boolean isFavorite() {
+    public boolean getFavorite() {
         return isFavorite;
     }
 
@@ -148,17 +129,27 @@ public class Movie implements Parcelable {
         isFavorite = favorite;
     }
 
-    public void setVoteAverage(double voteAverage) {
-
-        this.voteAverage = voteAverage;
-    }
-
     public String getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movie movie = (Movie) o;
+        return movieId == movie.movieId &&
+                Double.compare(movie.voteAverage, voteAverage) == 0 &&
+                isFavorite == movie.isFavorite &&
+                originalTitle.equals(movie.originalTitle) &&
+                posterPath.equals(movie.posterPath) &&
+                backdropPath.equals(movie.backdropPath) &&
+                overview.equals(movie.overview) &&
+                releaseDate.equals(movie.releaseDate);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(movieId, originalTitle, posterPath, backdropPath, overview, voteAverage, releaseDate, isFavorite);
+    }
 }

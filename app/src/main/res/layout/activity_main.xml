@@ -5,6 +5,7 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -15,9 +16,6 @@
             name="viewModel"
             type="com.example.android.popularmovies2.ui.list.MainViewModel" />
 
-        <variable
-            name="isConnected"
-            type="boolean" />
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -41,13 +39,14 @@
                 android:padding="116dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/error_network"
-                android:visibility="@{isConnected ? View.GONE : View.VISIBLE}" />
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{isConnected ? View.VISIBLE : View.GONE}" />
+                android:visibility="visible" />
 
         </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

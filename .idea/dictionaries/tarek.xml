@@ -2,9 +2,15 @@
   <dictionary name="tarek">
     <words>
       <w>bohdima</w>
+      <w>expandabletextview</w>
+      <w>imageview</w>
       <w>nanodegree</w>
+      <w>okhttp</w>
       <w>popularmovies</w>
+      <w>swiperefresh</w>
+      <w>swiperefreshlayout</w>
       <w>tarek</w>
+      <w>themovie</w>
       <w>tmdb</w>
       <w>udacity</w>
     </words>

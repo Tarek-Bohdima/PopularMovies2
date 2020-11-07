@@ -7,18 +7,16 @@
 package com.example.android.popularmovies2.di.component;
 
 import com.example.android.popularmovies2.data.AppRepository;
-import com.example.android.popularmovies2.di.module.ContextModule;
+import com.example.android.popularmovies2.di.module.FavoriteDatabaseModule;
 import com.example.android.popularmovies2.di.module.NetworkModule;
 import com.example.android.popularmovies2.di.scopes.ApplicationScope;
 
 import dagger.Component;
 
 @ApplicationScope
-@Component(modules = {NetworkModule.class, ContextModule.class})
+@Component(modules = {NetworkModule.class, FavoriteDatabaseModule.class})
 public interface MovieComponent {
 
-
     AppRepository getAppRepository();
-
 
 }

@@ -11,14 +11,19 @@
     <data>
 
         <variable
-            name="url"
-            type="String" />
+            name="movie"
+            type="com.example.android.popularmovies2.data.model.Movie" />
+
+        <variable
+            name="movieItemClick"
+            type="com.example.android.popularmovies2.ui.list.MovieAdapter.MovieItemClickListener" />
 
     </data>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> movieItemClick.onMovieItemClicked(movie)}">
 
         <ImageView
             android:id="@+id/poster_img"
@@ -26,7 +31,7 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:contentDescription="@string/description_movie_poster"
-            app:posterUrl="@{url}"
+            app:posterUrl="@{@string/poster_url(movie.posterPath)}"
             tools:src="@tools:sample/backgrounds/scenic" />
 
     </androidx.cardview.widget.CardView>

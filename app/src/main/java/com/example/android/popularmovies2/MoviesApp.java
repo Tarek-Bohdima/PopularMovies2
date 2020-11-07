@@ -12,12 +12,13 @@ import com.example.android.popularmovies2.di.component.DaggerMovieComponent;
 import com.example.android.popularmovies2.di.component.MovieComponent;
 import com.example.android.popularmovies2.di.module.ContextModule;
 import com.example.android.popularmovies2.di.module.NetworkModule;
+import com.example.android.popularmovies2.di.module.OkHttpClientModule;
 
 import timber.log.Timber;
 
 public class MoviesApp extends Application {
 
-    private static String BASE_URL = "https://api.themoviedb.org/3/movie/";
+    private static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
     private MovieComponent movieComponent;
 
     @Override
@@ -30,6 +31,7 @@ public class MoviesApp extends Application {
         movieComponent = DaggerMovieComponent.builder()
                 .networkModule(new NetworkModule(BASE_URL))
                 .contextModule(new ContextModule(this))
+                .okHttpClientModule(new OkHttpClientModule())
                 .build();
     }
 

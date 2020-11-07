@@ -41,8 +41,7 @@ public class NetworkDataSource {
     private final MutableLiveData<List<Trailer>> trailersLiveData;
     private final Retrofit retrofit;
     private final CompositeDisposable compositeDisposable;
-    String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
-    private Integer movieId;
+    final String MY_TMDB_API_KEY = BuildConfig.TMDB_API_KEY;
     private MovieApi movieApi;
 
     @Inject
@@ -56,8 +55,19 @@ public class NetworkDataSource {
         compositeDisposable = new CompositeDisposable();
     }
 
-    private void getMoviesByPath(String path) {
+    public LiveData<List<Movie>> getPopularMoviesLiveData() {
+        getMoviesByPath(POPULAR);
+        Timber.tag(Constants.TAG).d("NetworkDataSource: return PopularMovies LiveData");
+        return popularMovies;
+    }
 
+    public LiveData<List<Movie>> getTopRatedMoviesLiveData() {
+        getMoviesByPath(TOP_RATED);
+        Timber.tag(Constants.TAG).d("NetworkDataSource: return TopRatedMovies LiveData");
+        return topRatedMovies;
+    }
+
+    private void getMoviesByPath(String path) {
 
         movieApi = retrofit.create(MovieApi.class);
         Single<MoviesList> moviesListSingle = movieApi.getMoviesByPath(path, MY_TMDB_API_KEY)
@@ -79,6 +89,12 @@ public class NetworkDataSource {
         }
     }
 
+    public LiveData<List<Review>> getReviewsLiveDataByMovieId(String movieId) {
+        getReviewsByMovie(movieId);
+        Timber.tag(Constants.TAG).d("NetWorkDataSource: getReviewsLiveDataByMovieId() called with: movieId = [" + movieId + "]");
+        return reviewsLiveData;
+    }
+
     private void getReviewsByMovie(String movieId) {
         Single<ReviewsList> reviewsListSingle = movieApi.getReviews(movieId, MY_TMDB_API_KEY)
                 .subscribeOn(Schedulers.io())
@@ -95,6 +111,12 @@ public class NetworkDataSource {
                         e -> Timber.tag(Constants.TAG).d("NetWorkDataSource: getReviewsByMovie() error: [" + e.getMessage() + "]")));
     }
 
+    public LiveData<List<Trailer>> getTrailersLiveDataByMovieId(String movieId) {
+        getTrailersByMovie(movieId);
+        Timber.tag(Constants.TAG).d("NetWorkDataSource: getTrailersLiveDataByMovieId() called with: movieId = [" + movieId + "]");
+        return trailersLiveData;
+    }
+
     private void getTrailersByMovie(String movieId) {
         Single<TrailerList> trailerListSingle = movieApi.getTrailers(movieId, MY_TMDB_API_KEY)
                 .subscribeOn(Schedulers.io())
@@ -109,31 +131,6 @@ public class NetworkDataSource {
                             trailersLiveData.postValue(trailers);
                         },
                         e -> Timber.tag(Constants.TAG).d("NetworkDataSource: getTrailersByMovie() error = [" + e.getMessage() + "]")));
-    }
-
-    public LiveData<List<Movie>> getPopularMoviesLiveData() {
-        getMoviesByPath(POPULAR);
-        Timber.tag(Constants.TAG).d("NetworkDataSource: return PopularMovies LiveData");
-        return popularMovies;
-    }
-
-    public LiveData<List<Movie>> getTopRatedMoviesLiveData() {
-
-        getMoviesByPath(TOP_RATED);
-        Timber.tag(Constants.TAG).d("NetworkDataSource: return TopRatedMovies LiveData");
-        return topRatedMovies;
-    }
-
-    public LiveData<List<Review>> getReviewsLiveDataByMovieId(String movieId) {
-        getReviewsByMovie(movieId);
-        Timber.tag(Constants.TAG).d("NetWorkDataSource: getReviewsLiveDataByMovieId() called with: movieId = [" + movieId + "]");
-        return reviewsLiveData;
-    }
-
-    public LiveData<List<Trailer>> getTrailersLiveDataByMovieId(String movieId) {
-        getTrailersByMovie(movieId);
-        Timber.tag(Constants.TAG).d("NetWorkDataSource: getTrailersLiveDataByMovieId() called with: movieId = [" + movieId + "]");
-        return trailersLiveData;
     }
 
     public void clearDisposables() {

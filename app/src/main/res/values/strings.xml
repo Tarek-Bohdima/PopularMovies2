@@ -6,8 +6,15 @@
     <string name="connection_error_placeholder">Connection Error PlaceHolder</string>
     <string name="backdrop">Backdrop</string>
     <string name="overview">Overview</string>
-    <string name="favorite">Favorites</string>
+    <string name="favorites">Favorites</string>
     <string name="menu_refresh">Refresh</string>
     <string name="reviews_title">Reviews</string>
     <string name="trailers_title">Trailers</string>
+    <string name="image_button_content_description">expand or collapse arrow</string>
+    <string name="like_unlike">Like/Unlike</string>
+    <string name="delete_all_favorites">Delete All Favorites</string>
+
+    <!--    for databinding-->
+    <string name="poster_url">https://image.tmdb.org/t/p/w185/%1$s</string>
+    <string name="backdrop_url">https://image.tmdb.org/t/p/w500/%1$s</string>
 </resources>

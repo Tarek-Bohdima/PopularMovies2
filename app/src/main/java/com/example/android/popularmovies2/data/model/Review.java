@@ -10,14 +10,12 @@ import com.google.gson.annotations.SerializedName;
 
 public class Review {
 
-    @SerializedName("author")
     private String author;
 
-    @SerializedName("content")
     private String content;
 
     @SerializedName("id")
-    private String  commentId;
+    private String commentId;
 
     @SerializedName("url")
     private String reviewUrl;
@@ -42,15 +40,7 @@ public class Review {
         return commentId;
     }
 
-    public void setCommentId(String commentId) {
-        this.commentId = commentId;
-    }
-
     public String getReviewUrl() {
         return reviewUrl;
-    }
-
-    public void setReviewUrl(String reviewUrl) {
-        this.reviewUrl = reviewUrl;
     }
 }

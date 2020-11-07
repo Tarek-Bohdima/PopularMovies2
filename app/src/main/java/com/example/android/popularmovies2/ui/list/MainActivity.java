@@ -13,15 +13,16 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.android.popularmovies2.AppExecutors;
 import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
@@ -35,14 +36,15 @@ import timber.log.Timber;
 
 import static com.example.android.popularmovies2.data.network.ConnectionUtils.isNetworkConnected;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterClickListener {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieItemClickListener {
     public static final String MOVIE_OBJECT = "movie_object";
     private static final String POPULAR = "Popular";
     private static final String TOP_RATED = "Top Rated";
-    public final String MENU_ITEM_SELECTED = "menuItemSelected";
+    public static final String FAVORITES = "Favorites";
+    private final String MENU_ITEM_SELECTED = "menuItemSelected";
     private final String POPULAR_MOVIES_TITLE = "Popular Movies";
     private final String TOP_RATED_MOVIES_TITLE = "Top Rated Movies";
-    public List<Movie> movieList = new ArrayList<>();
+    private final List<Movie> movieList = new ArrayList<>();
     ActivityMainBinding activityMainBinding;
     MainViewModel mainActivityViewModel;
     private MovieAdapter adapter;
@@ -55,51 +57,45 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onCreate(savedInstanceState);
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         activityMainBinding.setLifecycleOwner(this);
-
         mainActivityViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-
         changeSpanCountByOrientation();
-
         setRecyclerView();
-
         checkStateAfterOrientationChange(savedInstanceState);
-
-        setScreenTitleByMenuSelected();
-
+        setScreenTitleByMenuSelected(menuItemSelected);
         checkConnectivityAndCall(this, menuItemSelected);
-
         swipeRefreshLayout = activityMainBinding.swiperefresh;
         /*
          * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
          * performs a swipe-to-refresh gesture.
          */
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-                // This method performs the actual data-refresh operation.
-                // The method calls setRefreshing(false) when it's finished.
-                if (!TextUtils.isEmpty(menuItemSelected)) {
-                    swipeUpdateOperation();
-                }
-                swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            // This method performs the actual data-refresh operation.
+            // The method calls setRefreshing(false) when it's finished.
+            if (!TextUtils.isEmpty(menuItemSelected)) {
+                Timber.tag(Constants.TAG).d("MainActivity: onCreate() called with: menuItemSelected = [" + menuItemSelected + "]");
+                swipeUpdateOperation();
             }
+            swipeRefreshLayout.setRefreshing(false);
         });
     }
 
     private void setRecyclerView() {
         activityMainBinding.recyclerView.setHasFixedSize(true);
-        adapter = new MovieAdapter(movieList, (MovieAdapter.MovieAdapterClickListener) this);
+        adapter = new MovieAdapter(movieList, this);
         activityMainBinding.recyclerView.setAdapter(adapter);
     }
 
-    private void setScreenTitleByMenuSelected() {
+    private void setScreenTitleByMenuSelected(String menuItemSelected) {
         switch (menuItemSelected) {
             case POPULAR:
                 setTitle(POPULAR_MOVIES_TITLE);
                 break;
             case TOP_RATED:
                 setTitle(TOP_RATED_MOVIES_TITLE);
+                break;
+            case FAVORITES:
+                setTitle(FAVORITES);
+                Timber.tag(Constants.TAG).d("MainActivity: setScreenTitleByMenuSelected() called with: menuItemSelected = [" + menuItemSelected + "FAVOURITES = " + FAVORITES + "]");
                 break;
         }
     }
@@ -118,27 +114,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             menuItemSelected = POPULAR;
         } else {
             menuItemSelected = savedInstanceState.getString(MENU_ITEM_SELECTED);
+            Timber.tag(Constants.TAG).d("MainActivity: checkStateAfterOrientationChange() called with: menuItemSelected = [" + menuItemSelected + ", MENU_ITEM_SELECTED=  " + MENU_ITEM_SELECTED + "]");
         }
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
         if (menuItem != null) {
             menuItemSelected = menuItem.getTitle().toString();
         }
         Timber.tag(Constants.TAG).d("onSaveInstanceState() called with: outState = [" + menuItemSelected + "]");
         outState.putString(MENU_ITEM_SELECTED, menuItemSelected);
-    }
-
-    private void checkConnectivityAndCall(Context context, String path) {
-        if (isNetworkConnected(context)) {
-            activityMainBinding.setIsConnected(true);
-            setupViewModel(path);
-        } else {
-            activityMainBinding.setIsConnected(false);
-        }
     }
 
     private void swipeUpdateOperation() {
@@ -147,30 +134,56 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
         // Signal SwipeRefreshLayout to start the progress indicator
         swipeRefreshLayout.setRefreshing(true);
-        Timber.tag(Constants.TAG).d("onRefresh() called from SwipeRefreshLayout");
+        Timber.tag(Constants.TAG).d("onRefresh() called from SwipeRefreshLayout menuItemSelected = %s", menuItemSelected);
         checkConnectivityAndCall(this, menuItemSelected);
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void checkConnectivityAndCall(Context context, String menuItemSelected) {
+
+
+        if (isNetworkConnected(context)) {
+            showRecyclerView();
+            setupViewModel(menuItemSelected);
+        } else if (menuItemSelected.equals(FAVORITES) && !isNetworkConnected(context)) {
+            Timber.tag(Constants.TAG).d("MainActivity: checkConnectivityAndCall() called with: menuItemSelected.equals(FAVOURITES) = %s and !isNetworkConnected(context) = %s"
+                    , menuItemSelected.equals(FAVORITES), !isNetworkConnected(context));
+            showRecyclerView();
+            setupViewModel(FAVORITES);
+        } else if (!isNetworkConnected(context)) {
+            showErrorImage();
+        }
+    }
+
+    private void showErrorImage() {
+        activityMainBinding.recyclerView.setVisibility(View.GONE);
+        activityMainBinding.connectionErrorImageview.setVisibility(View.VISIBLE);
+    }
+
+    private void showRecyclerView() {
+        activityMainBinding.recyclerView.setVisibility(View.VISIBLE);
+        activityMainBinding.connectionErrorImageview.setVisibility(View.GONE);
     }
 
     private void setupViewModel(String path) {
 
         switch (path) {
             case POPULAR:
-                mainActivityViewModel.getPopularMovies().observe(this, new Observer<List<Movie>>() {
-                    @Override
-                    public void onChanged(List<Movie> movies) {
-                        Timber.tag(Constants.TAG).d("MainActivity: getPopularMovies Observed");
-                        adapter.setMovieData(movies);
-                    }
+                mainActivityViewModel.getPopularMovies().observe(this, movies -> {
+                    Timber.tag(Constants.TAG).d("MainActivity: getPopularMovies Observed");
+                    adapter.setMovieData(movies);
                 });
                 break;
             case TOP_RATED:
-                mainActivityViewModel.getTopRatedMovies().observe(this, new Observer<List<Movie>>() {
-                    @Override
-                    public void onChanged(List<Movie> movies) {
-                        Timber.tag(Constants.TAG).d("MainActivity: getTopRatedMovies Observed");
-                        adapter.setMovieData(movies);
-                    }
+                mainActivityViewModel.getTopRatedMovies().observe(this, movies -> {
+                    Timber.tag(Constants.TAG).d("MainActivity: getTopRatedMovies Observed");
+                    adapter.setMovieData(movies);
+                });
+                break;
+            case FAVORITES:
+                mainActivityViewModel.getFavoriteMovies().observe(this, movies -> {
+                    Timber.tag(Constants.TAG).d("MainActivity: getFavouriteMovies Observed");
+                    adapter.setMovieData(movies);
                 });
                 break;
         }
@@ -181,44 +194,49 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         activityMainBinding.recyclerView.setLayoutManager(gridLayoutManager);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
+    // TODO: try cleaning this a bit by separating maybe!
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
 
         if (itemId == R.id.menu_refresh) {
-            Timber.tag(Constants.TAG).d("Refresh menu item selected");
-
             // Start the refresh background task.
             // This method calls setRefreshing(false) when it's finished.
             swipeUpdateOperation();
             return true;
         } else if (itemId == R.id.sort_by_popularity) {
             menuItem = item;
+            Timber.tag(Constants.TAG).d("MainActivity: onOptionsItemSelected() called with: item = [" + item + "]");
             checkConnectivityAndCall(this, POPULAR);
             setTitle(POPULAR_MOVIES_TITLE);
             return true;
         } else if (itemId == R.id.sort_by_rating) {
             menuItem = item;
+            Timber.tag(Constants.TAG).d("MainActivity: onOptionsItemSelected() called with: item = [" + item + "]");
             checkConnectivityAndCall(this, TOP_RATED);
             setTitle(TOP_RATED_MOVIES_TITLE);
             return true;
-        } else if (itemId == R.id.favorite) {
-            setTitle("Favorites");
-
-            return super.onOptionsItemSelected(item);
+        } else if (itemId == R.id.favorites) {
+            menuItem = item;
+            Timber.tag(Constants.TAG).d("MainActivity: onOptionsItemSelected() called with: item = [" + item + "]");
+            checkConnectivityAndCall(this, FAVORITES);
+            setTitle(FAVORITES);
+            return true;
+        } else if (itemId == R.id.delete_all_favorites) {
+            AppExecutors.getInstance().diskIO().execute(() -> mainActivityViewModel.deleteAllFavoriteMovies());
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onListItemClick(Movie currentMovie) {
+    public void onMovieItemClicked(Movie currentMovie) {
         Intent mainToDetailIntent = new Intent(MainActivity.this, DetailActivity.class);
         mainToDetailIntent.putExtra(MOVIE_OBJECT, currentMovie);
         startActivity(mainToDetailIntent);

@@ -27,7 +27,7 @@ public class BindingAdapters {
         }
     }
 
-    @BindingAdapter("BackDropUrl")
+    @BindingAdapter("backDropUrl")
     public static void loadBackground(ImageView imageView, String url) {
         if (!TextUtils.isEmpty(url)) {
             Glide.with(imageView.getContext())

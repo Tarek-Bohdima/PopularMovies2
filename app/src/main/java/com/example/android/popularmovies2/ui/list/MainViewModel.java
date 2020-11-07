@@ -23,9 +23,10 @@ import timber.log.Timber;
 
 public class MainViewModel extends AndroidViewModel {
 
-    private LiveData<List<Movie>> popularMoviesLiveData;
-    private LiveData<List<Movie>> topRatedMoviesLiveData;
-    private AppRepository appRepository;
+    private final LiveData<List<Movie>> popularMoviesLiveData;
+    private final LiveData<List<Movie>> topRatedMoviesLiveData;
+    private final LiveData<List<Movie>> favoriteMoviesLiveData;
+    private final AppRepository appRepository;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -34,16 +35,27 @@ public class MainViewModel extends AndroidViewModel {
         Timber.tag(Constants.TAG).d("MainViewModel: get AppRepository instance");
         popularMoviesLiveData = appRepository.getPopularMovies();
         topRatedMoviesLiveData = appRepository.getTopRatedMovies();
+        favoriteMoviesLiveData = appRepository.getAllFavoriteMovies();
     }
 
     public LiveData<List<Movie>> getPopularMovies() {
-        Timber.tag(Constants.TAG).d("MainViewModel: getPopularMovies");
+        Timber.tag(Constants.TAG).d("MainViewModel: getPopularMovies() called");
         return popularMoviesLiveData;
     }
 
     public LiveData<List<Movie>> getTopRatedMovies() {
-        Timber.tag(Constants.TAG).d("MainViewModel: getTopRatedMovies");
+        Timber.tag(Constants.TAG).d("MainViewModel: getTopRatedMovies() called");
         return topRatedMoviesLiveData;
+    }
+
+    public LiveData<List<Movie>> getFavoriteMovies() {
+        Timber.tag(Constants.TAG).d("MainViewModel: getFavoriteMovies() called");
+        return favoriteMoviesLiveData;
+    }
+
+    public void deleteAllFavoriteMovies() {
+        Timber.tag(Constants.TAG).d("MainViewModel: deleteAllFavoriteMovies() called");
+        appRepository.deleteAllFavoriteMovies();
     }
 
     @Override

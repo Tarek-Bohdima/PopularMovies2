@@ -7,7 +7,6 @@
 package com.example.android.popularmovies2.ui.list;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -22,21 +21,12 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
-    private static final String BASE_IMAGE_URL = "https://image.tmdb.org/t/p/";
-    final private MovieAdapterClickListener onClickListener;
+    private final MovieItemClickListener movieItemClickListener;
     private List<Movie> moviesArrayList;
 
-    public MovieAdapter(List<Movie> moviesArrayList, MovieAdapterClickListener onClickListener) {
+    public MovieAdapter(List<Movie> moviesArrayList, MovieItemClickListener onClickListener) {
         this.moviesArrayList = moviesArrayList;
-        this.onClickListener = onClickListener;
-    }
-
-    public static String buildPosterImageUrl(String filepath) {
-        return BASE_IMAGE_URL + "w185/" + filepath;
-    }
-
-    public static String buildBackdropImageUrl(String filepath) {
-        return BASE_IMAGE_URL + "w500" + filepath;
+        this.movieItemClickListener = onClickListener;
     }
 
     @NonNull
@@ -54,9 +44,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
 
-        holder.bind();
-        Movie currentMovie = moviesArrayList.get(position);
-        holder.itemBinding.setUrl(buildPosterImageUrl(currentMovie.getPosterPath()));
+        holder.bind(moviesArrayList.get(position), movieItemClickListener);
     }
 
     @Override
@@ -69,28 +57,25 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         notifyDataSetChanged();
     }
 
-    public interface MovieAdapterClickListener {
-        void onListItemClick(Movie currentMovie);
+
+    public interface MovieItemClickListener {
+        void onMovieItemClicked(Movie movie);
     }
 
-    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MovieViewHolder extends RecyclerView.ViewHolder {
 
-        MovieListItemBinding itemBinding;
+        final MovieListItemBinding itemBinding;
 
         MovieViewHolder(MovieListItemBinding itemBinding) {
             super(itemBinding.getRoot());
             this.itemBinding = itemBinding;
         }
 
-        public void bind() {
-            itemBinding.posterImg.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int clickedPosition = getAdapterPosition();
-            Movie currentMovie = moviesArrayList.get(clickedPosition);
-            onClickListener.onListItemClick(currentMovie);
+        public void bind(Movie currentMovie, MovieItemClickListener movieItemClickListener) {
+            itemBinding.setMovie(currentMovie);
+            itemBinding.setMovieItemClick(movieItemClickListener);
+            //This is to force bindings to execute right away
+            itemBinding.executePendingBindings();
         }
     }
 }
