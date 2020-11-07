@@ -80,6 +80,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
             String key = trailer.getKey();
             trailerItemBinding.trailerTitle.setText(trailer.getName());
             trailerItemBinding.trailerTitle.setOnClickListener(v -> watchYoutubeVideo(context, key));
+            trailerItemBinding.executePendingBindings();
         }
     }
 }

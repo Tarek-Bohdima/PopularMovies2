@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.android.popularmovies2.AppExecutors;
@@ -49,9 +50,11 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activityDetailBinding = ActivityDetailBinding.inflate(getLayoutInflater());
-        View view = activityDetailBinding.getRoot();
-        setContentView(view);
+//        activityDetailBinding = ActivityDetailBinding.inflate(getLayoutInflater());
+//        View view = activityDetailBinding.getRoot();
+//        setContentView(view);
+        activityDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
+        activityDetailBinding.setLifecycleOwner(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent extraIntent = getIntent();
         if (extraIntent != null) {

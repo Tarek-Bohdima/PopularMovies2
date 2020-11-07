@@ -67,6 +67,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
             reviewItemBinding.expandTextView.setOnExpandStateChangeListener((textView, isExpanded) -> {
 
             });
+            reviewItemBinding.executePendingBindings();
         }
     }
 }
