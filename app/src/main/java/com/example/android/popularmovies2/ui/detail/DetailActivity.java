@@ -94,7 +94,6 @@ public class DetailActivity extends AppCompatActivity {
                 Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called ");
             }
         }));
-        activityDetailBinding.executePendingBindings();
     }
 
     private void setupViewModel() {

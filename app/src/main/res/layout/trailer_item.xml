@@ -4,19 +4,26 @@
   ~ Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardBackgroundColor="@color/colorPrimary">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/trailer_title"
-        style="@style/detail_text_medium"
-        android:layout_width="wrap_content"
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorAccent"
-        tools:text="@tools:sample/lorem" />
-</LinearLayout>
+        android:layout_margin="8dp"
+        app:cardBackgroundColor="@color/colorPrimary">
+
+        <TextView
+            android:id="@+id/trailer_title"
+            style="@style/detail_text_medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            tools:text="@tools:sample/lorem" />
+    </LinearLayout>
+</layout>
