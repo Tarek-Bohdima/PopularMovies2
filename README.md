@@ -4,7 +4,7 @@ This product uses the TMDb API but is not endorsed or certified by TMDb.
 
 This is the second project in Udacity Android Nanodegree course purely for educational purposes
 
-Stage 2: Trailers, Reviews, and Favorites
+## Stage 2: Trailers, Reviews, and Favorites
 
 User Experience
 In this stage you’ll add additional functionality to the app you built in Stage 1.
@@ -32,7 +32,7 @@ Specifications:
 
 Kindly note that you will need an API Key from [TMDB.org][1]. in order to build and try this application
 
-Add the following line to [USER_HOME]/.gradle/gradle.properties
+Add the following line to \[USER_HOME]/.gradle/gradle.properties
 
 For Windows OS, example for Denis user:
 
@@ -46,4 +46,8 @@ find the gradle.properties file and write in it :
 
 <img src="ScreenShots/device-2020-05-05-120708.png" width="300">    <img src="ScreenShots/device-2020-05-05-123133.png" width="300">
 
-<img src="ScreenShots/device-2020-05-05-123223.png" width="300">    <img src="ScreenShots/device-2020-05-05-123342.png" width="300">
+ <img src="ScreenShots/device-2020-05-05-123342.png" width="300">   <img src="ScreenShots/device-2020-11-08-105458.png" width="300">
+
+<img src="ScreenShots/device-2020-11-08-105028.png" width="300">    <img src="ScreenShots/device-2020-11-08-105205.png" width="300">
+
+<img src="ScreenShots/device-2020-05-05-123223.png" width="300">
