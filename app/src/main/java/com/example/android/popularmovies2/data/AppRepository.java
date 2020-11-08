@@ -8,6 +8,7 @@ package com.example.android.popularmovies2.data;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.android.popularmovies2.AppExecutors;
 import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.data.local.LocalDataSource;
 import com.example.android.popularmovies2.data.model.Movie;
@@ -66,17 +67,32 @@ public class AppRepository {
 
     public void insertFavoriteMovie(Movie movie) {
         Timber.tag(Constants.TAG).d("AppRepository: insertFavoriteMovie() called with: movie = [ %s ]", movie);
-        localDataSource.insertMovie(movie);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                localDataSource.insertMovie(movie);
+            }
+        });
     }
 
     public void deleteFavoriteMovie(Movie movie) {
         Timber.tag(Constants.TAG).d("AppRepository: deleteFavoriteMovie() called with: movie = [ %s ]", movie);
-        localDataSource.deleteMovie(movie);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                localDataSource.deleteMovie(movie);
+            }
+        });
     }
 
     public void deleteAllFavoriteMovies() {
         Timber.tag(Constants.TAG).d("AppRepository: deleteAllFavoriteMovies() called");
-        localDataSource.deleteAllMovies();
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                localDataSource.deleteAllMovies();
+            }
+        });
     }
 
     public void clearDisposables() {

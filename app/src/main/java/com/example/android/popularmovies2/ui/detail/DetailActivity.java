@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.android.popularmovies2.AppExecutors;
 import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
@@ -50,9 +49,6 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        activityDetailBinding = ActivityDetailBinding.inflate(getLayoutInflater());
-//        View view = activityDetailBinding.getRoot();
-//        setContentView(view);
         activityDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
         activityDetailBinding.setLifecycleOwner(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -84,7 +80,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void toggleLikeMovie() {
-        activityDetailBinding.like.setOnClickListener(v -> AppExecutors.getInstance().diskIO().execute(() -> {
+        activityDetailBinding.like.setOnClickListener(v -> {
             if (isFavorite) {
                 Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called , detailMovie = %s ", detailMovie);
                 detailViewModel.deleteFavoriteMovie(detailMovie);
@@ -92,7 +88,7 @@ public class DetailActivity extends AppCompatActivity {
                 detailViewModel.insertFavoriteMovie(detailMovie);
                 Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called ");
             }
-        }));
+        });
     }
 
     private void setupViewModel() {

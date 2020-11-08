@@ -22,7 +22,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.android.popularmovies2.AppExecutors;
 import com.example.android.popularmovies2.Constants;
 import com.example.android.popularmovies2.R;
 import com.example.android.popularmovies2.data.model.Movie;
@@ -139,56 +138,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    private void checkConnectivityAndCall(Context context, String menuItemSelected) {
-
-
-        if (isNetworkConnected(context)) {
-            showRecyclerView();
-            setupViewModel(menuItemSelected);
-        } else if (menuItemSelected.equals(FAVORITES) && !isNetworkConnected(context)) {
-            Timber.tag(Constants.TAG).d("MainActivity: checkConnectivityAndCall() called with: menuItemSelected.equals(FAVOURITES) = %s and !isNetworkConnected(context) = %s"
-                    , menuItemSelected.equals(FAVORITES), !isNetworkConnected(context));
-            showRecyclerView();
-            setupViewModel(FAVORITES);
-        } else if (!isNetworkConnected(context)) {
-            showErrorImage();
-        }
-    }
-
-    private void showErrorImage() {
-        activityMainBinding.recyclerView.setVisibility(View.GONE);
-        activityMainBinding.connectionErrorImageview.setVisibility(View.VISIBLE);
-    }
-
-    private void showRecyclerView() {
-        activityMainBinding.recyclerView.setVisibility(View.VISIBLE);
-        activityMainBinding.connectionErrorImageview.setVisibility(View.GONE);
-    }
-
-    private void setupViewModel(String path) {
-
-        switch (path) {
-            case POPULAR:
-                mainActivityViewModel.getPopularMovies().observe(this, movies -> {
-                    Timber.tag(Constants.TAG).d("MainActivity: getPopularMovies Observed");
-                    adapter.setMovieData(movies);
-                });
-                break;
-            case TOP_RATED:
-                mainActivityViewModel.getTopRatedMovies().observe(this, movies -> {
-                    Timber.tag(Constants.TAG).d("MainActivity: getTopRatedMovies Observed");
-                    adapter.setMovieData(movies);
-                });
-                break;
-            case FAVORITES:
-                mainActivityViewModel.getFavoriteMovies().observe(this, movies -> {
-                    Timber.tag(Constants.TAG).d("MainActivity: getFavouriteMovies Observed");
-                    adapter.setMovieData(movies);
-                });
-                break;
-        }
-    }
-
     private void setGridLayoutManager(Context context, int spanCount) {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, spanCount);
         activityMainBinding.recyclerView.setLayoutManager(gridLayoutManager);
@@ -229,10 +178,59 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             setTitle(FAVORITES);
             return true;
         } else if (itemId == R.id.delete_all_favorites) {
-            AppExecutors.getInstance().diskIO().execute(() -> mainActivityViewModel.deleteAllFavoriteMovies());
+            mainActivityViewModel.deleteAllFavoriteMovies();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void checkConnectivityAndCall(Context context, String menuItemSelected) {
+
+        if (isNetworkConnected(context)) {
+            showRecyclerView();
+            setupViewModel(menuItemSelected);
+        } else if (menuItemSelected.equals(FAVORITES) && !isNetworkConnected(context)) {
+            Timber.tag(Constants.TAG).d("MainActivity: checkConnectivityAndCall() called with: menuItemSelected.equals(FAVOURITES) = %s and !isNetworkConnected(context) = %s"
+                    , menuItemSelected.equals(FAVORITES), !isNetworkConnected(context));
+            showRecyclerView();
+            setupViewModel(FAVORITES);
+        } else if (!isNetworkConnected(context)) {
+            showErrorImage();
+        }
+    }
+
+    private void showRecyclerView() {
+        activityMainBinding.recyclerView.setVisibility(View.VISIBLE);
+        activityMainBinding.connectionErrorImageview.setVisibility(View.GONE);
+    }
+
+    private void showErrorImage() {
+        activityMainBinding.recyclerView.setVisibility(View.GONE);
+        activityMainBinding.connectionErrorImageview.setVisibility(View.VISIBLE);
+    }
+
+    private void setupViewModel(String path) {
+
+        switch (path) {
+            case POPULAR:
+                mainActivityViewModel.getPopularMovies().observe(this, movies -> {
+                    Timber.tag(Constants.TAG).d("MainActivity: getPopularMovies Observed");
+                    adapter.setMovieData(movies);
+                });
+                break;
+            case TOP_RATED:
+                mainActivityViewModel.getTopRatedMovies().observe(this, movies -> {
+                    Timber.tag(Constants.TAG).d("MainActivity: getTopRatedMovies Observed");
+                    adapter.setMovieData(movies);
+                });
+                break;
+            case FAVORITES:
+                mainActivityViewModel.getFavoriteMovies().observe(this, movies -> {
+                    Timber.tag(Constants.TAG).d("MainActivity: getFavouriteMovies Observed");
+                    adapter.setMovieData(movies);
+                });
+                break;
+        }
     }
 
     @Override
