@@ -50,4 +50,4 @@ find the gradle.properties file and write in it :
 
 <img src="ScreenShots/device-2020-11-08-105028.png" width="300">    <img src="ScreenShots/device-2020-11-08-105205.png" width="300">
 
-<img src="ScreenShots/device-2020-05-05-123223.png" width="300">
+<img src="ScreenShots/device-2020-05-05-123223.png" width="600">
