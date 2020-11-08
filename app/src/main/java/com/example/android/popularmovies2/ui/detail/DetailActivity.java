@@ -35,7 +35,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private final List<Review> reviewList = new ArrayList<>();
     private final List<Trailer> trailersList = new ArrayList<>();
-    DetailViewModel detailViewModel;
+    private DetailViewModel detailViewModel;
     private ActivityDetailBinding activityDetailBinding;
     private String movieId;
     private ReviewsAdapter reviewsAdapter;
@@ -73,20 +73,24 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish();
+            super.onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void toggleLikeMovie() {
-        activityDetailBinding.like.setOnClickListener(v -> {
-            if (isFavorite) {
-                Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called , detailMovie = %s ", detailMovie);
-                detailViewModel.deleteFavoriteMovie(detailMovie);
-            } else {
-                detailViewModel.insertFavoriteMovie(detailMovie);
-                Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called ");
+        activityDetailBinding.like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isFavorite) {
+                    Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called , detailMovie = %s ", detailMovie);
+                    detailViewModel.deleteFavoriteMovie(detailMovie);
+                } else {
+                    detailViewModel.insertFavoriteMovie(detailMovie);
+                    Timber.tag(Constants.TAG).d("DetailActivity: likeDislikeMovie() called ");
+                }
+                activityDetailBinding.executePendingBindings();
             }
         });
     }

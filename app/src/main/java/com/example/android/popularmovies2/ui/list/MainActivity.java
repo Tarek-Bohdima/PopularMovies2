@@ -39,13 +39,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public static final String MOVIE_OBJECT = "movie_object";
     private static final String POPULAR = "Popular";
     private static final String TOP_RATED = "Top Rated";
-    public static final String FAVORITES = "Favorites";
+    private static final String FAVORITES = "Favorites";
     private final String MENU_ITEM_SELECTED = "menuItemSelected";
     private final String POPULAR_MOVIES_TITLE = "Popular Movies";
     private final String TOP_RATED_MOVIES_TITLE = "Top Rated Movies";
     private final List<Movie> movieList = new ArrayList<>();
-    ActivityMainBinding activityMainBinding;
-    MainViewModel mainActivityViewModel;
+    private ActivityMainBinding activityMainBinding;
+    private MainViewModel mainActivityViewModel;
     private MovieAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private MenuItem menuItem;
@@ -58,10 +58,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         activityMainBinding.setLifecycleOwner(this);
         mainActivityViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         changeSpanCountByOrientation();
-        setRecyclerView();
+
         checkStateAfterOrientationChange(savedInstanceState);
         setScreenTitleByMenuSelected(menuItemSelected);
+        setRecyclerView();
+        swipeToRefresh();
         checkConnectivityAndCall(this, menuItemSelected);
+    }
+
+    private void swipeToRefresh() {
         swipeRefreshLayout = activityMainBinding.swiperefresh;
         /*
          * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
