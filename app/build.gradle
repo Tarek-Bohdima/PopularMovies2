@@ -29,7 +29,15 @@ android {
 
     // for hiding the API key credits to: https://stackoverflow.com/a/34021467/8899344
     buildTypes.each {
-        it.buildConfigField 'String', 'TMDB_API_KEY', myTMDBApiKey
+        try{
+            it.buildConfigField 'String', 'TMDB_API_KEY', myTMDBApiKey
+        }
+        catch (exception){
+            throw new InvalidUserDataException(
+                    " API key Missing: Kindly Check README for supplying your API key from TMDB.org"
+            )
+        }
+
     }
 
     compileOptions {
