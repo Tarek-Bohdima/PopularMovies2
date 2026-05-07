@@ -1,5 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 // Sourced from ~/.gradle/gradle.properties (local) or ORG_GRADLE_PROJECT_myTMDBApiKey (CI).
@@ -20,6 +23,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Required because minSdk 19 (< 21) cannot fit kotlin-stdlib + AndroidX + Dagger
+        // generated code under the 64K dex method limit. The minSdk bump to 21 (forced
+        // by the upcoming Compose migration) will let us drop multidex.
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -39,6 +47,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 
     buildFeatures {
@@ -61,6 +73,7 @@ dependencies {
     implementation(libs.jetbrains.annotations)
 
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.multidex)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.recyclerview)
@@ -78,15 +91,15 @@ dependencies {
 
     // Room
     implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.compiler)
+    kapt(libs.androidx.room.compiler)
 
     // Dagger (legacy — slated for replacement by Hilt)
     implementation(libs.dagger)
-    annotationProcessor(libs.dagger.compiler)
+    kapt(libs.dagger.compiler)
 
     // Glide (legacy — slated for replacement by Coil)
     implementation(libs.glide)
-    annotationProcessor(libs.glide.compiler)
+    kapt(libs.glide.compiler)
 
     implementation(libs.timber)
     implementation(libs.expandable.textview)
