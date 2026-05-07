@@ -28,7 +28,7 @@ rxjava3 = "3.0.7"
 rxandroid = "3.0.0"
 
 # DI (legacy — slated for replacement by Hilt)
-dagger = "2.28.3"
+dagger = "2.50"
 
 # Imaging (legacy — slated for replacement by Coil)
 glide = "4.11.0"

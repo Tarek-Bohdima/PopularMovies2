@@ -3,16 +3,10 @@
  * As part of Udacity Honor code, your submissions must be your own work, hence submitting this project as yours will cause you to break the Udacity Honor Code and the suspension of your account.
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
+package com.example.android.popularmovies2.di.scopes
 
-package com.example.android.popularmovies2.di.scopes;
-
-import java.lang.annotation.Retention;
-
-import javax.inject.Scope;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.inject.Scope
 
 @Scope
-@Retention(RUNTIME)
-public @interface ApplicationScope {
-}
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ApplicationScope

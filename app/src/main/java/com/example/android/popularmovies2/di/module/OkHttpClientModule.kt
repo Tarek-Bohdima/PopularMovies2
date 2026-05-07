@@ -3,29 +3,14 @@
  * As part of Udacity Honor code, your submissions must be your own work, hence submitting this project as yours will cause you to break the Udacity Honor Code and the suspension of your account.
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
+package com.example.android.popularmovies2.di.module
 
-package com.example.android.popularmovies2.di.module;
-
-import android.content.Context;
-
-import com.example.android.popularmovies2.di.scopes.ApplicationScope;
-
-import dagger.Module;
-import dagger.Provides;
+import dagger.Module
+import dagger.Provides
+import okhttp3.OkHttpClient
 
 @Module
-public class ContextModule {
-
-    private final Context context;
-
-    public ContextModule(Context context) {
-        this.context = context;
-    }
-
+class OkHttpClientModule {
     @Provides
-    @ApplicationScope
-    public Context provideContext() {
-        return context.getApplicationContext();
-    }
-
+    fun okHttpClient(): OkHttpClient = OkHttpClient().newBuilder().build()
 }
