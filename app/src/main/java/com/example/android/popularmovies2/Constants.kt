@@ -3,27 +3,8 @@
  * As part of Udacity Honor code, your submissions must be your own work, hence submitting this project as yours will cause you to break the Udacity Honor Code and the suspension of your account.
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
+package com.example.android.popularmovies2
 
-package com.example.android.popularmovies2.data.model;
-
-import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
-
-public class TrailerList {
-
-    @SerializedName("id")
-    private Integer movieId;
-
-    @SerializedName("results")
-    private final List<Trailer> trailers = null;
-
-    public Integer getMovieId() {
-        return movieId;
-    }
-
-    // use this to get list of trailers.
-    public List<Trailer> getTrailers() {
-        return trailers;
-    }
+object Constants {
+    const val TAG = "MyApp"
 }

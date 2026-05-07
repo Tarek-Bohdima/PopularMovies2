@@ -3,33 +3,22 @@
  * As part of Udacity Honor code, your submissions must be your own work, hence submitting this project as yours will cause you to break the Udacity Honor Code and the suspension of your account.
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
+package com.example.android.popularmovies2.data.model
 
-package com.example.android.popularmovies2.data.model;
+import com.google.gson.annotations.SerializedName
 
-import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
-
-public class ReviewsList {
+class ReviewsList {
     @SerializedName("id")
-    private Integer movieId;
+    val movieId: Int? = null
 
-    private Integer page;
+    val page: Int? = null
 
     @SerializedName("results")
-    private final List<Review> reviews = null;
+    private val reviews: List<Review>? = null
 
-    private Integer totalPages;
+    val totalPages: Int? = null
 
-    private Integer totalReviews;
+    val totalReviews: Int? = null
 
-    public Integer getMovieId() {
-        return movieId;
-    }
-
-    // Use this to get list of reviews.
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
+    fun getReviews(): List<Review>? = reviews
 }
