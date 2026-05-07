@@ -21,7 +21,7 @@ Android app — Udacity Android Developer Nanodegree "Popular Movies" Stage 2 su
 | Language | **Kotlin (idiomatic)** | Java |
 | UI | **Jetpack Compose** | XML layouts + DataBinding/ViewBinding |
 | Architecture | **MVVM + UDF** (immutable `UiState` data class, `StateFlow` from `ViewModel`, state hoisted into Composables) | LiveData-driven Activities |
-| Async | **Coroutines + Flow / StateFlow** | RxJava 3, LiveData |
+| Async | **Coroutines + Flow / StateFlow** — no `Single`/`Observable`, no `LiveData` | RxJava 3, LiveData |
 | DI | **Hilt** | Dagger 2 (manual `@Component`) |
 | Annotation processing | **KSP** | kapt / `annotationProcessor` |
 | Build | **Gradle Kotlin DSL** + **`gradle/libs.versions.toml`** version catalog + convention plugins in `build-logic/` | Groovy `build.gradle` with hardcoded versions |
@@ -31,7 +31,7 @@ Android app — Udacity Android Developer Nanodegree "Popular Movies" Stage 2 su
 | Image loading | **Coil** (Compose-native) | Glide |
 | Navigation | **Navigation-Compose** (or Navigation 3 when stable — see android/skills `navigation-3`) | Activity-to-Activity Intents |
 | Local persistence (structured) | Room (keep) — but expose Flows, not LiveData | Room with LiveData DAO methods |
-| Local persistence (key/value) | **DataStore** (Preferences DataStore for simple key/value, Proto DataStore for typed) | SharedPreferences |
+| Local persistence (key/value) | **DataStore** (Preferences DataStore for simple key/value, Proto DataStore for typed). **Forbidden: `SharedPreferences`, `PreferenceManager`, `getDefaultSharedPreferences`, anything in `androidx.preference:*`.** | SharedPreferences |
 | Networking | Retrofit + OkHttp + **kotlinx.serialization** + coroutine `suspend` functions | Retrofit + Gson + RxJava `Single` |
 | JSON | **kotlinx.serialization** (compile-time, no reflection). If Moshi is unavoidable in some module, use **Moshi codegen** (`com.squareup.moshi:moshi-kotlin-codegen` via KSP) — never the reflective `KotlinJsonAdapterFactory`. | Gson |
 
