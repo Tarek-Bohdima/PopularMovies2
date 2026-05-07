@@ -3,17 +3,17 @@
  * As part of Udacity Honor code, your submissions must be your own work, hence submitting this project as yours will cause you to break the Udacity Honor Code and the suspension of your account.
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
+package com.example.android.popularmovies2.data.local
 
-package com.example.android.popularmovies2.data.local;
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import com.example.android.popularmovies2.data.model.Movie
 
-import androidx.room.Database;
-import androidx.room.RoomDatabase;
+@Database(entities = [Movie::class], version = 1, exportSchema = false)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun movieDao(): MovieDao
 
-import com.example.android.popularmovies2.data.model.Movie;
-
-@Database(entities = {Movie.class}, version = 1, exportSchema = false)
-public abstract class AppDatabase extends RoomDatabase {
-    public static final String DATABASE_NAME = "favorite_movies.db";
-
-    public abstract MovieDao movieDao();
+    companion object {
+        const val DATABASE_NAME = "favorite_movies.db"
+    }
 }
