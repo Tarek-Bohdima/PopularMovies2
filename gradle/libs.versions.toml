@@ -1,0 +1,110 @@
+[versions]
+# Build / toolchain
+agp = "7.4.2"
+
+# AndroidX
+appcompat = "1.2.0"
+constraintlayout = "2.0.4"
+coordinatorlayout = "1.1.0"
+recyclerview = "1.1.0"
+swiperefreshlayout = "1.1.0"
+material = "1.2.1"
+
+# Lifecycle (legacy — slated for removal with the Coroutines/Flow migration)
+lifecycle = "2.2.0"
+
+# Data persistence
+room = "2.2.5"
+
+# Networking
+retrofit = "2.9.0"
+okhttp = "4.9.0"
+rxjava3-retrofit-adapter = "2.9.0"
+
+# Reactive (legacy — slated for removal with the Coroutines/Flow migration)
+rxjava3 = "3.0.7"
+rxandroid = "3.0.0"
+
+# DI (legacy — slated for replacement by Hilt)
+dagger = "2.28.3"
+
+# Imaging (legacy — slated for replacement by Coil)
+glide = "4.11.0"
+
+# Misc
+timber = "4.7.1"
+expandable-textview = "0.1.4"
+jetbrains-annotations = "16.0.1"
+
+# Test
+junit = "4.13.2"
+androidx-test-ext-junit = "1.1.5"
+espresso = "3.5.1"
+
+[libraries]
+# AndroidX
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+androidx-coordinatorlayout = { module = "androidx.coordinatorlayout:coordinatorlayout", version.ref = "coordinatorlayout" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
+google-material = { module = "com.google.android.material:material", version.ref = "material" }
+
+# Lifecycle (legacy)
+androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
+androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata", version.ref = "lifecycle" }
+androidx-lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycle" }
+
+# Room
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+# Retrofit / OkHttp
+square-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+square-retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+square-retrofit-adapter-rxjava3 = { module = "com.squareup.retrofit2:adapter-rxjava3", version.ref = "rxjava3-retrofit-adapter" }
+square-okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+
+# RxJava (legacy)
+rxjava3-core = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava3" }
+rxjava3-android = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroid" }
+
+# Dagger (legacy — replaced by Hilt)
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+
+# Glide (legacy — replaced by Coil)
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+
+# Misc
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+expandable-textview = { module = "com.ms-square:expandableTextView", version.ref = "expandable-textview" }
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+
+# Test
+junit = { module = "junit:junit", version.ref = "junit" }
+androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-ext-junit" }
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+
+[bundles]
+lifecycle-legacy = [
+    "androidx-lifecycle-extensions",
+    "androidx-lifecycle-viewmodel",
+    "androidx-lifecycle-livedata",
+    "androidx-lifecycle-common-java8",
+]
+retrofit = [
+    "square-retrofit",
+    "square-retrofit-converter-gson",
+    "square-retrofit-adapter-rxjava3",
+    "square-okhttp-logging-interceptor",
+]
+rxjava-legacy = [
+    "rxjava3-core",
+    "rxjava3-android",
+]
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
