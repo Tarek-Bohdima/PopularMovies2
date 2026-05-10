@@ -13,21 +13,16 @@ val myTMDBApiKey: String by project
 
 android {
     namespace = "com.example.android.popularmovies2"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.android.popularmovies2"
-        minSdk = 19
+        minSdk = 21
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // Required because minSdk 19 (< 21) cannot fit kotlin-stdlib + AndroidX + Dagger
-        // generated code under the 64K dex method limit. The minSdk bump to 21 (forced
-        // by the upcoming Compose migration) will let us drop multidex.
-        multiDexEnabled = true
     }
 
     buildTypes {
@@ -73,7 +68,6 @@ dependencies {
     implementation(libs.jetbrains.annotations)
 
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.multidex)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.recyclerview)
