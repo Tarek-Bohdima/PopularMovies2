@@ -44,10 +44,24 @@ find the gradle.properties file and write in it :
 
 [1]:https://developers.themoviedb.org/3/getting-started/introduction
 
-<img src="ScreenShots/device-2020-05-05-120708.png" width="300">    <img src="ScreenShots/device-2020-05-05-123133.png" width="300">
+## Screenshots
 
- <img src="ScreenShots/device-2020-05-05-123342.png" width="300">   <img src="ScreenShots/device-2020-11-08-105458.png" width="300">
+### Portrait
 
-<img src="ScreenShots/device-2020-11-08-105028.png" width="300">    <img src="ScreenShots/device-2020-11-08-105205.png" width="300">
+| Popular | Top Rated | Favorites |
+| --- | --- | --- |
+| <img src="ScreenShots/01-popular-portrait.png" width="240"> | <img src="ScreenShots/02-top-rated-portrait.png" width="240"> | <img src="ScreenShots/03-favorites-portrait.png" width="240"> |
 
-<img src="ScreenShots/device-2020-05-05-123223.png" width="600">
+| Detail | Trailers |
+| --- | --- |
+| <img src="ScreenShots/04-detail-portrait.png" width="240"> | <img src="ScreenShots/05-trailers-portrait.png" width="240"> |
+
+### Landscape
+
+| Popular | Top Rated |
+| --- | --- |
+| <img src="ScreenShots/06-popular-landscape.png" width="480"> | <img src="ScreenShots/07-top-rated-landscape.png" width="480"> |
+
+| Favorites | Detail |
+| --- | --- |
+| <img src="ScreenShots/08-favorites-landscape.png" width="480"> | <img src="ScreenShots/09-detail-landscape.png" width="480"> |
