@@ -107,15 +107,19 @@ Once Detekt/Spotless/Kover are wired:
 
 ---
 
-## 6. Current SDK / toolchain (legacy state)
+## 6. Current SDK / toolchain
 
-- `compileSdk` 29, `targetSdk` 29, `minSdk` 19, Build Tools 29.0.3
-- Java 8 source/target
-- AGP 4.1.0, repos: `google()` + `jcenter()` (**jcenter is dead** — adding new deps not already cached requires migrating to `mavenCentral()` first)
-- DataBinding *and* ViewBinding both enabled (`app/build.gradle:48-52`)
-- ProGuard/R8 disabled in release (`minifyEnabled false`)
+- `compileSdk` 34, `targetSdk` 33, `minSdk` 21
+- Java 8 source/target (Kotlin `jvmTarget = "1.8"`)
+- AGP 9.2.1, Gradle 9.4.1, Kotlin 2.2.10 (kapt still in use; KSP migration is a follow-up)
+- Repos: `google()` + `mavenCentral()` (jcenter removed)
+- Daemon JVM pinned to JDK 17 via `gradle/gradle-daemon-jvm.properties`; `org.gradle.toolchains.foojay-resolver-convention` 0.10.0 enabled in `settings.gradle.kts`
+- DataBinding *and* ViewBinding both enabled (`app/build.gradle.kts:56-60`) — both slated for removal in the Compose migration
+- Multidex dropped — `minSdk = 21` makes the 64K dex limit a non-issue
+- ProGuard/R8 disabled in release (`isMinifyEnabled = false`)
+- `gradle.properties` carries AGP-9-upgrade-utility stability flags pinning AGP-7-era behavior (`android.nonTransitiveRClass=false`, `android.newDsl=false`, etc.). These are deprecated and emit warnings; they should be flipped one at a time in follow-up issues.
 
-These will all change as the modernization lands. AGP 4 → 9 migration should use the `agp-9-upgrade` skill from `github.com/android/skills`.
+Bumped together with AGP 9 to avoid Kotlin-2.2-metadata kapt failures: Dagger 2.50 → 2.56.2, Room 2.2.5 → 2.7.2, Glide 4.11.0 → 4.16.0. Each is still slated for replacement (Hilt / Coroutines+Flow / Coil) per §2.
 
 ---
 

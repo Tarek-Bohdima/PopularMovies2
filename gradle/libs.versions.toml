@@ -1,11 +1,10 @@
 [versions]
 # Build / toolchain
-agp = "7.4.2"
-kotlin = "1.9.25"
+agp = "9.2.1"
+kotlin = "2.2.10"
 
 # AndroidX
 appcompat = "1.2.0"
-multidex = "2.0.1"
 constraintlayout = "2.0.4"
 coordinatorlayout = "1.1.0"
 recyclerview = "1.1.0"
@@ -16,7 +15,7 @@ material = "1.2.1"
 lifecycle = "2.2.0"
 
 # Data persistence
-room = "2.2.5"
+room = "2.7.2"
 
 # Networking
 retrofit = "2.9.0"
@@ -28,10 +27,10 @@ rxjava3 = "3.0.7"
 rxandroid = "3.0.0"
 
 # DI (legacy — slated for replacement by Hilt)
-dagger = "2.50"
+dagger = "2.56.2"
 
 # Imaging (legacy — slated for replacement by Coil)
-glide = "4.11.0"
+glide = "4.16.0"
 
 # Misc
 timber = "4.7.1"
@@ -46,7 +45,6 @@ espresso = "3.5.1"
 [libraries]
 # AndroidX
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
-androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-coordinatorlayout = { module = "androidx.coordinatorlayout:coordinatorlayout", version.ref = "coordinatorlayout" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }

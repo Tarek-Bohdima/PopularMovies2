@@ -5,7 +5,7 @@
  */
 package com.example.android.popularmovies2
 
-import androidx.multidex.MultiDexApplication
+import android.app.Application
 import com.example.android.popularmovies2.di.component.DaggerMovieComponent
 import com.example.android.popularmovies2.di.component.MovieComponent
 import com.example.android.popularmovies2.di.module.ContextModule
@@ -13,7 +13,7 @@ import com.example.android.popularmovies2.di.module.NetworkModule
 import com.example.android.popularmovies2.di.module.OkHttpClientModule
 import timber.log.Timber
 
-class MoviesApp : MultiDexApplication() {
+class MoviesApp : Application() {
     lateinit var movieComponent: MovieComponent
         private set
 
