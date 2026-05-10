@@ -5,19 +5,14 @@
  */
 package com.example.android.popularmovies2.ui.list
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import com.example.android.popularmovies2.Constants
-import com.example.android.popularmovies2.MoviesApp
 import com.example.android.popularmovies2.data.AppRepository
 import com.example.android.popularmovies2.data.model.Movie
 import timber.log.Timber
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val appRepository: AppRepository =
-        (application as MoviesApp).movieComponent.getAppRepository()
-
+class MainViewModel(private val appRepository: AppRepository) : ViewModel() {
     private val popularMoviesLiveData: LiveData<List<Movie>>
     private val topRatedMoviesLiveData: LiveData<List<Movie>>
     private val favoriteMoviesLiveData: LiveData<List<Movie>>
