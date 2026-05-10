@@ -5,21 +5,19 @@
  */
 package com.example.android.popularmovies2.ui.detail
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.android.popularmovies2.Constants
-import com.example.android.popularmovies2.MoviesApp
 import com.example.android.popularmovies2.data.AppRepository
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.data.model.Review
 import com.example.android.popularmovies2.data.model.Trailer
 import timber.log.Timber
 
-class DetailViewModel(application: Application, movieId: String) : ViewModel() {
-    private val appRepository: AppRepository =
-        (application as MoviesApp).movieComponent.getAppRepository()
-
+class DetailViewModel(
+    private val appRepository: AppRepository,
+    movieId: String,
+) : ViewModel() {
     private val reviews: LiveData<List<Review>?> = appRepository.getReviewsByMovieId(movieId)
     private val trailers: LiveData<List<Trailer>?> = appRepository.getTrailersByMovieId(movieId)
     private val favoriteMovie: LiveData<Movie> = appRepository.getFavoriteMovieById(movieId)

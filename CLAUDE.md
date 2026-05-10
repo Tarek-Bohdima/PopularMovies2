@@ -89,21 +89,28 @@ The quotes are required — the value is interpolated into a Java string literal
 ./gradlew assembleDebug                # build debug APK
 ./gradlew installDebug                 # build + install on connected device/emulator
 ./gradlew test                         # JVM unit tests (app/src/test)
-./gradlew :app:testDebugUnitTest --tests "com.example.android.popularmovies2.ExampleUnitTest.addition_isCorrect"   # single test
+./gradlew :app:testDebugUnitTest --tests "com.example.android.popularmovies2.data.AppRepositoryTest.clearDisposables_propagatesToNetwork"   # single test
 ./gradlew connectedAndroidTest         # instrumented tests (needs device/emulator)
 ./gradlew lint                         # Android Lint
+./gradlew koverHtmlReport              # coverage HTML at app/build/reports/kover/html/
+./gradlew koverVerify                  # fail build if coverage < threshold (60% line)
 ./gradlew clean
 ```
 
-Once Detekt/Spotless/Kover are wired:
+Once Detekt/Spotless are wired:
 
 ```bash
 ./gradlew detekt                       # static analysis
 ./gradlew spotlessCheck                # format check
 ./gradlew spotlessApply                # auto-fix formatting
-./gradlew koverHtmlReport              # coverage HTML at app/build/reports/kover/
-./gradlew koverVerify                  # fail build if coverage < threshold
 ```
+
+### Coverage rules
+
+- Kover plugin is applied in `app/build.gradle.kts` with a `koverVerify` rule pinning min line coverage to **60%**.
+- Excluded from coverage: generated code (Dagger/Room/DataBinding/Glide/R/BuildConfig), Activities, adapters, BindingAdapters, Dagger DI graph, factory glue that touches `MoviesApp`, DTOs/entities in `data.model.*`, and `AppExecutors` (Android-framework-tied; slated for removal with the Coroutines migration).
+- Production code that legitimately needs the `Build.VERSION.SDK_INT` check should expose an `@VisibleForTesting internal` overload that takes an `sdkInt: Int` parameter (see `ConnectionUtils.isNetworkConnected`) so both branches can be covered without Robolectric.
+- ViewModels take their dependencies via constructor (`AppRepository`, etc.) so they're JVM-unit-testable without Robolectric. The `*ViewModelFactory` companions own the `(application as MoviesApp).movieComponent.getAppRepository()` lookup and are excluded from coverage; they go away with Hilt.
 
 ---
 

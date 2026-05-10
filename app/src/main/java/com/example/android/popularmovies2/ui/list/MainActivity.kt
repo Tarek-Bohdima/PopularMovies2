@@ -36,7 +36,10 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
         super.onCreate(savedInstanceState)
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         activityMainBinding.lifecycleOwner = this
-        mainActivityViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        mainActivityViewModel = ViewModelProvider(
+            this,
+            MainViewModelFactory(application),
+        )[MainViewModel::class.java]
         changeSpanCountByOrientation()
 
         checkStateAfterOrientationChange(savedInstanceState)

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kover)
 }
 
 // Sourced from ~/.gradle/gradle.properties (local) or ORG_GRADLE_PROJECT_myTMDBApiKey (CI).
@@ -40,12 +41,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     buildFeatures {
@@ -61,6 +62,10 @@ android {
         // but we don't use NotificationTarget. Both libraries are slated for replacement
         // (Timber → structured logging, Glide → Coil) so we don't bump them just for lint.
         disable += setOf("LintError", "NotificationPermission")
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 }
 
@@ -99,6 +104,95 @@ dependencies {
     implementation(libs.expandable.textview)
 
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.arch.core.testing)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                // Generated code (Dagger, Room, DataBinding, Glide, R, BuildConfig, Parcelize)
+                classes(
+                    "*_Factory",
+                    "*_Factory\$*",
+                    "*_MembersInjector",
+                    "*_MembersInjector\$*",
+                    "*_Provide*Factory",
+                    "*_Provide*Factory\$*",
+                    "Dagger*",
+                    "Dagger*\$*",
+                    "*_Impl",
+                    "*_Impl\$*",
+                    "*Binding",
+                    "*Binding\$*",
+                    "*BindingImpl",
+                    "*BindingImpl\$*",
+                    "*.BR",
+                    "*.R",
+                    "*.R\$*",
+                    "*.BuildConfig",
+                    "*.databinding.*",
+                    "*.DataBinderMapperImpl",
+                    "*.DataBindingTriggerClass",
+                    "com.example.android.popularmovies2.DataBinderMapperImpl",
+                    "com.example.android.popularmovies2.DataBindingTriggerClass",
+                    "*.GlideApp",
+                    "*.GlideOptions",
+                    "*.GlideOptions\$*",
+                    "*.GlideRequest",
+                    "*.GlideRequest\$*",
+                    "*.GlideRequests",
+                    "*.GeneratedAppGlideModuleImpl",
+                    "*.GeneratedRequestManagerFactory",
+                )
+                packages(
+                    "com.example.android.popularmovies2.generated.callback",
+                    "com.bumptech.glide",
+                )
+                // Hand-written code that's tied to Android framework / DI graph and not
+                // realistically JVM-unit-testable. Compose migration deletes most of these.
+                packages(
+                    "com.example.android.popularmovies2.di.*",
+                    "com.example.android.popularmovies2.data.model",
+                )
+                classes(
+                    "com.example.android.popularmovies2.MoviesApp",
+                    "com.example.android.popularmovies2.CustomGlideModule",
+                    "com.example.android.popularmovies2.AppExecutors",
+                    "com.example.android.popularmovies2.AppExecutors\$*",
+                    "com.example.android.popularmovies2.Constants",
+                    "com.example.android.popularmovies2.data.network.MovieApi",
+                    "com.example.android.popularmovies2.data.network.MovieApi\$*",
+                    "com.example.android.popularmovies2.data.local.MovieDao",
+                    "com.example.android.popularmovies2.data.local.AppDatabase",
+                    "com.example.android.popularmovies2.data.local.AppDatabase\$*",
+                    "com.example.android.popularmovies2.ui.BindingAdapters*",
+                    "com.example.android.popularmovies2.ui.list.MainActivity",
+                    "com.example.android.popularmovies2.ui.list.MainActivity\$*",
+                    "com.example.android.popularmovies2.ui.list.MainViewModelFactory",
+                    "com.example.android.popularmovies2.ui.list.MovieAdapter",
+                    "com.example.android.popularmovies2.ui.list.MovieAdapter\$*",
+                    "com.example.android.popularmovies2.ui.detail.DetailActivity",
+                    "com.example.android.popularmovies2.ui.detail.DetailActivity\$*",
+                    "com.example.android.popularmovies2.ui.detail.DetailViewModelFactory",
+                    "com.example.android.popularmovies2.ui.detail.ReviewsAdapter",
+                    "com.example.android.popularmovies2.ui.detail.ReviewsAdapter\$*",
+                    "com.example.android.popularmovies2.ui.detail.TrailersAdapter",
+                    "com.example.android.popularmovies2.ui.detail.TrailersAdapter\$*",
+                )
+            }
+        }
+        verify {
+            rule {
+                bound {
+                    minValue = 60
+                    coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE
+                }
+            }
+        }
+    }
 }
