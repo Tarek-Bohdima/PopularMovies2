@@ -3,21 +3,17 @@
  * As part of Udacity Honor code, your submissions must be your own work, hence submitting this project as yours will cause you to break the Udacity Honor Code and the suspension of your account.
  * Me, the author of the project, allow you to check the code as a reference, but if you submit it, it's your own responsibility if you get expelled.
  */
-package com.example.android.popularmovies2.ui.detail
+package com.example.android.popularmovies2.ui.list
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.android.popularmovies2.MoviesApp
 
-class DetailViewModelFactory(
+class MainViewModelFactory(
     private val application: Application,
-    private val movieId: String,
 ) : ViewModelProvider.NewInstanceFactory() {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        DetailViewModel(
-            (application as MoviesApp).movieComponent.getAppRepository(),
-            movieId,
-        ) as T
+        MainViewModel((application as MoviesApp).movieComponent.getAppRepository()) as T
 }

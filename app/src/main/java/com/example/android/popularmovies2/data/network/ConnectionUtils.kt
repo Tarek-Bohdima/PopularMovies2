@@ -5,19 +5,27 @@
  */
 package com.example.android.popularmovies2.data.network
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import androidx.annotation.VisibleForTesting
 
 object ConnectionUtils {
     @JvmStatic
-    fun isNetworkConnected(context: Context): Boolean {
+    fun isNetworkConnected(context: Context): Boolean =
+        isNetworkConnected(context, Build.VERSION.SDK_INT)
+
+    // Lint can't tell that the `sdkInt` parameter gates the M+ APIs at runtime.
+    @SuppressLint("NewApi")
+    @VisibleForTesting
+    internal fun isNetworkConnected(context: Context, sdkInt: Int): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
                 ?: return false
 
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        return if (sdkInt >= Build.VERSION_CODES.M) {
             val capabilities =
                 connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
             capabilities != null && (
