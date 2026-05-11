@@ -6,9 +6,11 @@
 package com.example.android.popularmovies2.di.module
 
 import android.content.Context
-import androidx.room.Room
-import com.example.android.popularmovies2.data.local.AppDatabase
-import com.example.android.popularmovies2.data.local.MovieDao
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import com.example.android.popularmovies2.data.network.ConnectivityManagerNetworkMonitor
+import com.example.android.popularmovies2.data.network.NetworkMonitor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,15 +20,15 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object FavoriteDatabaseModule {
+object NetworkMonitorModule {
     @Provides
     @Singleton
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
-            .fallbackToDestructiveMigration(dropAllTables = true)
+    fun networkMonitor(@ApplicationContext context: Context): NetworkMonitor {
+        val cm = context.applicationContext
+            .getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        val request = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
-
-    @Provides
-    @Singleton
-    fun provideMovieDao(appDatabase: AppDatabase): MovieDao = appDatabase.movieDao()
+        return ConnectivityManagerNetworkMonitor(cm, request)
+    }
 }

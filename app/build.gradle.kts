@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kover)
+    alias(libs.plugins.hilt)
 }
 
 // Sourced from ~/.gradle/gradle.properties (local) or ORG_GRADLE_PROJECT_myTMDBApiKey (CI).
@@ -70,6 +71,7 @@ android {
 dependencies {
     implementation(libs.jetbrains.annotations)
 
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.coordinatorlayout)
@@ -90,9 +92,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
 
-    // Dagger (legacy — slated for replacement by Hilt)
-    implementation(libs.dagger)
-    kapt(libs.dagger.compiler)
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
 
     // Image loading
     implementation(libs.coil)
@@ -113,7 +115,7 @@ kover {
     reports {
         filters {
             excludes {
-                // Generated code (Dagger, Room, DataBinding, R, BuildConfig, Parcelize)
+                // Generated code (Hilt, Room, DataBinding, R, BuildConfig, Parcelize)
                 classes(
                     "*_Factory",
                     "*_Factory\$*",
@@ -121,8 +123,6 @@ kover {
                     "*_MembersInjector\$*",
                     "*_Provide*Factory",
                     "*_Provide*Factory\$*",
-                    "Dagger*",
-                    "Dagger*\$*",
                     "*_Impl",
                     "*_Impl\$*",
                     "*Binding",
@@ -138,6 +138,20 @@ kover {
                     "*.DataBindingTriggerClass",
                     "com.example.android.popularmovies2.DataBinderMapperImpl",
                     "com.example.android.popularmovies2.DataBindingTriggerClass",
+                    // Hilt code-gen
+                    "*.Hilt_*",
+                    "*Hilt_*",
+                    "*HiltModules*",
+                    "*HiltComponents*",
+                    "*_GeneratedInjector",
+                    "*_GeneratedHilt*",
+                    "*_AggregatedAnnotations",
+                    "*_ComponentTreeDeps",
+                )
+                packages(
+                    "dagger.hilt.internal.aggregatedroot.codegen",
+                    "dagger.hilt.android.internal.modules",
+                    "hilt_aggregated_deps",
                 )
                 packages(
                     "com.example.android.popularmovies2.generated.callback",
@@ -145,8 +159,11 @@ kover {
                 // Hand-written code that's tied to Android framework / DI graph and not
                 // realistically JVM-unit-testable. Compose migration deletes most of these.
                 packages(
-                    "com.example.android.popularmovies2.di.*",
+                    "com.example.android.popularmovies2.di",
+                    "com.example.android.popularmovies2.di.module",
                     "com.example.android.popularmovies2.data.model",
+                    // CoilImageLoader is a thin coil.* delegation; ImageLoader interface has no body
+                    "com.example.android.popularmovies2.ui.image",
                 )
                 classes(
                     "com.example.android.popularmovies2.MoviesApp",
@@ -159,12 +176,10 @@ kover {
                     "com.example.android.popularmovies2.ui.BindingAdapters*",
                     "com.example.android.popularmovies2.ui.list.MainActivity",
                     "com.example.android.popularmovies2.ui.list.MainActivity\$*",
-                    "com.example.android.popularmovies2.ui.list.MainViewModelFactory",
                     "com.example.android.popularmovies2.ui.list.MovieAdapter",
                     "com.example.android.popularmovies2.ui.list.MovieAdapter\$*",
                     "com.example.android.popularmovies2.ui.detail.DetailActivity",
                     "com.example.android.popularmovies2.ui.detail.DetailActivity\$*",
-                    "com.example.android.popularmovies2.ui.detail.DetailViewModelFactory",
                     "com.example.android.popularmovies2.ui.detail.ReviewsAdapter",
                     "com.example.android.popularmovies2.ui.detail.ReviewsAdapter\$*",
                     "com.example.android.popularmovies2.ui.detail.TrailersAdapter",

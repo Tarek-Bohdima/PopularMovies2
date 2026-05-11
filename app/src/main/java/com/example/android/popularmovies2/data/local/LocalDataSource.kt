@@ -6,9 +6,11 @@
 package com.example.android.popularmovies2.data.local
 
 import com.example.android.popularmovies2.data.model.Movie
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
 
+@Singleton
 class LocalDataSource @Inject constructor(
     private val movieDao: MovieDao,
 ) {

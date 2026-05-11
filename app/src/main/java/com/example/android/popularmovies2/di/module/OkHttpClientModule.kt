@@ -7,10 +7,15 @@ package com.example.android.popularmovies2.di.module
 
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import okhttp3.OkHttpClient
 
 @Module
-class OkHttpClientModule {
+@InstallIn(SingletonComponent::class)
+object OkHttpClientModule {
     @Provides
-    fun okHttpClient(): OkHttpClient = OkHttpClient().newBuilder().build()
+    @Singleton
+    fun okHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
 }

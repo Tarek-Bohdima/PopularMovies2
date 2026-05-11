@@ -5,7 +5,6 @@
  */
 package com.example.android.popularmovies2.data.network
 
-import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -37,16 +36,9 @@ class ConnectivityManagerNetworkMonitor(
     private val networkRequest: NetworkRequest,
 ) : NetworkMonitor {
 
-    // Production entrypoint. The `NetworkRequest.Builder` call is hoisted here (outside
-    // `callbackFlow`) so unit tests can bypass the Android-framework `Builder` stubs by
-    // calling the primary constructor with a mock `NetworkRequest`.
-    constructor(context: Context) : this(
-        connectivityManager = context.applicationContext
-            .getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager,
-        networkRequest = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .build(),
-    )
+    // Production assembly happens in `NetworkMonitorModule.networkMonitor(@ApplicationContext)`.
+    // This primary constructor is kept open so unit tests can bypass the Android-framework
+    // `NetworkRequest.Builder` stubs by passing a mock `NetworkRequest` directly.
 
     override val isOnline: Flow<Boolean> = callbackFlow {
         val cm = connectivityManager

@@ -5,13 +5,17 @@
  */
 package com.example.android.popularmovies2.ui.detail
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.android.popularmovies2.Constants
-import com.example.android.popularmovies2.data.AppRepository
+import com.example.android.popularmovies2.data.MovieRepository
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.data.model.Review
 import com.example.android.popularmovies2.data.model.Trailer
+import com.example.android.popularmovies2.ui.list.MainActivity.Companion.MOVIE_OBJECT
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,10 +24,20 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class DetailViewModel(
-    private val appRepository: AppRepository,
-    private val movieId: String,
+@HiltViewModel
+class DetailViewModel @Inject constructor(
+    private val repository: MovieRepository,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+    // `DetailActivity` is launched with a parcelable `Movie` extra under
+    // `MainActivity.MOVIE_OBJECT`; ComponentActivity's `defaultViewModelCreationExtras`
+    // promotes Intent extras into the SavedStateHandle, so reading by the same key
+    // here gives us the movie without an explicit Activity → VM hand-off.
+    private val movie: Movie = checkNotNull(savedStateHandle.get<Movie>(MOVIE_OBJECT)) {
+        "DetailViewModel requires a '$MOVIE_OBJECT' extra on the launching Intent"
+    }
+    private val movieId: String = movie.movieId.toString()
 
     private val _reviews = MutableStateFlow<List<Review>>(emptyList())
     val reviews: StateFlow<List<Review>> = _reviews.asStateFlow()
@@ -31,7 +45,7 @@ class DetailViewModel(
     private val _trailers = MutableStateFlow<List<Trailer>>(emptyList())
     val trailers: StateFlow<List<Trailer>> = _trailers.asStateFlow()
 
-    val favoriteMovie: StateFlow<Movie?> = appRepository.favoriteMovieById(movieId)
+    val favoriteMovie: StateFlow<Movie?> = repository.favoriteMovieById(movieId)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MS),
@@ -40,14 +54,14 @@ class DetailViewModel(
 
     init {
         viewModelScope.launch {
-            runCatching { appRepository.fetchReviews(movieId) }
+            runCatching { repository.fetchReviews(movieId) }
                 .onSuccess { _reviews.value = it }
                 .onFailure {
                     Timber.tag(Constants.TAG).w(it, "DetailViewModel: reviews fetch failed")
                 }
         }
         viewModelScope.launch {
-            runCatching { appRepository.fetchTrailers(movieId) }
+            runCatching { repository.fetchTrailers(movieId) }
                 .onSuccess { _trailers.value = it }
                 .onFailure {
                     Timber.tag(Constants.TAG).w(it, "DetailViewModel: trailers fetch failed")
@@ -57,12 +71,12 @@ class DetailViewModel(
 
     fun insertFavoriteMovie(movie: Movie) {
         Timber.tag(Constants.TAG).d("DetailViewModel: insertFavoriteMovie() called with: movie = [$movie]")
-        viewModelScope.launch { appRepository.insertFavoriteMovie(movie) }
+        viewModelScope.launch { repository.insertFavoriteMovie(movie) }
     }
 
     fun deleteFavoriteMovie(movie: Movie) {
         Timber.tag(Constants.TAG).d("DetailViewModel: deleteFavoriteMovie() called with: movie = [$movie]")
-        viewModelScope.launch { appRepository.deleteFavoriteMovie(movie) }
+        viewModelScope.launch { repository.deleteFavoriteMovie(movie) }
     }
 
     private companion object {

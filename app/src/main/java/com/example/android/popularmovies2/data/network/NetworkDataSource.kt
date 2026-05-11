@@ -9,11 +9,11 @@ import com.example.android.popularmovies2.BuildConfig
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.data.model.Review
 import com.example.android.popularmovies2.data.model.Trailer
-import com.example.android.popularmovies2.di.scopes.ApplicationScope
-import retrofit2.Retrofit
 import javax.inject.Inject
+import javax.inject.Singleton
+import retrofit2.Retrofit
 
-@ApplicationScope
+@Singleton
 class NetworkDataSource @Inject constructor(
     retrofit: Retrofit,
 ) {
