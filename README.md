@@ -30,6 +30,29 @@ Specifications:
 
 * App utilizes stable release versions of all libraries, Gradle, and Android Studio.
 
+> Historical note: the Udacity rubric required Java; this app was converted to Kotlin after submission and has since been brought onto a Google-recommended stack — see "Tech stack" below.
+
+## Tech stack
+
+The data, DI, imaging, and JSON layers all sit on the modern Android target stack. The UI layer is still XML/Activities; the Compose migration is the last big lane.
+
+| Concern | Library / pattern |
+|---|---|
+| Language | Kotlin 2.2 |
+| Min SDK | 26 (adaptive launcher icon, no `mipmap-*dpi/` PNG fallbacks) |
+| Build | Gradle 9.4 with Kotlin DSL + `gradle/libs.versions.toml` version catalog |
+| DI | Hilt 2.56 (`@HiltAndroidApp`, `@HiltViewModel`, `@AndroidEntryPoint`) |
+| Async | Coroutines + Flow / StateFlow (no RxJava, no LiveData) |
+| Networking | Retrofit 2.11 `suspend` + OkHttp + `converter-kotlinx-serialization` |
+| JSON | kotlinx.serialization 1.7 (compile-time, no reflection) |
+| Local persistence | Room 2.7 — DAO reads return `Flow`, writes are `suspend` |
+| Image loading | Coil 2.7 — accessed only through a `ui.image.ImageLoader` interface |
+| Connectivity | `NetworkMonitor` interface backed by `ConnectivityManager.NetworkCallback`; observed reactively from VMs |
+| Coverage | Kover (≥60% line gate, enforced in CI) |
+| UI (still legacy) | XML layouts + DataBinding + ViewBinding, two Activities (`MainActivity` / `DetailActivity`) — migration to Jetpack Compose + Navigation-Compose pending |
+
+For the full set of decisions and constraints driving this stack — including the LoD-and-abstractions rule that drove the `MovieRepository` interface and the `ImageLoader` indirection — see [CLAUDE.md](./CLAUDE.md).
+
 Kindly note that you will need an API Key from [TMDB.org][1]. in order to build and try this application
 
 Add the following line to \[USER_HOME]/.gradle/gradle.properties
