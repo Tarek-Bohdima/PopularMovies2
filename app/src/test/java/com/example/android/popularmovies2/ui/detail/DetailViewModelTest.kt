@@ -1,14 +1,20 @@
 package com.example.android.popularmovies2.ui.detail
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.android.popularmovies2.data.AppRepository
 import com.example.android.popularmovies2.data.local.sampleMovie
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.data.model.Review
 import com.example.android.popularmovies2.data.model.Trailer
-import org.junit.Assert.assertSame
+import com.example.android.popularmovies2.util.MainDispatcherRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -16,57 +22,94 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DetailViewModelTest {
-    @get:Rule val instantTask = InstantTaskExecutorRule()
+    @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
     private val repository = mock<AppRepository>()
     private val movieId = "42"
-    private val reviews: LiveData<List<Review>?> = MutableLiveData()
-    private val trailers: LiveData<List<Trailer>?> = MutableLiveData()
-    private val favorite: LiveData<Movie> = MutableLiveData()
-    private lateinit var viewModel: DetailViewModel
+    private val favoriteFlow = MutableSharedFlow<Movie?>(replay = 1)
 
     @Before
     fun setUp() {
-        whenever(repository.getReviewsByMovieId(movieId)).thenReturn(reviews)
-        whenever(repository.getTrailersByMovieId(movieId)).thenReturn(trailers)
-        whenever(repository.getFavoriteMovieById(movieId)).thenReturn(favorite)
-        viewModel = DetailViewModel(repository, movieId)
+        whenever(repository.favoriteMovieById(movieId)).thenReturn(favoriteFlow)
+    }
+
+    private fun newViewModel(): DetailViewModel = DetailViewModel(repository, movieId)
+
+    @Test
+    fun init_fetchesReviewsAndTrailersForMovieId() = runTest {
+        whenever(repository.fetchReviews(movieId)).thenReturn(emptyList())
+        whenever(repository.fetchTrailers(movieId)).thenReturn(emptyList())
+        newViewModel()
+        runCurrent()
+        verify(repository).fetchReviews(movieId)
+        verify(repository).fetchTrailers(movieId)
     }
 
     @Test
-    fun init_pullsReviewsTrailersAndFavoriteForMovieId() {
-        verify(repository).getReviewsByMovieId(movieId)
-        verify(repository).getTrailersByMovieId(movieId)
-        verify(repository).getFavoriteMovieById(movieId)
+    fun reviews_emitsRepositoryResult() = runTest(UnconfinedTestDispatcher()) {
+        val reviews = listOf(Review(), Review())
+        whenever(repository.fetchReviews(movieId)).thenReturn(reviews)
+        whenever(repository.fetchTrailers(movieId)).thenReturn(emptyList())
+        val vm = newViewModel()
+        assertEquals(reviews, vm.reviews.value)
     }
 
     @Test
-    fun getReviewsByMovieId_returnsCachedLiveData() {
-        assertSame(reviews, viewModel.getReviewsByMovieId())
+    fun trailers_emitsRepositoryResult() = runTest(UnconfinedTestDispatcher()) {
+        val trailers = listOf(Trailer())
+        whenever(repository.fetchReviews(movieId)).thenReturn(emptyList())
+        whenever(repository.fetchTrailers(movieId)).thenReturn(trailers)
+        val vm = newViewModel()
+        assertEquals(trailers, vm.trailers.value)
     }
 
     @Test
-    fun getTrailersByMovieId_returnsCachedLiveData() {
-        assertSame(trailers, viewModel.getTrailersByMovieId())
+    fun reviews_swallowsFetchFailure() = runTest(UnconfinedTestDispatcher()) {
+        whenever(repository.fetchReviews(movieId)).thenThrow(RuntimeException("boom"))
+        whenever(repository.fetchTrailers(movieId)).thenReturn(emptyList())
+        val vm = newViewModel()
+        assertEquals(emptyList<Review>(), vm.reviews.value)
     }
 
     @Test
-    fun getFavoriteMovieById_returnsCachedLiveData() {
-        assertSame(favorite, viewModel.getFavoriteMovieById())
+    fun favoriteMovie_collectsFromRepositoryFlow() = runTest(UnconfinedTestDispatcher()) {
+        whenever(repository.fetchReviews(movieId)).thenReturn(emptyList())
+        whenever(repository.fetchTrailers(movieId)).thenReturn(emptyList())
+        val vm = newViewModel()
+        val sink = mutableListOf<Movie?>()
+        val job = launch { vm.favoriteMovie.toList(sink) }
+        favoriteFlow.emit(sampleMovie(1))
+        favoriteFlow.emit(null)
+        job.cancel()
+        assertEquals(3, sink.size) // initial null seed + two emissions
+        assertEquals(null, sink[0])
+        assertEquals(sampleMovie(1).movieId, sink[1]?.movieId)
+        assertEquals(null, sink[2])
     }
 
     @Test
-    fun insertFavoriteMovie_propagatesToRepository() {
+    fun insertFavoriteMovie_propagatesToRepository() = runTest {
+        whenever(repository.fetchReviews(movieId)).thenReturn(emptyList())
+        whenever(repository.fetchTrailers(movieId)).thenReturn(emptyList())
+        whenever(repository.favoriteMovieById(movieId)).thenReturn(flowOf(null))
+        val vm = newViewModel()
         val movie = sampleMovie(1)
-        viewModel.insertFavoriteMovie(movie)
+        vm.insertFavoriteMovie(movie)
+        runCurrent()
         verify(repository).insertFavoriteMovie(movie)
     }
 
     @Test
-    fun deleteFavoriteMovie_propagatesToRepository() {
+    fun deleteFavoriteMovie_propagatesToRepository() = runTest {
+        whenever(repository.fetchReviews(movieId)).thenReturn(emptyList())
+        whenever(repository.fetchTrailers(movieId)).thenReturn(emptyList())
+        whenever(repository.favoriteMovieById(movieId)).thenReturn(flowOf(null))
+        val vm = newViewModel()
         val movie = sampleMovie(2)
-        viewModel.deleteFavoriteMovie(movie)
+        vm.deleteFavoriteMovie(movie)
+        runCurrent()
         verify(repository).deleteFavoriteMovie(movie)
     }
 }

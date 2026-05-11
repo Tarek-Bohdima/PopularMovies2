@@ -13,7 +13,6 @@ import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Module(includes = [OkHttpClientModule::class])
@@ -27,7 +26,6 @@ class NetworkModule(private val baseUrl: String) {
         .client(okHttpClient)
         .baseUrl(baseUrl)
         .addConverterFactory(gsonConverterFactory)
-        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .build()
 
     @ApplicationScope

@@ -128,7 +128,9 @@ Once Detekt/Spotless are wired:
 
 Bumped together with AGP 9 to avoid Kotlin-2.2-metadata kapt failures: Dagger 2.50 → 2.56.2, Room 2.2.5 → 2.7.2, Glide 4.11.0 → 4.16.0. Each is still slated for replacement (Hilt / Coroutines+Flow / Coil) per §2.
 
-Active in #18: **Coroutines** (`kotlinx-coroutines-android` 1.8.1) explicit, **Lifecycle 2.2.0 → 2.8.7** (`runtime-ktx` + `viewmodel-ktx` + `livedata-ktx`) so `viewModelScope`, `repeatOnLifecycle`, and `stateIn` are available. The `lifecycle-legacy` bundle was renamed to `lifecycle` — LiveData artifact stays in it until the RxJava→Flow migration replaces it.
+Active in #18: **Coroutines** (`kotlinx-coroutines-android` 1.8.1) explicit, **Lifecycle 2.2.0 → 2.8.7** (`runtime-ktx` + `viewmodel-ktx`) so `viewModelScope`, `repeatOnLifecycle`, and `stateIn` are available. The `lifecycle-legacy` bundle was renamed to `lifecycle`.
+
+After #20: **RxJava and LiveData are gone.** Retrofit calls are `suspend fun`, Room reads return `Flow`, Room writes are `suspend fun`, ViewModels expose `StateFlow<T>` exclusively. `AppExecutors`, `CompositeDisposable`, `lifecycle-livedata-ktx`, and the `rxjava-legacy` bundle are removed.
 
 ---
 
@@ -137,15 +139,16 @@ Active in #18: **Coroutines** (`kotlinx-coroutines-android` 1.8.1) explicit, **L
 MVVM + single-Repository, DI via Dagger 2 (no Hilt). Replace lane-by-lane.
 
 ```
-Activity → ViewModel → AppRepository ──► NetworkDataSource (Retrofit+RxJava3 → TMDb)
-                                    └─► LocalDataSource (Room: favorite_movies.db)
+Activity → ViewModel → AppRepository ──► NetworkDataSource (Retrofit `suspend` → TMDb)
+                                    └─► LocalDataSource (Room: favorite_movies.db, Flow + suspend)
 ```
 
 - One `@ApplicationScope` `MovieComponent` is built in `MoviesApp.onCreate()` and exposes only `getAppRepository()`.
-- ViewModels are **not** injected — they grab the repository via `((MoviesApp) application).getMovieComponent().getAppRepository()`. After Hilt migration, this pattern disappears (`@HiltViewModel` + constructor injection).
-- `AppRepository` returns `LiveData` for everything; network calls return `MutableLiveData` posted from RxJava `Single` subscriptions inside `NetworkDataSource`. Disposables are managed via `CompositeDisposable` cleared on `ViewModel.onCleared`. **Migration target:** repository methods become `suspend fun` / `Flow<T>`; cancellation comes free with the ViewModel's `viewModelScope`.
-- Room writes are dispatched through `AppExecutors.getInstance().diskIO()` from the repository because DAO methods are not annotated as suspending. **Migration target:** DAO `suspend` + `Flow`; delete `AppExecutors`.
-- `Movie` is **both** the Room `@Entity` (table `favorite_movies`) and the Gson DTO (`@SerializedName("id")` + `@PrimaryKey(autoGenerate = true)` on the same field). When migrating, **split** into `MovieEntity` (Room) and `MovieDto` (network) with a mapper.
+- ViewModels are **not** injected — they grab the repository via `((MoviesApp) application).getMovieComponent().getAppRepository()`. After Hilt migration (#21), this pattern disappears (`@HiltViewModel` + constructor injection).
+- `AppRepository`: network reads are `suspend fun` returning `List<T>` (unwrapped from the Gson list wrappers inside `NetworkDataSource`). Room reads are `Flow<List<Movie>>` / `Flow<Movie?>`. Writes are `suspend fun`. **No `LiveData`, no `CompositeDisposable`, no `clearDisposables`** — cancellation rides `viewModelScope`.
+- ViewModels expose **`StateFlow<T>` only**. One-shot network results use `MutableStateFlow<T>` updated from `viewModelScope.launch { runCatching { … }.onSuccess { _state.value = it }.onFailure { Timber.w(…) } }`; reactive Room reads use `repository.flow.stateIn(viewModelScope, WhileSubscribed(5_000), initialValue)`. **Never re-introduce `LiveData` exposure.**
+- Activities collect VM `StateFlow`s with `lifecycleScope.launch { repeatOnLifecycle(STARTED) { vm.flow.collect { … } } }`. **No `.observe(this)` callsites.** When a single drawer-style screen flips between multiple flow sources (see `MainActivity.bindMovies`), keep a `currentJob: Job?` field and cancel/replace it on path change.
+- `Movie` is **still both** the Room `@Entity` (table `favorite_movies`) and the Gson DTO (`@SerializedName("id")` + `@PrimaryKey(autoGenerate = true)` on the same field). This is a bug magnet — favorite-detail lookups rely on the auto-generated id happening to equal the TMDb id. **Split into `MovieEntity` + `MovieDto` + mapper** is the next correctness fix; intentionally deferred from #20 to keep the diff scoped.
 - Two activities: `MainActivity` (RecyclerView grid, span 2 portrait / 4 landscape) and `DetailActivity`. Sort mode (`"Popular"`/`"Top Rated"`/`"Favorites"`) is a `String` saved via `onSaveInstanceState`. Both activities will be replaced by Compose screens hosted in a single `ComponentActivity` with `NavHost`.
 - Image loading uses Glide via two `@BindingAdapter`s (`posterUrl`, `backDropUrl`). Replaced by `coil.compose.AsyncImage`.
 - Logging: Timber, planted only in debug, with tag `Constants.TAG = "MyApp"`.

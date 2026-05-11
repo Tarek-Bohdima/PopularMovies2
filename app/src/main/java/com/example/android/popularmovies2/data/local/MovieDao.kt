@@ -5,28 +5,28 @@
  */
 package com.example.android.popularmovies2.data.local
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.android.popularmovies2.data.model.Movie
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDao {
     @Query("SELECT * FROM favorite_movies")
-    fun getAllMovies(): LiveData<List<Movie>>
+    fun getAllMovies(): Flow<List<Movie>>
 
     @Query("SELECT * FROM favorite_movies where movieId = :id")
-    fun getMovieById(id: String): LiveData<Movie>
+    fun getMovieById(id: String): Flow<Movie?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMovie(movie: Movie)
+    suspend fun insertMovie(movie: Movie)
 
     @Delete
-    fun delete(movie: Movie)
+    suspend fun delete(movie: Movie)
 
     @Query("DELETE FROM favorite_movies")
-    fun deleteAllMovies()
+    suspend fun deleteAllMovies()
 }

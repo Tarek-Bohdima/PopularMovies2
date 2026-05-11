@@ -23,11 +23,6 @@ room = "2.7.2"
 # Networking
 retrofit = "2.9.0"
 okhttp = "4.9.0"
-rxjava3-retrofit-adapter = "2.9.0"
-
-# Reactive (legacy — slated for removal with the Coroutines/Flow migration)
-rxjava3 = "3.0.7"
-rxandroid = "3.0.0"
 
 # DI (legacy — slated for replacement by Hilt)
 dagger = "2.56.2"
@@ -57,10 +52,9 @@ androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 google-material = { module = "com.google.android.material:material", version.ref = "material" }
 
-# Lifecycle (LiveData artifacts still legacy; runtime-ktx + viewmodel-ktx are target-stack)
+# Lifecycle (target-stack KTX; LiveData artifact retired with #20)
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycle" }
 
 # Coroutines
@@ -74,12 +68,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 # Retrofit / OkHttp
 square-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 square-retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
-square-retrofit-adapter-rxjava3 = { module = "com.squareup.retrofit2:adapter-rxjava3", version.ref = "rxjava3-retrofit-adapter" }
 square-okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
-
-# RxJava (legacy)
-rxjava3-core = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava3" }
-rxjava3-android = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroid" }
 
 # Dagger (legacy — replaced by Hilt)
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
@@ -106,18 +95,12 @@ mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "
 lifecycle = [
     "androidx-lifecycle-runtime-ktx",
     "androidx-lifecycle-viewmodel-ktx",
-    "androidx-lifecycle-livedata-ktx",
     "androidx-lifecycle-common-java8",
 ]
 retrofit = [
     "square-retrofit",
     "square-retrofit-converter-gson",
-    "square-retrofit-adapter-rxjava3",
     "square-okhttp-logging-interceptor",
-]
-rxjava-legacy = [
-    "rxjava3-core",
-    "rxjava3-android",
 ]
 
 [plugins]

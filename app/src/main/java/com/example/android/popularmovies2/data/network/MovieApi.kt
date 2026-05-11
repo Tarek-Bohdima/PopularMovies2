@@ -8,29 +8,28 @@ package com.example.android.popularmovies2.data.network
 import com.example.android.popularmovies2.data.model.MoviesList
 import com.example.android.popularmovies2.data.model.ReviewsList
 import com.example.android.popularmovies2.data.model.TrailerList
-import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MovieApi {
     @GET(PATH)
-    fun getMoviesByPath(
+    suspend fun getMoviesByPath(
         @Path("path") path: String,
         @Query(API_PARAMETER) key: String,
-    ): Single<MoviesList>
+    ): MoviesList
 
     @GET("{id}/$REVIEWS")
-    fun getReviews(
+    suspend fun getReviews(
         @Path("id") movieId: String,
         @Query(API_PARAMETER) key: String,
-    ): Single<ReviewsList>
+    ): ReviewsList
 
     @GET("{id}/$VIDEOS")
-    fun getTrailers(
+    suspend fun getTrailers(
         @Path("id") movieId: String,
         @Query(API_PARAMETER) key: String,
-    ): Single<TrailerList>
+    ): TrailerList
 
     companion object {
         const val API_PARAMETER = "api_key"

@@ -88,9 +88,6 @@ dependencies {
     // Retrofit / OkHttp
     implementation(libs.bundles.retrofit)
 
-    // RxJava (legacy — slated for removal alongside the Coroutines/Flow migration)
-    implementation(libs.bundles.rxjava.legacy)
-
     // Room
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
@@ -166,8 +163,6 @@ kover {
                 classes(
                     "com.example.android.popularmovies2.MoviesApp",
                     "com.example.android.popularmovies2.CustomGlideModule",
-                    "com.example.android.popularmovies2.AppExecutors",
-                    "com.example.android.popularmovies2.AppExecutors\$*",
                     "com.example.android.popularmovies2.Constants",
                     "com.example.android.popularmovies2.data.network.MovieApi",
                     "com.example.android.popularmovies2.data.network.MovieApi\$*",

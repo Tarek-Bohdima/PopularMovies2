@@ -10,7 +10,10 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.android.popularmovies2.Constants
 import com.example.android.popularmovies2.R
 import com.example.android.popularmovies2.data.model.Movie
@@ -18,6 +21,7 @@ import com.example.android.popularmovies2.data.model.Review
 import com.example.android.popularmovies2.data.model.Trailer
 import com.example.android.popularmovies2.databinding.ActivityDetailBinding
 import com.example.android.popularmovies2.ui.list.MainActivity.Companion.MOVIE_OBJECT
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class DetailActivity : AppCompatActivity() {
@@ -82,29 +86,41 @@ class DetailActivity : AppCompatActivity() {
         val factory = DetailViewModelFactory(application, movieId)
         detailViewModel = ViewModelProvider(this, factory)[DetailViewModel::class.java]
 
-        detailViewModel.getReviewsByMovieId().observe(this) { reviews ->
-            Timber.tag(Constants.TAG)
-                .d("DetailActivity: onChanged() called with: reviews empty = [${reviews?.isEmpty()}]")
-            reviewsAdapter.setReviewsData(reviews)
-            activityDetailBinding.reviewsTitle.visibility =
-                if (reviews.isNullOrEmpty()) View.GONE else View.VISIBLE
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                detailViewModel.reviews.collect { reviews ->
+                    Timber.tag(Constants.TAG)
+                        .d("DetailActivity: reviews collected, empty = [${reviews.isEmpty()}]")
+                    reviewsAdapter.setReviewsData(reviews)
+                    activityDetailBinding.reviewsTitle.visibility =
+                        if (reviews.isEmpty()) View.GONE else View.VISIBLE
+                }
+            }
         }
 
-        detailViewModel.getTrailersByMovieId().observe(this) { trailers ->
-            Timber.tag(Constants.TAG)
-                .d("DetailActivity: onChanged() called with: trailers empty = [${trailers?.isEmpty()}]")
-            trailersAdapter.setTrailersData(trailers)
-            activityDetailBinding.trailersTitle.visibility =
-                if (trailers.isNullOrEmpty()) View.GONE else View.VISIBLE
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                detailViewModel.trailers.collect { trailers ->
+                    Timber.tag(Constants.TAG)
+                        .d("DetailActivity: trailers collected, empty = [${trailers.isEmpty()}]")
+                    trailersAdapter.setTrailersData(trailers)
+                    activityDetailBinding.trailersTitle.visibility =
+                        if (trailers.isEmpty()) View.GONE else View.VISIBLE
+                }
+            }
         }
 
-        detailViewModel.getFavoriteMovieById().observe(this) { movie ->
-            if (movie != null && movie == detailMovie) {
-                isFavorite = true
-                activityDetailBinding.like.setImageResource(iconFull)
-            } else {
-                isFavorite = false
-                activityDetailBinding.like.setImageResource(iconEmpty)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                detailViewModel.favoriteMovie.collect { movie ->
+                    if (movie != null && movie == detailMovie) {
+                        isFavorite = true
+                        activityDetailBinding.like.setImageResource(iconFull)
+                    } else {
+                        isFavorite = false
+                        activityDetailBinding.like.setImageResource(iconEmpty)
+                    }
+                }
             }
         }
     }
