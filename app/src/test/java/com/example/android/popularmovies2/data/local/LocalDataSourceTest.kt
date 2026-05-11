@@ -1,7 +1,10 @@
 package com.example.android.popularmovies2.data.local
 
-import androidx.lifecycle.LiveData
 import com.example.android.popularmovies2.data.model.Movie
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -14,36 +17,45 @@ class LocalDataSourceTest {
 
     @Test
     fun getAllMovies_delegatesToDao() {
-        val expected = mock<LiveData<List<Movie>>>()
+        val expected: Flow<List<Movie>> = flowOf(emptyList())
         whenever(dao.getAllMovies()).thenReturn(expected)
         assertSame(expected, source.getAllMovies())
     }
 
     @Test
     fun getMovieById_delegatesToDao() {
-        val expected = mock<LiveData<Movie>>()
+        val expected: Flow<Movie?> = flowOf(null)
         whenever(dao.getMovieById("42")).thenReturn(expected)
         assertSame(expected, source.getMovieById("42"))
     }
 
     @Test
-    fun insertMovie_delegatesToDao() {
+    fun insertMovie_delegatesToDao() = runTest {
         val movie = sampleMovie(7)
         source.insertMovie(movie)
         verify(dao).insertMovie(movie)
     }
 
     @Test
-    fun deleteMovie_delegatesToDao() {
+    fun deleteMovie_delegatesToDao() = runTest {
         val movie = sampleMovie(7)
         source.deleteMovie(movie)
         verify(dao).delete(movie)
     }
 
     @Test
-    fun deleteAllMovies_delegatesToDao() {
+    fun deleteAllMovies_delegatesToDao() = runTest {
         source.deleteAllMovies()
         verify(dao).deleteAllMovies()
+    }
+
+    @Test
+    fun getAllMovies_emitsDaoFlowValues() = runTest {
+        val movies = listOf(sampleMovie(1), sampleMovie(2))
+        whenever(dao.getAllMovies()).thenReturn(flowOf(movies))
+        val emitted = mutableListOf<List<Movie>>()
+        source.getAllMovies().collect { emitted += it }
+        assertEquals(listOf(movies), emitted)
     }
 }
 

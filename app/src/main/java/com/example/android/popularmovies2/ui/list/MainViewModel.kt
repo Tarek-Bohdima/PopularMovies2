@@ -5,25 +5,37 @@
  */
 package com.example.android.popularmovies2.ui.list
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.android.popularmovies2.Constants
 import com.example.android.popularmovies2.data.AppRepository
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.data.network.NetworkMonitor
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainViewModel(
     private val appRepository: AppRepository,
     networkMonitor: NetworkMonitor,
 ) : ViewModel() {
-    private val popularMoviesLiveData: LiveData<List<Movie>>
-    private val topRatedMoviesLiveData: LiveData<List<Movie>>
-    private val favoriteMoviesLiveData: LiveData<List<Movie>>
+
+    private val _popular = MutableStateFlow<List<Movie>>(emptyList())
+    val popular: StateFlow<List<Movie>> = _popular.asStateFlow()
+
+    private val _topRated = MutableStateFlow<List<Movie>>(emptyList())
+    val topRated: StateFlow<List<Movie>> = _topRated.asStateFlow()
+
+    val favorites: StateFlow<List<Movie>> = appRepository.favoriteMovies()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MS),
+            initialValue = emptyList(),
+        )
 
     val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
         .stateIn(
@@ -34,39 +46,36 @@ class MainViewModel(
 
     init {
         Timber.tag(Constants.TAG).d("MainViewModel: get AppRepository instance")
-        popularMoviesLiveData = appRepository.getPopularMovies()
-        topRatedMoviesLiveData = appRepository.getTopRatedMovies()
-        favoriteMoviesLiveData = appRepository.getAllFavoriteMovies()
+        refreshPopular()
+        refreshTopRated()
     }
 
-    fun getPopularMovies(): LiveData<List<Movie>> {
-        Timber.tag(Constants.TAG).d("MainViewModel: getPopularMovies() called")
-        return popularMoviesLiveData
+    fun refreshPopular() {
+        viewModelScope.launch {
+            runCatching { appRepository.fetchPopularMovies() }
+                .onSuccess { _popular.value = it }
+                .onFailure {
+                    Timber.tag(Constants.TAG).w(it, "MainViewModel: popular fetch failed")
+                }
+        }
     }
 
-    fun getTopRatedMovies(): LiveData<List<Movie>> {
-        Timber.tag(Constants.TAG).d("MainViewModel: getTopRatedMovies() called")
-        return topRatedMoviesLiveData
-    }
-
-    fun getFavoriteMovies(): LiveData<List<Movie>> {
-        Timber.tag(Constants.TAG).d("MainViewModel: getFavoriteMovies() called")
-        return favoriteMoviesLiveData
+    fun refreshTopRated() {
+        viewModelScope.launch {
+            runCatching { appRepository.fetchTopRatedMovies() }
+                .onSuccess { _topRated.value = it }
+                .onFailure {
+                    Timber.tag(Constants.TAG).w(it, "MainViewModel: topRated fetch failed")
+                }
+        }
     }
 
     fun deleteAllFavoriteMovies() {
         Timber.tag(Constants.TAG).d("MainViewModel: deleteAllFavoriteMovies() called")
-        appRepository.deleteAllFavoriteMovies()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        appRepository.clearDisposables()
-        Timber.tag(Constants.TAG).d("MainViewModel: onCleared() called")
+        viewModelScope.launch { appRepository.deleteAllFavoriteMovies() }
     }
 
     private companion object {
-        // 5s lets the upstream survive a config-change subscription gap.
         const val STATE_FLOW_STOP_TIMEOUT_MS = 5_000L
     }
 }

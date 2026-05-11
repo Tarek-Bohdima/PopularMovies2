@@ -24,6 +24,8 @@ import com.example.android.popularmovies2.R
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.databinding.ActivityMainBinding
 import com.example.android.popularmovies2.ui.detail.DetailActivity
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -35,9 +37,13 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
     private var menuItem: MenuItem? = null
     private var menuItemSelected: String = POPULAR
 
-    // Tracks the LiveData currently being observed so we don't stack observers each
-    // time connectivity flips. Cleared when the user selects a new menu (forces re-observe).
-    private var observedPath: String? = null
+    // Path currently bound to the adapter — guards against re-launching a duplicate
+    // collector when the connectivity collector re-renders during a flip.
+    private var boundPath: String? = null
+
+    // Active list-data collector. Cancelled and replaced whenever the bound path
+    // changes (menu tap / connectivity transition / swipe-refresh).
+    private var listCollectionJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,7 +133,7 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
         activityMainBinding.swiperefresh.isRefreshing = true
         Timber.tag(Constants.TAG)
             .d("onRefresh() called from SwipeRefreshLayout menuItemSelected = %s", menuItemSelected)
-        observedPath = null
+        boundPath = null
         renderForConnectivity(mainActivityViewModel.isOnline.value, menuItemSelected)
         activityMainBinding.swiperefresh.isRefreshing = false
     }
@@ -181,7 +187,7 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
 
     private fun selectMenu(newMenu: String) {
         menuItemSelected = newMenu
-        observedPath = null
+        boundPath = null
         renderForConnectivity(mainActivityViewModel.isOnline.value, newMenu)
     }
 
@@ -189,14 +195,40 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
         val canShowContent = online || menuItem == FAVORITES
         if (!canShowContent) {
             showErrorImage()
-            observedPath = null
+            listCollectionJob?.cancel()
+            listCollectionJob = null
+            boundPath = null
             return
         }
         showRecyclerView()
         val targetPath = if (online) menuItem else FAVORITES
-        if (observedPath != targetPath) {
-            setupViewModel(targetPath)
-            observedPath = targetPath
+        if (boundPath != targetPath) {
+            bindMovies(targetPath)
+            boundPath = targetPath
+        }
+    }
+
+    private fun bindMovies(path: String) {
+        listCollectionJob?.cancel()
+        val source: Flow<List<Movie>> = when (path) {
+            POPULAR -> {
+                mainActivityViewModel.refreshPopular()
+                mainActivityViewModel.popular
+            }
+            TOP_RATED -> {
+                mainActivityViewModel.refreshTopRated()
+                mainActivityViewModel.topRated
+            }
+            FAVORITES -> mainActivityViewModel.favorites
+            else -> return
+        }
+        listCollectionJob = lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                source.collect { movies ->
+                    Timber.tag(Constants.TAG).d("MainActivity: $path collected ${movies.size}")
+                    adapter.setMovieData(movies)
+                }
+            }
         }
     }
 
@@ -208,23 +240,6 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
     private fun showErrorImage() {
         activityMainBinding.recyclerView.visibility = View.GONE
         activityMainBinding.connectionErrorImageview.visibility = View.VISIBLE
-    }
-
-    private fun setupViewModel(path: String) {
-        when (path) {
-            POPULAR -> mainActivityViewModel.getPopularMovies().observe(this) { movies ->
-                Timber.tag(Constants.TAG).d("MainActivity: getPopularMovies Observed")
-                adapter.setMovieData(movies)
-            }
-            TOP_RATED -> mainActivityViewModel.getTopRatedMovies().observe(this) { movies ->
-                Timber.tag(Constants.TAG).d("MainActivity: getTopRatedMovies Observed")
-                adapter.setMovieData(movies)
-            }
-            FAVORITES -> mainActivityViewModel.getFavoriteMovies().observe(this) { movies ->
-                Timber.tag(Constants.TAG).d("MainActivity: getFavouriteMovies Observed")
-                adapter.setMovieData(movies)
-            }
-        }
     }
 
     override fun onMovieItemClicked(movie: Movie) {

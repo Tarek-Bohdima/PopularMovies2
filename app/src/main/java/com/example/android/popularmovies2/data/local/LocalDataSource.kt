@@ -5,20 +5,20 @@
  */
 package com.example.android.popularmovies2.data.local
 
-import androidx.lifecycle.LiveData
 import com.example.android.popularmovies2.data.model.Movie
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class LocalDataSource @Inject constructor(
     private val movieDao: MovieDao,
 ) {
-    fun getAllMovies(): LiveData<List<Movie>> = movieDao.getAllMovies()
+    fun getAllMovies(): Flow<List<Movie>> = movieDao.getAllMovies()
 
-    fun getMovieById(movieId: String): LiveData<Movie> = movieDao.getMovieById(movieId)
+    fun getMovieById(movieId: String): Flow<Movie?> = movieDao.getMovieById(movieId)
 
-    fun insertMovie(movie: Movie) = movieDao.insertMovie(movie)
+    suspend fun insertMovie(movie: Movie) = movieDao.insertMovie(movie)
 
-    fun deleteMovie(movie: Movie) = movieDao.delete(movie)
+    suspend fun deleteMovie(movie: Movie) = movieDao.delete(movie)
 
-    fun deleteAllMovies() = movieDao.deleteAllMovies()
+    suspend fun deleteAllMovies() = movieDao.deleteAllMovies()
 }

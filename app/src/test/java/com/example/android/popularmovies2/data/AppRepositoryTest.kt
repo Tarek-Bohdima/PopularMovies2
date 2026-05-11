@@ -1,94 +1,85 @@
 package com.example.android.popularmovies2.data
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.android.popularmovies2.data.local.LocalDataSource
 import com.example.android.popularmovies2.data.local.sampleMovie
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.data.model.Review
 import com.example.android.popularmovies2.data.model.Trailer
 import com.example.android.popularmovies2.data.network.NetworkDataSource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.timeout
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class AppRepositoryTest {
-    @get:Rule val instantTask = InstantTaskExecutorRule()
-
     private val network = mock<NetworkDataSource>()
     private val local = mock<LocalDataSource>()
     private val repository = AppRepository(network, local)
 
     @Test
-    fun getPopularMovies_delegatesToNetwork() {
-        val expected: LiveData<List<Movie>> = MutableLiveData(emptyList())
-        whenever(network.getPopularMoviesLiveData()).thenReturn(expected)
-        assertSame(expected, repository.getPopularMovies())
+    fun fetchPopularMovies_delegatesToNetwork() = runTest {
+        val expected = listOf(sampleMovie(1))
+        whenever(network.popularMovies()).thenReturn(expected)
+        assertEquals(expected, repository.fetchPopularMovies())
     }
 
     @Test
-    fun getTopRatedMovies_delegatesToNetwork() {
-        val expected: LiveData<List<Movie>> = MutableLiveData(emptyList())
-        whenever(network.getTopRatedMoviesLiveData()).thenReturn(expected)
-        assertSame(expected, repository.getTopRatedMovies())
+    fun fetchTopRatedMovies_delegatesToNetwork() = runTest {
+        val expected = listOf(sampleMovie(2))
+        whenever(network.topRatedMovies()).thenReturn(expected)
+        assertEquals(expected, repository.fetchTopRatedMovies())
     }
 
     @Test
-    fun getReviewsByMovieId_delegatesToNetwork() {
-        val expected: LiveData<List<Review>?> = MutableLiveData()
-        whenever(network.getReviewsLiveDataByMovieId("42")).thenReturn(expected)
-        assertSame(expected, repository.getReviewsByMovieId("42"))
+    fun fetchReviews_delegatesToNetwork() = runTest {
+        val expected = listOf(Review())
+        whenever(network.reviews("42")).thenReturn(expected)
+        assertEquals(expected, repository.fetchReviews("42"))
     }
 
     @Test
-    fun getTrailersByMovieId_delegatesToNetwork() {
-        val expected: LiveData<List<Trailer>?> = MutableLiveData()
-        whenever(network.getTrailersLiveDataByMovieId("42")).thenReturn(expected)
-        assertSame(expected, repository.getTrailersByMovieId("42"))
+    fun fetchTrailers_delegatesToNetwork() = runTest {
+        val expected = listOf(Trailer())
+        whenever(network.trailers("42")).thenReturn(expected)
+        assertEquals(expected, repository.fetchTrailers("42"))
     }
 
     @Test
-    fun getAllFavoriteMovies_delegatesToLocal() {
-        val expected: LiveData<List<Movie>> = MutableLiveData(emptyList())
+    fun favoriteMovies_delegatesToLocal() {
+        val expected: Flow<List<Movie>> = flowOf(emptyList())
         whenever(local.getAllMovies()).thenReturn(expected)
-        assertSame(expected, repository.getAllFavoriteMovies())
+        assertSame(expected, repository.favoriteMovies())
     }
 
     @Test
-    fun getFavoriteMovieById_delegatesToLocal() {
-        val expected: LiveData<Movie> = MutableLiveData()
+    fun favoriteMovieById_delegatesToLocal() {
+        val expected: Flow<Movie?> = flowOf(null)
         whenever(local.getMovieById("9")).thenReturn(expected)
-        assertSame(expected, repository.getFavoriteMovieById("9"))
+        assertSame(expected, repository.favoriteMovieById("9"))
     }
 
     @Test
-    fun insertFavoriteMovie_persistsViaLocal() {
+    fun insertFavoriteMovie_persistsViaLocal() = runTest {
         val movie = sampleMovie(1)
         repository.insertFavoriteMovie(movie)
-        verify(local, timeout(2_000)).insertMovie(movie)
+        verify(local).insertMovie(movie)
     }
 
     @Test
-    fun deleteFavoriteMovie_removesViaLocal() {
+    fun deleteFavoriteMovie_removesViaLocal() = runTest {
         val movie = sampleMovie(2)
         repository.deleteFavoriteMovie(movie)
-        verify(local, timeout(2_000)).deleteMovie(movie)
+        verify(local).deleteMovie(movie)
     }
 
     @Test
-    fun deleteAllFavoriteMovies_clearsViaLocal() {
+    fun deleteAllFavoriteMovies_clearsViaLocal() = runTest {
         repository.deleteAllFavoriteMovies()
-        verify(local, timeout(2_000)).deleteAllMovies()
-    }
-
-    @Test
-    fun clearDisposables_propagatesToNetwork() {
-        repository.clearDisposables()
-        verify(network).clearDisposables()
+        verify(local).deleteAllMovies()
     }
 }
