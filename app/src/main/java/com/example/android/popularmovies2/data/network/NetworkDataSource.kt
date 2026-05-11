@@ -9,6 +9,7 @@ import com.example.android.popularmovies2.BuildConfig
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.data.model.Review
 import com.example.android.popularmovies2.data.model.Trailer
+import com.example.android.popularmovies2.data.toDomain
 import javax.inject.Inject
 import javax.inject.Singleton
 import retrofit2.Retrofit
@@ -20,18 +21,17 @@ class NetworkDataSource @Inject constructor(
     private val apiKey: String = BuildConfig.TMDB_API_KEY
     private val movieApi: MovieApi = retrofit.create(MovieApi::class.java)
 
-    suspend fun moviesByPath(path: String): List<Movie> =
-        movieApi.getMoviesByPath(path, apiKey).getMovies().orEmpty()
+    suspend fun popularMovies(): List<Movie> =
+        movieApi.getMoviesByPath(POPULAR, apiKey).results.map { it.toDomain() }
 
-    suspend fun popularMovies(): List<Movie> = moviesByPath(POPULAR)
-
-    suspend fun topRatedMovies(): List<Movie> = moviesByPath(TOP_RATED)
+    suspend fun topRatedMovies(): List<Movie> =
+        movieApi.getMoviesByPath(TOP_RATED, apiKey).results.map { it.toDomain() }
 
     suspend fun reviews(movieId: String): List<Review> =
-        movieApi.getReviews(movieId, apiKey).getReviews().orEmpty()
+        movieApi.getReviews(movieId, apiKey).results
 
     suspend fun trailers(movieId: String): List<Trailer> =
-        movieApi.getTrailers(movieId, apiKey).getTrailers().orEmpty()
+        movieApi.getTrailers(movieId, apiKey).results
 
     private companion object {
         const val POPULAR = "popular"

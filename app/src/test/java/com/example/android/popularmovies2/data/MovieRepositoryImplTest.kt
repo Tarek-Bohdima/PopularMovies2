@@ -57,9 +57,9 @@ class MovieRepositoryImplTest {
     }
 
     @Test
-    fun favoriteMovieById_delegatesToLocal() {
+    fun favoriteMovieById_delegatesToLocal_convertingIdToInt() {
         val expected: Flow<Movie?> = flowOf(null)
-        whenever(local.getMovieById("9")).thenReturn(expected)
+        whenever(local.getMovieByTmdbId(9)).thenReturn(expected)
         assertSame(expected, repository.favoriteMovieById("9"))
     }
 

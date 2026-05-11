@@ -32,7 +32,7 @@ class MovieRepositoryImpl @Inject constructor(
     override fun favoriteMovies(): Flow<List<Movie>> = localDataSource.getAllMovies()
 
     override fun favoriteMovieById(movieId: String): Flow<Movie?> =
-        localDataSource.getMovieById(movieId)
+        localDataSource.getMovieByTmdbId(movieId.toInt())
 
     override suspend fun insertFavoriteMovie(movie: Movie) = localDataSource.insertMovie(movie)
 

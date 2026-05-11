@@ -5,41 +5,43 @@
  */
 package com.example.android.popularmovies2.di.module
 
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     private const val BASE_URL = "https://api.themoviedb.org/3/movie/"
+    private val JSON_MEDIA_TYPE = "application/json".toMediaType()
+
+    @Provides
+    @Singleton
+    fun json(): Json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+    }
+
+    @Provides
+    @Singleton
+    fun converterFactory(json: Json): Converter.Factory = json.asConverterFactory(JSON_MEDIA_TYPE)
 
     @Provides
     @Singleton
     fun retrofit(
         okHttpClient: OkHttpClient,
-        gsonConverterFactory: GsonConverterFactory,
+        converterFactory: Converter.Factory,
     ): Retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(BASE_URL)
-        .addConverterFactory(gsonConverterFactory)
+        .addConverterFactory(converterFactory)
         .build()
-
-    @Provides
-    @Singleton
-    fun gson(): Gson = GsonBuilder()
-        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-        .create()
-
-    @Provides
-    @Singleton
-    fun gsonConverterFactory(gson: Gson): GsonConverterFactory = GsonConverterFactory.create(gson)
 }

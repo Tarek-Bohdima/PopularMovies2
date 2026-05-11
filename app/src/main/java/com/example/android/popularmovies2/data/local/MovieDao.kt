@@ -6,26 +6,24 @@
 package com.example.android.popularmovies2.data.local
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.android.popularmovies2.data.model.Movie
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDao {
     @Query("SELECT * FROM favorite_movies")
-    fun getAllMovies(): Flow<List<Movie>>
+    fun getAllMovies(): Flow<List<MovieEntity>>
 
-    @Query("SELECT * FROM favorite_movies where movieId = :id")
-    fun getMovieById(id: String): Flow<Movie?>
+    @Query("SELECT * FROM favorite_movies WHERE tmdb_id = :tmdbId LIMIT 1")
+    fun getMovieByTmdbId(tmdbId: Int): Flow<MovieEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMovie(movie: Movie)
+    suspend fun insertMovie(movie: MovieEntity)
 
-    @Delete
-    suspend fun delete(movie: Movie)
+    @Query("DELETE FROM favorite_movies WHERE tmdb_id = :tmdbId")
+    suspend fun deleteByTmdbId(tmdbId: Int)
 
     @Query("DELETE FROM favorite_movies")
     suspend fun deleteAllMovies()
