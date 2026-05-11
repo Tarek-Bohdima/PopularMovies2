@@ -6,24 +6,25 @@
 package com.example.android.popularmovies2.data.model
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
+/**
+ * UI/ViewModel-facing domain type for a movie. Carries no Room or kotlinx.serialization
+ * annotations — those live on `MovieEntity` (Room) and `MovieDto` (wire), with the
+ * mapping in `data.Mappers`.
+ *
+ * `movieId` is TMDb's id (the API's `"id"` field). It is **not** a Room primary key —
+ * the favorites table has its own auto-generated primary key plus a unique `tmdb_id`
+ * column.
+ */
 @Parcelize
-@Entity(tableName = "favorite_movies")
 data class Movie(
-    @PrimaryKey(autoGenerate = true)
-    @SerializedName("id")
-    var movieId: Int,
+    val movieId: Int,
     val originalTitle: String,
     val posterPath: String,
     val backdropPath: String,
     val overview: String,
     val voteAverage: Double,
     val releaseDate: String,
-    @ColumnInfo(name = "is_favorite")
-    var isFavorite: Boolean,
+    val isFavorite: Boolean = false,
 ) : Parcelable

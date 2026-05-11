@@ -5,20 +5,10 @@
  */
 package com.example.android.popularmovies2.data.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class ReviewsList {
-    @SerializedName("id")
-    val movieId: Int? = null
-
-    val page: Int? = null
-
-    @SerializedName("results")
-    private val reviews: List<Review>? = null
-
-    val totalPages: Int? = null
-
-    val totalReviews: Int? = null
-
-    fun getReviews(): List<Review>? = reviews
-}
+@Serializable
+data class ReviewsList(
+    @SerialName("results") val results: List<Review> = emptyList(),
+)

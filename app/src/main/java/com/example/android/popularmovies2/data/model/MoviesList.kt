@@ -5,8 +5,10 @@
  */
 package com.example.android.popularmovies2.data.model
 
-class MoviesList {
-    private val results: List<Movie>? = null
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-    fun getMovies(): List<Movie>? = results
-}
+@Serializable
+data class MoviesList(
+    @SerialName("results") val results: List<MovieDto> = emptyList(),
+)

@@ -7,9 +7,8 @@ package com.example.android.popularmovies2.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.android.popularmovies2.data.model.Movie
 
-@Database(entities = [Movie::class], version = 1, exportSchema = false)
+@Database(entities = [MovieEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun movieDao(): MovieDao
 

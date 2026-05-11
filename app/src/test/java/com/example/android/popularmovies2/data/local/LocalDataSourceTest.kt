@@ -1,11 +1,10 @@
 package com.example.android.popularmovies2.data.local
 
 import com.example.android.popularmovies2.data.model.Movie
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertSame
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -16,46 +15,47 @@ class LocalDataSourceTest {
     private val source = LocalDataSource(dao)
 
     @Test
-    fun getAllMovies_delegatesToDao() {
-        val expected: Flow<List<Movie>> = flowOf(emptyList())
-        whenever(dao.getAllMovies()).thenReturn(expected)
-        assertSame(expected, source.getAllMovies())
+    fun getAllMovies_mapsDaoEntitiesToDomain() = runTest {
+        val entities = listOf(sampleEntity(1), sampleEntity(2))
+        whenever(dao.getAllMovies()).thenReturn(flowOf(entities))
+        val emitted = source.getAllMovies().toList()
+        assertEquals(1, emitted.size)
+        assertEquals(2, emitted.first().size)
+        assertEquals(1, emitted.first()[0].movieId)
+        assertEquals(true, emitted.first()[0].isFavorite)
     }
 
     @Test
-    fun getMovieById_delegatesToDao() {
-        val expected: Flow<Movie?> = flowOf(null)
-        whenever(dao.getMovieById("42")).thenReturn(expected)
-        assertSame(expected, source.getMovieById("42"))
+    fun getMovieByTmdbId_mapsDaoEntityToDomain() = runTest {
+        whenever(dao.getMovieByTmdbId(42)).thenReturn(flowOf(sampleEntity(42)))
+        val emitted = source.getMovieByTmdbId(42).toList()
+        assertEquals(1, emitted.size)
+        assertEquals(42, emitted.first()?.movieId)
     }
 
     @Test
-    fun insertMovie_delegatesToDao() = runTest {
-        val movie = sampleMovie(7)
-        source.insertMovie(movie)
-        verify(dao).insertMovie(movie)
+    fun getMovieByTmdbId_passesThroughNull() = runTest {
+        whenever(dao.getMovieByTmdbId(99)).thenReturn(flowOf(null))
+        val emitted = source.getMovieByTmdbId(99).toList()
+        assertEquals(listOf<Movie?>(null), emitted)
     }
 
     @Test
-    fun deleteMovie_delegatesToDao() = runTest {
-        val movie = sampleMovie(7)
-        source.deleteMovie(movie)
-        verify(dao).delete(movie)
+    fun insertMovie_mapsDomainToEntityAndDelegatesToDao() = runTest {
+        source.insertMovie(sampleMovie(7))
+        verify(dao).insertMovie(sampleEntity(7).copy(id = 0L))
+    }
+
+    @Test
+    fun deleteMovie_routesToDeleteByTmdbId() = runTest {
+        source.deleteMovie(sampleMovie(7))
+        verify(dao).deleteByTmdbId(7)
     }
 
     @Test
     fun deleteAllMovies_delegatesToDao() = runTest {
         source.deleteAllMovies()
         verify(dao).deleteAllMovies()
-    }
-
-    @Test
-    fun getAllMovies_emitsDaoFlowValues() = runTest {
-        val movies = listOf(sampleMovie(1), sampleMovie(2))
-        whenever(dao.getAllMovies()).thenReturn(flowOf(movies))
-        val emitted = mutableListOf<List<Movie>>()
-        source.getAllMovies().collect { emitted += it }
-        assertEquals(listOf(movies), emitted)
     }
 }
 
@@ -68,4 +68,15 @@ internal fun sampleMovie(id: Int) = Movie(
     voteAverage = 7.5,
     releaseDate = "2024-01-0$id".take(10),
     isFavorite = false,
+)
+
+internal fun sampleEntity(id: Int) = MovieEntity(
+    id = 0L,
+    tmdbId = id,
+    originalTitle = "title-$id",
+    posterPath = "/p$id.jpg",
+    backdropPath = "/b$id.jpg",
+    overview = "overview $id",
+    voteAverage = 7.5,
+    releaseDate = "2024-01-0$id".take(10),
 )

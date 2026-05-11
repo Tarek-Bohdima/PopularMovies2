@@ -110,7 +110,10 @@ class DetailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 detailViewModel.favoriteMovie.collect { movie ->
-                    if (movie != null && movie == detailMovie) {
+                    // Match on TMDb id only: the Room-mapped Movie has isFavorite=true while
+                    // detailMovie (mapped from the network DTO via Intent extras) has
+                    // isFavorite=false, so a full data-class equality check would always fail.
+                    if (movie != null && movie.movieId == detailMovie.movieId) {
                         isFavorite = true
                         activityDetailBinding.like.setImageResource(iconFull)
                     } else {

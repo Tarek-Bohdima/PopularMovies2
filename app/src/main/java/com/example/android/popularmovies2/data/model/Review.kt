@@ -5,15 +5,13 @@
  */
 package com.example.android.popularmovies2.data.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class Review {
-    var author: String? = null
-    var content: String? = null
-
-    @SerializedName("id")
-    val commentId: String? = null
-
-    @SerializedName("url")
-    val reviewUrl: String? = null
-}
+@Serializable
+data class Review(
+    val author: String? = null,
+    val content: String? = null,
+    @SerialName("id") val commentId: String? = null,
+    @SerialName("url") val reviewUrl: String? = null,
+)
