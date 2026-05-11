@@ -128,6 +128,8 @@ Once Detekt/Spotless are wired:
 
 Bumped together with AGP 9 to avoid Kotlin-2.2-metadata kapt failures: Dagger 2.50 → 2.56.2, Room 2.2.5 → 2.7.2, Glide 4.11.0 → 4.16.0. Each is still slated for replacement (Hilt / Coroutines+Flow / Coil) per §2.
 
+Active in #18: **Coroutines** (`kotlinx-coroutines-android` 1.8.1) explicit, **Lifecycle 2.2.0 → 2.8.7** (`runtime-ktx` + `viewmodel-ktx` + `livedata-ktx`) so `viewModelScope`, `repeatOnLifecycle`, and `stateIn` are available. The `lifecycle-legacy` bundle was renamed to `lifecycle` — LiveData artifact stays in it until the RxJava→Flow migration replaces it.
+
 ---
 
 ## 7. Legacy architecture (what's there now)
@@ -147,6 +149,7 @@ Activity → ViewModel → AppRepository ──► NetworkDataSource (Retrofit+R
 - Two activities: `MainActivity` (RecyclerView grid, span 2 portrait / 4 landscape) and `DetailActivity`. Sort mode (`"Popular"`/`"Top Rated"`/`"Favorites"`) is a `String` saved via `onSaveInstanceState`. Both activities will be replaced by Compose screens hosted in a single `ComponentActivity` with `NavHost`.
 - Image loading uses Glide via two `@BindingAdapter`s (`posterUrl`, `backDropUrl`). Replaced by `coil.compose.AsyncImage`.
 - Logging: Timber, planted only in debug, with tag `Constants.TAG = "MyApp"`.
+- Connectivity: `NetworkMonitor` (`data/network/NetworkMonitor.kt`) exposes `Flow<Boolean>` via `callbackFlow` + `ConnectivityManager.NetworkCallback`. Used by `MainViewModel.isOnline: StateFlow<Boolean>` (collected by `MainActivity` with `repeatOnLifecycle(STARTED)`). Primary constructor takes injected `ConnectivityManager?` + `NetworkRequest` for unit-testability; secondary constructor `(context: Context)` assembles them for production. **Never re-introduce synchronous `isNetworkConnected(context)` polling** — observe the flow.
 
 ---
 
