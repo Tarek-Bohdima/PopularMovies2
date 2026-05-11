@@ -16,10 +16,10 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-class AppRepositoryTest {
+class MovieRepositoryImplTest {
     private val network = mock<NetworkDataSource>()
     private val local = mock<LocalDataSource>()
-    private val repository = AppRepository(network, local)
+    private val repository = MovieRepositoryImpl(network, local)
 
     @Test
     fun fetchPopularMovies_delegatesToNetwork() = runTest {

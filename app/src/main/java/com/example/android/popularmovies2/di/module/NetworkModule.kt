@@ -5,36 +5,41 @@
  */
 package com.example.android.popularmovies2.di.module
 
-import com.example.android.popularmovies2.di.scopes.ApplicationScope
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-@Module(includes = [OkHttpClientModule::class])
-class NetworkModule(private val baseUrl: String) {
-    @ApplicationScope
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+    private const val BASE_URL = "https://api.themoviedb.org/3/movie/"
+
     @Provides
+    @Singleton
     fun retrofit(
         okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory,
     ): Retrofit = Retrofit.Builder()
         .client(okHttpClient)
-        .baseUrl(baseUrl)
+        .baseUrl(BASE_URL)
         .addConverterFactory(gsonConverterFactory)
         .build()
 
-    @ApplicationScope
     @Provides
+    @Singleton
     fun gson(): Gson = GsonBuilder()
         .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
         .create()
 
-    @ApplicationScope
     @Provides
+    @Singleton
     fun gsonConverterFactory(gson: Gson): GsonConverterFactory = GsonConverterFactory.create(gson)
 }

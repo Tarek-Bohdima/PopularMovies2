@@ -1,10 +1,12 @@
 package com.example.android.popularmovies2.ui.detail
 
-import com.example.android.popularmovies2.data.AppRepository
+import androidx.lifecycle.SavedStateHandle
+import com.example.android.popularmovies2.data.MovieRepository
 import com.example.android.popularmovies2.data.local.sampleMovie
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.data.model.Review
 import com.example.android.popularmovies2.data.model.Trailer
+import com.example.android.popularmovies2.ui.list.MainActivity.Companion.MOVIE_OBJECT
 import com.example.android.popularmovies2.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,16 +28,19 @@ import org.mockito.kotlin.whenever
 class DetailViewModelTest {
     @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
-    private val repository = mock<AppRepository>()
-    private val movieId = "42"
+    private val repository = mock<MovieRepository>()
+    private val seedMovie = sampleMovie(42)
+    private val movieId = seedMovie.movieId.toString()
     private val favoriteFlow = MutableSharedFlow<Movie?>(replay = 1)
+
+    private fun handle() = SavedStateHandle(mapOf(MOVIE_OBJECT to seedMovie))
 
     @Before
     fun setUp() {
         whenever(repository.favoriteMovieById(movieId)).thenReturn(favoriteFlow)
     }
 
-    private fun newViewModel(): DetailViewModel = DetailViewModel(repository, movieId)
+    private fun newViewModel(): DetailViewModel = DetailViewModel(repository, handle())
 
     @Test
     fun init_fetchesReviewsAndTrailersForMovieId() = runTest {
@@ -83,7 +88,7 @@ class DetailViewModelTest {
         favoriteFlow.emit(sampleMovie(1))
         favoriteFlow.emit(null)
         job.cancel()
-        assertEquals(3, sink.size) // initial null seed + two emissions
+        assertEquals(3, sink.size)
         assertEquals(null, sink[0])
         assertEquals(sampleMovie(1).movieId, sink[1]?.movieId)
         assertEquals(null, sink[2])

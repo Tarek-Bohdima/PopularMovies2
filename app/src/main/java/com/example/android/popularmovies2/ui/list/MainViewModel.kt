@@ -8,9 +8,11 @@ package com.example.android.popularmovies2.ui.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.android.popularmovies2.Constants
-import com.example.android.popularmovies2.data.AppRepository
+import com.example.android.popularmovies2.data.MovieRepository
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.data.network.NetworkMonitor
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,8 +21,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class MainViewModel(
-    private val appRepository: AppRepository,
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val repository: MovieRepository,
     networkMonitor: NetworkMonitor,
 ) : ViewModel() {
 
@@ -30,7 +33,7 @@ class MainViewModel(
     private val _topRated = MutableStateFlow<List<Movie>>(emptyList())
     val topRated: StateFlow<List<Movie>> = _topRated.asStateFlow()
 
-    val favorites: StateFlow<List<Movie>> = appRepository.favoriteMovies()
+    val favorites: StateFlow<List<Movie>> = repository.favoriteMovies()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MS),
@@ -52,7 +55,7 @@ class MainViewModel(
 
     fun refreshPopular() {
         viewModelScope.launch {
-            runCatching { appRepository.fetchPopularMovies() }
+            runCatching { repository.fetchPopularMovies() }
                 .onSuccess { _popular.value = it }
                 .onFailure {
                     Timber.tag(Constants.TAG).w(it, "MainViewModel: popular fetch failed")
@@ -62,7 +65,7 @@ class MainViewModel(
 
     fun refreshTopRated() {
         viewModelScope.launch {
-            runCatching { appRepository.fetchTopRatedMovies() }
+            runCatching { repository.fetchTopRatedMovies() }
                 .onSuccess { _topRated.value = it }
                 .onFailure {
                     Timber.tag(Constants.TAG).w(it, "MainViewModel: topRated fetch failed")
@@ -72,7 +75,7 @@ class MainViewModel(
 
     fun deleteAllFavoriteMovies() {
         Timber.tag(Constants.TAG).d("MainViewModel: deleteAllFavoriteMovies() called")
-        viewModelScope.launch { appRepository.deleteAllFavoriteMovies() }
+        viewModelScope.launch { repository.deleteAllFavoriteMovies() }
     }
 
     private companion object {

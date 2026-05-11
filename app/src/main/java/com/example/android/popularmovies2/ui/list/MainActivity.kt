@@ -12,10 +12,10 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
@@ -24,14 +24,16 @@ import com.example.android.popularmovies2.R
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.databinding.ActivityMainBinding
 import com.example.android.popularmovies2.ui.detail.DetailActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
     private lateinit var activityMainBinding: ActivityMainBinding
-    private lateinit var mainActivityViewModel: MainViewModel
+    private val mainActivityViewModel: MainViewModel by viewModels()
     private lateinit var adapter: MovieAdapter
     private val movieList: List<Movie> = ArrayList()
     private var menuItem: MenuItem? = null
@@ -49,10 +51,6 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
         super.onCreate(savedInstanceState)
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         activityMainBinding.lifecycleOwner = this
-        mainActivityViewModel = ViewModelProvider(
-            this,
-            MainViewModelFactory(application),
-        )[MainViewModel::class.java]
         changeSpanCountByOrientation()
 
         checkStateAfterOrientationChange(savedInstanceState)

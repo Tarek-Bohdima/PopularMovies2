@@ -8,10 +8,10 @@ package com.example.android.popularmovies2.ui.detail
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.android.popularmovies2.Constants
@@ -21,15 +21,16 @@ import com.example.android.popularmovies2.data.model.Review
 import com.example.android.popularmovies2.data.model.Trailer
 import com.example.android.popularmovies2.databinding.ActivityDetailBinding
 import com.example.android.popularmovies2.ui.list.MainActivity.Companion.MOVIE_OBJECT
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
     private val reviewList: List<Review> = ArrayList()
     private val trailersList: List<Trailer> = ArrayList()
-    private lateinit var detailViewModel: DetailViewModel
+    private val detailViewModel: DetailViewModel by viewModels()
     private lateinit var activityDetailBinding: ActivityDetailBinding
-    private lateinit var movieId: String
     private lateinit var reviewsAdapter: ReviewsAdapter
     private lateinit var trailersAdapter: TrailersAdapter
     private lateinit var detailMovie: Movie
@@ -52,7 +53,6 @@ class DetailActivity : AppCompatActivity() {
         iconEmpty = R.drawable.ic_favorite_empty
         iconFull = R.drawable.ic_favorite_full
         title = detailMovie.originalTitle
-        movieId = detailMovie.movieId.toString()
         setReviewsRecyclerView()
         setTrailersRecyclerView()
         setupViewModel()
@@ -83,9 +83,6 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun setupViewModel() {
-        val factory = DetailViewModelFactory(application, movieId)
-        detailViewModel = ViewModelProvider(this, factory)[DetailViewModel::class.java]
-
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 detailViewModel.reviews.collect { reviews ->

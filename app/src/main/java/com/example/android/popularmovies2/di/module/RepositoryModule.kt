@@ -5,14 +5,18 @@
  */
 package com.example.android.popularmovies2.di.module
 
-import android.content.Context
-import com.example.android.popularmovies2.di.scopes.ApplicationScope
+import com.example.android.popularmovies2.data.MovieRepository
+import com.example.android.popularmovies2.data.MovieRepositoryImpl
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
-class ContextModule(private val context: Context) {
-    @Provides
-    @ApplicationScope
-    fun provideContext(): Context = context.applicationContext
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindMovieRepository(impl: MovieRepositoryImpl): MovieRepository
 }

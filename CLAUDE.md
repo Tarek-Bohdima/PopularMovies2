@@ -126,7 +126,7 @@ Once Detekt/Spotless are wired:
 - ProGuard/R8 disabled in release (`isMinifyEnabled = false`)
 - `gradle.properties` carries AGP-9-upgrade-utility stability flags pinning AGP-7-era behavior (`android.nonTransitiveRClass=false`, `android.newDsl=false`, etc.). These are deprecated and emit warnings; they should be flipped one at a time in follow-up issues.
 
-Bumped together with AGP 9 to avoid Kotlin-2.2-metadata kapt failures: Dagger 2.50 → 2.56.2, Room 2.2.5 → 2.7.2, Glide 4.11.0 → 4.16.0. Each is still slated for replacement (Hilt / Coroutines+Flow / Coil) per §2.
+Bumped together with AGP 9 to avoid Kotlin-2.2-metadata kapt failures: Dagger 2.50 → 2.56.2 (now Hilt 2.56.2 — see §7), Room 2.2.5 → 2.7.2, Glide 4.11.0 → 4.16.0 (retired in #23). Per §2.
 
 Active in #18: **Coroutines** (`kotlinx-coroutines-android` 1.8.1) explicit, **Lifecycle 2.2.0 → 2.8.7** (`runtime-ktx` + `viewmodel-ktx`) so `viewModelScope`, `repeatOnLifecycle`, and `stateIn` are available. The `lifecycle-legacy` bundle was renamed to `lifecycle`.
 
@@ -136,15 +136,24 @@ After #20: **RxJava and LiveData are gone.** Retrofit calls are `suspend fun`, R
 
 ## 7. Legacy architecture (what's there now)
 
-MVVM + single-Repository, DI via Dagger 2 (no Hilt). Replace lane-by-lane.
+MVVM + single-Repository, DI via **Hilt** (Dagger 2.x compiler under the hood). Replace remaining legacy lanes one by one.
 
 ```
-Activity → ViewModel → AppRepository ──► NetworkDataSource (Retrofit `suspend` → TMDb)
-                                    └─► LocalDataSource (Room: favorite_movies.db, Flow + suspend)
+@AndroidEntryPoint Activity → @HiltViewModel ViewModel → MovieRepository (interface)
+                                                          └─► MovieRepositoryImpl
+                                                              ├─► NetworkDataSource (Retrofit suspend → TMDb)
+                                                              └─► LocalDataSource (Room: favorite_movies.db, Flow + suspend)
 ```
 
-- One `@ApplicationScope` `MovieComponent` is built in `MoviesApp.onCreate()` and exposes only `getAppRepository()`.
-- ViewModels are **not** injected — they grab the repository via `((MoviesApp) application).getMovieComponent().getAppRepository()`. After Hilt migration (#21), this pattern disappears (`@HiltViewModel` + constructor injection).
+- `MoviesApp` is `@HiltAndroidApp`. There is no manual `Component` build any more — Hilt manages `SingletonComponent` automatically. The legacy `di/component/`, `di/scopes/`, `di/qualifier/` packages and `ContextModule` are all deleted.
+- Modules live in `di/module/` and use `@Module @InstallIn(SingletonComponent::class)`:
+  - `NetworkModule` (Retrofit + Gson, `@Singleton`).
+  - `OkHttpClientModule` (`@Singleton`).
+  - `FavoriteDatabaseModule` (Room AppDatabase + MovieDao via `@ApplicationContext Context`).
+  - `RepositoryModule` (`@Binds @Singleton bindMovieRepository(impl: MovieRepositoryImpl): MovieRepository`) — the headline abstraction-principle binding.
+  - `NetworkMonitorModule` (`@Provides @Singleton networkMonitor(@ApplicationContext)` — builds the `ConnectivityManager` + `NetworkRequest` and returns `ConnectivityManagerNetworkMonitor`).
+- ViewModels are constructor-injected (`@HiltViewModel class FooViewModel @Inject constructor(repository: MovieRepository, ...)`). Activities use `by viewModels<FooViewModel>()`. **No more `*ViewModelFactory` classes**, and no more `(application as MoviesApp).movieComponent.getAppRepository()` Demeter chains — both gone with #21.
+- Per-screen runtime arguments (e.g. `DetailViewModel.movieId`) ride `SavedStateHandle`. `ComponentActivity.defaultViewModelCreationExtras` promotes Intent extras to the SavedStateHandle, so `DetailActivity` putting a `Movie` Parcelable under `MainActivity.MOVIE_OBJECT` is all the wiring needed — the VM reads it via `savedStateHandle.get<Movie>(MOVIE_OBJECT)`. **Never read `Intent` extras from inside a ViewModel directly** — go through `SavedStateHandle`.
 - `AppRepository`: network reads are `suspend fun` returning `List<T>` (unwrapped from the Gson list wrappers inside `NetworkDataSource`). Room reads are `Flow<List<Movie>>` / `Flow<Movie?>`. Writes are `suspend fun`. **No `LiveData`, no `CompositeDisposable`, no `clearDisposables`** — cancellation rides `viewModelScope`.
 - ViewModels expose **`StateFlow<T>` only**. One-shot network results use `MutableStateFlow<T>` updated from `viewModelScope.launch { runCatching { … }.onSuccess { _state.value = it }.onFailure { Timber.w(…) } }`; reactive Room reads use `repository.flow.stateIn(viewModelScope, WhileSubscribed(5_000), initialValue)`. **Never re-introduce `LiveData` exposure.**
 - Activities collect VM `StateFlow`s with `lifecycleScope.launch { repeatOnLifecycle(STARTED) { vm.flow.collect { … } } }`. **No `.observe(this)` callsites.** When a single drawer-style screen flips between multiple flow sources (see `MainActivity.bindMovies`), keep a `currentJob: Job?` field and cancel/replace it on path change.

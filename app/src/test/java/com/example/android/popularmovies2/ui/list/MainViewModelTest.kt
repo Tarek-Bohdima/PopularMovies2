@@ -1,6 +1,6 @@
 package com.example.android.popularmovies2.ui.list
 
-import com.example.android.popularmovies2.data.AppRepository
+import com.example.android.popularmovies2.data.MovieRepository
 import com.example.android.popularmovies2.data.local.sampleMovie
 import com.example.android.popularmovies2.data.model.Movie
 import com.example.android.popularmovies2.data.network.NetworkMonitor
@@ -26,7 +26,7 @@ import org.mockito.kotlin.whenever
 class MainViewModelTest {
     @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
-    private val repository = mock<AppRepository>()
+    private val repository = mock<MovieRepository>()
     private val networkMonitor = mock<NetworkMonitor>()
     private val online = MutableStateFlow(false)
     private val favorites = MutableSharedFlow<List<Movie>>(replay = 1)
