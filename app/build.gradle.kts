@@ -58,10 +58,8 @@ android {
     lint {
         // Timber 4.7.1's WrongTimberUsageDetector calls Context.getMainProject() which is
         // forbidden during module analysis on AGP 7.x — produces LintError, not a real issue.
-        // Glide 4.11.0's NotificationTarget triggers NotificationPermission on targetSdk 33,
-        // but we don't use NotificationTarget. Both libraries are slated for replacement
-        // (Timber → structured logging, Glide → Coil) so we don't bump them just for lint.
-        disable += setOf("LintError", "NotificationPermission")
+        // Timber is slated for replacement, so we don't bump just for lint.
+        disable += setOf("LintError")
     }
 
     testOptions {
@@ -96,9 +94,8 @@ dependencies {
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
 
-    // Glide (legacy — slated for replacement by Coil)
-    implementation(libs.glide)
-    kapt(libs.glide.compiler)
+    // Image loading
+    implementation(libs.coil)
 
     implementation(libs.timber)
     implementation(libs.expandable.textview)
@@ -116,7 +113,7 @@ kover {
     reports {
         filters {
             excludes {
-                // Generated code (Dagger, Room, DataBinding, Glide, R, BuildConfig, Parcelize)
+                // Generated code (Dagger, Room, DataBinding, R, BuildConfig, Parcelize)
                 classes(
                     "*_Factory",
                     "*_Factory\$*",
@@ -141,18 +138,9 @@ kover {
                     "*.DataBindingTriggerClass",
                     "com.example.android.popularmovies2.DataBinderMapperImpl",
                     "com.example.android.popularmovies2.DataBindingTriggerClass",
-                    "*.GlideApp",
-                    "*.GlideOptions",
-                    "*.GlideOptions\$*",
-                    "*.GlideRequest",
-                    "*.GlideRequest\$*",
-                    "*.GlideRequests",
-                    "*.GeneratedAppGlideModuleImpl",
-                    "*.GeneratedRequestManagerFactory",
                 )
                 packages(
                     "com.example.android.popularmovies2.generated.callback",
-                    "com.bumptech.glide",
                 )
                 // Hand-written code that's tied to Android framework / DI graph and not
                 // realistically JVM-unit-testable. Compose migration deletes most of these.
@@ -162,7 +150,6 @@ kover {
                 )
                 classes(
                     "com.example.android.popularmovies2.MoviesApp",
-                    "com.example.android.popularmovies2.CustomGlideModule",
                     "com.example.android.popularmovies2.Constants",
                     "com.example.android.popularmovies2.data.network.MovieApi",
                     "com.example.android.popularmovies2.data.network.MovieApi\$*",

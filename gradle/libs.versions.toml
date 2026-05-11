@@ -27,8 +27,8 @@ okhttp = "4.9.0"
 # DI (legacy — slated for replacement by Hilt)
 dagger = "2.56.2"
 
-# Imaging (legacy — slated for replacement by Coil)
-glide = "4.16.0"
+# Imaging
+coil = "2.7.0"
 
 # Misc
 timber = "4.7.1"
@@ -74,9 +74,8 @@ square-okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-int
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 
-# Glide (legacy — replaced by Coil)
-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
-glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+# Coil (image loading; ImageView extension for the BindingAdapter callsites)
+coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 
 # Misc
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

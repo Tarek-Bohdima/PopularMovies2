@@ -7,26 +7,18 @@ package com.example.android.popularmovies2.ui
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
-import com.bumptech.glide.Glide
 import com.example.android.popularmovies2.R
+import com.example.android.popularmovies2.ui.image.ImageLoaderHost
 
 @BindingAdapter("posterUrl")
 fun loadPoster(imageView: ImageView, url: String?) {
-    if (!url.isNullOrEmpty()) {
-        Glide.with(imageView.context)
-            .load(url)
-            .placeholder(R.drawable.film_poster_placeholder)
-            .centerCrop()
-            .into(imageView)
-    }
+    imageView.imageLoader().load(imageView, url, R.drawable.film_poster_placeholder)
 }
 
 @BindingAdapter("backDropUrl")
 fun loadBackdrop(imageView: ImageView, url: String?) {
-    if (!url.isNullOrEmpty()) {
-        Glide.with(imageView.context)
-            .load(url)
-            .centerCrop()
-            .into(imageView)
-    }
+    imageView.imageLoader().load(imageView, url)
 }
+
+private fun ImageView.imageLoader() =
+    (context.applicationContext as ImageLoaderHost).imageLoader
