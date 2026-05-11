@@ -79,8 +79,11 @@ dependencies {
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.google.material)
 
-    // Lifecycle (legacy — slated for removal alongside the Coroutines/Flow migration)
-    implementation(libs.bundles.lifecycle.legacy)
+    // Lifecycle (KTX — LiveData artifact still legacy; runtime + viewmodel KTX are target-stack)
+    implementation(libs.bundles.lifecycle)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
 
     // Retrofit / OkHttp
     implementation(libs.bundles.retrofit)
@@ -107,6 +110,7 @@ dependencies {
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 }

@@ -14,14 +14,17 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.android.popularmovies2.Constants
 import com.example.android.popularmovies2.R
 import com.example.android.popularmovies2.data.model.Movie
-import com.example.android.popularmovies2.data.network.ConnectionUtils.isNetworkConnected
 import com.example.android.popularmovies2.databinding.ActivityMainBinding
 import com.example.android.popularmovies2.ui.detail.DetailActivity
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
@@ -31,6 +34,10 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
     private val movieList: List<Movie> = ArrayList()
     private var menuItem: MenuItem? = null
     private var menuItemSelected: String = POPULAR
+
+    // Tracks the LiveData currently being observed so we don't stack observers each
+    // time connectivity flips. Cleared when the user selects a new menu (forces re-observe).
+    private var observedPath: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +53,17 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
         setScreenTitleByMenuSelected(menuItemSelected)
         setRecyclerView()
         swipeToRefresh()
-        checkConnectivityAndCall(this, menuItemSelected)
+        observeConnectivity()
+    }
+
+    private fun observeConnectivity() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainActivityViewModel.isOnline.collect { online ->
+                    renderForConnectivity(online, menuItemSelected)
+                }
+            }
+        }
     }
 
     private fun swipeToRefresh() {
@@ -110,7 +127,8 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
         activityMainBinding.swiperefresh.isRefreshing = true
         Timber.tag(Constants.TAG)
             .d("onRefresh() called from SwipeRefreshLayout menuItemSelected = %s", menuItemSelected)
-        checkConnectivityAndCall(this, menuItemSelected)
+        observedPath = null
+        renderForConnectivity(mainActivityViewModel.isOnline.value, menuItemSelected)
         activityMainBinding.swiperefresh.isRefreshing = false
     }
 
@@ -133,7 +151,7 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
                 menuItem = item
                 Timber.tag(Constants.TAG)
                     .d("MainActivity: onOptionsItemSelected() called with: item = [$item]")
-                checkConnectivityAndCall(this, POPULAR)
+                selectMenu(POPULAR)
                 title = POPULAR_MOVIES_TITLE
                 true
             }
@@ -141,7 +159,7 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
                 menuItem = item
                 Timber.tag(Constants.TAG)
                     .d("MainActivity: onOptionsItemSelected() called with: item = [$item]")
-                checkConnectivityAndCall(this, TOP_RATED)
+                selectMenu(TOP_RATED)
                 title = TOP_RATED_MOVIES_TITLE
                 true
             }
@@ -149,7 +167,7 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
                 menuItem = item
                 Timber.tag(Constants.TAG)
                     .d("MainActivity: onOptionsItemSelected() called with: item = [$item]")
-                checkConnectivityAndCall(this, FAVORITES)
+                selectMenu(FAVORITES)
                 title = FAVORITES
                 true
             }
@@ -161,22 +179,24 @@ class MainActivity : AppCompatActivity(), MovieAdapter.MovieItemClickListener {
         }
     }
 
-    private fun checkConnectivityAndCall(context: Context, menuItemSelected: String) {
-        when {
-            isNetworkConnected(context) -> {
-                showRecyclerView()
-                setupViewModel(menuItemSelected)
-            }
-            menuItemSelected == FAVORITES -> {
-                Timber.tag(Constants.TAG).d(
-                    "MainActivity: checkConnectivityAndCall() called with: menuItemSelected.equals(FAVOURITES) = %s and !isNetworkConnected(context) = %s",
-                    menuItemSelected == FAVORITES,
-                    !isNetworkConnected(context),
-                )
-                showRecyclerView()
-                setupViewModel(FAVORITES)
-            }
-            else -> showErrorImage()
+    private fun selectMenu(newMenu: String) {
+        menuItemSelected = newMenu
+        observedPath = null
+        renderForConnectivity(mainActivityViewModel.isOnline.value, newMenu)
+    }
+
+    private fun renderForConnectivity(online: Boolean, menuItem: String) {
+        val canShowContent = online || menuItem == FAVORITES
+        if (!canShowContent) {
+            showErrorImage()
+            observedPath = null
+            return
+        }
+        showRecyclerView()
+        val targetPath = if (online) menuItem else FAVORITES
+        if (observedPath != targetPath) {
+            setupViewModel(targetPath)
+            observedPath = targetPath
         }
     }
 

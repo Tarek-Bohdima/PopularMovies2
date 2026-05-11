@@ -12,8 +12,10 @@ recyclerview = "1.1.0"
 swiperefreshlayout = "1.1.0"
 material = "1.2.1"
 
-# Lifecycle (legacy — slated for removal with the Coroutines/Flow migration)
-lifecycle = "2.2.0"
+lifecycle = "2.8.7"
+
+# Coroutines
+coroutines = "1.8.1"
 
 # Data persistence
 room = "2.7.2"
@@ -55,11 +57,15 @@ androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 google-material = { module = "com.google.android.material:material", version.ref = "material" }
 
-# Lifecycle (legacy)
-androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "lifecycle" }
-androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
-androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata", version.ref = "lifecycle" }
+# Lifecycle (LiveData artifacts still legacy; runtime-ktx + viewmodel-ktx are target-stack)
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycle" }
+
+# Coroutines
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 # Room
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
@@ -97,10 +103,10 @@ mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito-cor
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
 
 [bundles]
-lifecycle-legacy = [
-    "androidx-lifecycle-extensions",
-    "androidx-lifecycle-viewmodel",
-    "androidx-lifecycle-livedata",
+lifecycle = [
+    "androidx-lifecycle-runtime-ktx",
+    "androidx-lifecycle-viewmodel-ktx",
+    "androidx-lifecycle-livedata-ktx",
     "androidx-lifecycle-common-java8",
 ]
 retrofit = [
