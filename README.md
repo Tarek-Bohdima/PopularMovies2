@@ -18,7 +18,7 @@ Your app will:
 - You’ll modify the existing sorting criteria for the main view to include an additional pivot to show their favorites collection.
 
 Specifications:
-* App is written solely in the Java Programming Language.
+* App is written in Kotlin. _(The Udacity rubric required Java; the project was converted to Kotlin after submission — see "Tech stack" below.)_
 
 * Movies are displayed in the main layout via a grid of their corresponding movie poster thumbnails.
 
@@ -29,8 +29,6 @@ Specifications:
 * Movie details layout contains title, release date, movie poster, vote average, and plot synopsis.
 
 * App utilizes stable release versions of all libraries, Gradle, and Android Studio.
-
-> Historical note: the Udacity rubric required Java; this app was converted to Kotlin after submission and has since been brought onto a Google-recommended stack — see "Tech stack" below.
 
 ## Tech stack
 
