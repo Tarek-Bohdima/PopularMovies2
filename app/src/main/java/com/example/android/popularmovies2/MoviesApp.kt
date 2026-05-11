@@ -11,11 +11,16 @@ import com.example.android.popularmovies2.di.component.MovieComponent
 import com.example.android.popularmovies2.di.module.ContextModule
 import com.example.android.popularmovies2.di.module.NetworkModule
 import com.example.android.popularmovies2.di.module.OkHttpClientModule
+import com.example.android.popularmovies2.ui.image.CoilImageLoader
+import com.example.android.popularmovies2.ui.image.ImageLoader
+import com.example.android.popularmovies2.ui.image.ImageLoaderHost
 import timber.log.Timber
 
-class MoviesApp : Application() {
+class MoviesApp : Application(), ImageLoaderHost {
     lateinit var movieComponent: MovieComponent
         private set
+
+    override val imageLoader: ImageLoader by lazy { CoilImageLoader() }
 
     override fun onCreate() {
         super.onCreate()
